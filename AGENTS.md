@@ -24,8 +24,9 @@ Chaque utilisateur a son propre compte.
 
 ## Où on en est
 Squelette en place : Vite + React 19 + TypeScript + Tailwind v4 + shadcn/ui
-(la compilation passe). Supabase : compte et projet créés (plan gratuit),
-pas encore branché au site.
+(la compilation passe). Supabase : compte et projet créés, connexion du site
+configurée et clé publique validée (HTTP 200). Prochaine étape : schéma de
+base de données, puis authentification.
 
 ## Stack technique
 Vite · React 19 · TypeScript · Tailwind v4 · shadcn/ui.
