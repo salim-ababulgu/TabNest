@@ -16,6 +16,9 @@ dist-ssr
 .npm-cache/
 .pnpm-store/
 
+# Local CLI home (redirected Supabase CLI config)
+.home/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
