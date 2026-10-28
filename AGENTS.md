@@ -29,7 +29,7 @@ Projet non commencé. Dépôt GitHub vide au point de départ.
 Vite · React 19 · TypeScript · Tailwind v4 · shadcn/ui.
 
 ## Services (aucun branché pour l'instant — demander confirmation avant d'ajouter)
-- Base de données + authentification : Supabase ou Firebase (à décider).
+- Base de données + authentification : Supabase (retenu).
 - Paiement : Lemon Squeezy (retenu). Aucune carte bancaire stockée chez nous.
 - E-mails : Amazon SES ou customer.io (à décider).
 - Hébergement : VPS Hostinger (à configurer : HTTPS, sauvegardes, pare-feu).
