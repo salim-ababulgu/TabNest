@@ -23,7 +23,9 @@ Service public, multi-utilisateur, avec formules payantes.
 Chaque utilisateur a son propre compte.
 
 ## Où on en est
-Projet non commencé. Dépôt GitHub vide au point de départ.
+Squelette en place : Vite + React 19 + TypeScript + Tailwind v4 + shadcn/ui
+(la compilation passe). Supabase : compte et projet créés (plan gratuit),
+pas encore branché au site.
 
 ## Stack technique
 Vite · React 19 · TypeScript · Tailwind v4 · shadcn/ui.
