@@ -1,3 +1,4 @@
+import { computeExpiry } from '@/lib/lifetime'
 import { supabase } from '@/lib/supabase'
 
 export type Group = { id: string; name: string; created_at: string }
@@ -51,7 +52,9 @@ export async function createPage(input: {
   title: string
   groupId: string | null
   userId: string
+  kind: string
 }): Promise<Page> {
+  const now = new Date()
   const { data, error } = await supabase
     .from('pages')
     .insert({
@@ -59,6 +62,10 @@ export async function createPage(input: {
       title: input.title || null,
       group_id: input.groupId,
       user_id: input.userId,
+      kind: input.kind,
+      visit_count: 0,
+      last_visited_at: now.toISOString(),
+      expires_at: computeExpiry(input.kind, 0, now),
     })
     .select()
     .single()
@@ -70,4 +77,22 @@ export async function createPage(input: {
 export async function toggleInteresting(id: string, value: boolean): Promise<void> {
   const { error } = await supabase.from('pages').update({ is_interesting: value }).eq('id', id)
   if (error) throw error
+}
+
+export async function visitPage(page: Page): Promise<Page> {
+  const nextVisits = page.visit_count + 1
+  const now = new Date()
+  const { data, error } = await supabase
+    .from('pages')
+    .update({
+      visit_count: nextVisits,
+      last_visited_at: now.toISOString(),
+      expires_at: computeExpiry(page.kind, nextVisits, now),
+    })
+    .eq('id', page.id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data as Page
 }

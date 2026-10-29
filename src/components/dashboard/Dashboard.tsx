@@ -19,12 +19,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuth } from '@/lib/auth'
+import { KIND_LABELS, PAGE_KINDS, describeExpiry } from '@/lib/lifetime'
+import type { PageKind } from '@/lib/lifetime'
 import {
   createGroup,
   createPage,
   fetchGroups,
   fetchPages,
   toggleInteresting,
+  visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
 
@@ -39,6 +42,7 @@ export function Dashboard() {
 
   const [url, setUrl] = useState('')
   const [title, setTitle] = useState('')
+  const [kind, setKind] = useState<PageKind>('normal')
   const [groupId, setGroupId] = useState(NO_GROUP)
   const [newGroup, setNewGroup] = useState('')
   const [busy, setBusy] = useState(false)
@@ -72,9 +76,11 @@ export function Dashboard() {
         title: title.trim(),
         groupId: groupId === NO_GROUP ? null : groupId,
         userId: user.id,
+        kind,
       })
       setUrl('')
       setTitle('')
+      setKind('normal')
       setGroupId(NO_GROUP)
       await load()
     } catch (cause) {
@@ -105,6 +111,16 @@ export function Dashboard() {
     setError(null)
     try {
       await toggleInteresting(page.id, !page.is_interesting)
+      await load()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Erreur')
+    }
+  }
+
+  async function handleVisit(page: Page) {
+    setError(null)
+    try {
+      await visitPage(page)
       await load()
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur')
@@ -162,6 +178,21 @@ export function Dashboard() {
                     onChange={(event) => setTitle(event.target.value)}
                     placeholder="Ex. Documentation React"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="kind">Type de page</Label>
+                  <Select value={kind} onValueChange={(value) => setKind(value as PageKind)}>
+                    <SelectTrigger id="kind" className="w-full">
+                      <SelectValue placeholder="Normale" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAGE_KINDS.map((pageKind) => (
+                        <SelectItem key={pageKind} value={pageKind}>
+                          {KIND_LABELS[pageKind]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="group">Groupe</Label>
@@ -231,34 +262,57 @@ export function Dashboard() {
               </p>
             ) : (
               <div className="divide-y">
-                {pages.map((page) => (
-                  <div key={page.id} className="flex items-center justify-between gap-3 py-3">
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">{page.title || page.url}</p>
-                      <a
-                        href={page.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block truncate text-xs text-muted-foreground hover:underline"
-                      >
-                        {page.url}
-                      </a>
+                {pages.map((page) => {
+                  const expiry = describeExpiry(page.expires_at)
+                  return (
+                    <div
+                      key={page.id}
+                      className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{page.title || page.url}</p>
+                        <a
+                          href={page.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="block truncate text-xs text-muted-foreground hover:underline"
+                        >
+                          {page.url}
+                        </a>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline">
+                            {KIND_LABELS[page.kind as PageKind] ?? page.kind}
+                          </Badge>
+                          {groupName(page.group_id) && (
+                            <Badge variant="secondary">{groupName(page.group_id)}</Badge>
+                          )}
+                          <span>{page.visit_count} visite(s)</span>
+                          <span className={expiry.expired ? 'font-medium text-destructive' : ''}>
+                            {expiry.text}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleVisit(page)}
+                        >
+                          J'ai visité
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={page.is_interesting ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => handleToggleInteresting(page)}
+                        >
+                          {page.is_interesting ? 'Intéressante' : 'Marquer intéressante'}
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      {groupName(page.group_id) && (
-                        <Badge variant="outline">{groupName(page.group_id)}</Badge>
-                      )}
-                      <Button
-                        type="button"
-                        variant={page.is_interesting ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => handleToggleInteresting(page)}
-                      >
-                        {page.is_interesting ? 'Intéressante' : 'Marquer intéressante'}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </CardContent>
