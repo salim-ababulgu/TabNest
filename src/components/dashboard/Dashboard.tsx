@@ -46,6 +46,8 @@ export function Dashboard() {
   const [groupId, setGroupId] = useState(NO_GROUP)
   const [newGroup, setNewGroup] = useState('')
   const [busy, setBusy] = useState(false)
+  const [filterGroup, setFilterGroup] = useState('all')
+  const [onlyInteresting, setOnlyInteresting] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -131,6 +133,12 @@ export function Dashboard() {
     if (!id) return null
     return groups.find((group) => group.id === id)?.name ?? null
   }
+
+  const visiblePages = pages.filter((page) => {
+    if (filterGroup !== 'all' && page.group_id !== filterGroup) return false
+    if (onlyInteresting && !page.is_interesting) return false
+    return true
+  })
 
   return (
     <div className="min-h-screen bg-background">
@@ -251,18 +259,53 @@ export function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Mes pages</CardTitle>
-            <CardDescription>{pages.length} page(s) enregistrée(s).</CardDescription>
+            <CardDescription>
+              {visiblePages.length} page(s) affichée(s) sur {pages.length}.
+            </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant={filterGroup === 'all' ? 'default' : 'outline'}
+                onClick={() => setFilterGroup('all')}
+              >
+                Tous
+              </Button>
+              {groups.map((group) => (
+                <Button
+                  key={group.id}
+                  type="button"
+                  size="sm"
+                  variant={filterGroup === group.id ? 'default' : 'outline'}
+                  onClick={() => setFilterGroup(group.id)}
+                >
+                  {group.name}
+                </Button>
+              ))}
+              <Button
+                type="button"
+                size="sm"
+                variant={onlyInteresting ? 'default' : 'outline'}
+                onClick={() => setOnlyInteresting((value) => !value)}
+              >
+                Intéressantes
+              </Button>
+            </div>
             {loading ? (
               <p className="text-sm text-muted-foreground">Chargement…</p>
             ) : pages.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Aucune page pour l'instant. Ajoute-en une ci-dessus.
               </p>
+            ) : visiblePages.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Aucune page ne correspond à ce filtre.
+              </p>
             ) : (
               <div className="divide-y">
-                {pages.map((page) => {
+                {visiblePages.map((page) => {
                   const expiry = describeExpiry(page.expires_at)
                   return (
                     <div
