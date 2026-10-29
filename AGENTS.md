@@ -23,10 +23,10 @@ Service public, multi-utilisateur, avec formules payantes.
 Chaque utilisateur a son propre compte.
 
 ## Où on en est
-Squelette en place : Vite + React 19 + TypeScript + Tailwind v4 + shadcn/ui
-(la compilation passe). Supabase : compte et projet créés, connexion du site
-configurée et clé publique validée (HTTP 200). Prochaine étape : schéma de
-base de données, puis authentification.
+Squelette en place : Vite + React 19 + TypeScript + Tailwind v4 + shadcn/ui.
+Supabase connecté, authentification e-mail/mot de passe fonctionnelle
+(inscription, connexion, déconnexion, tableau de bord). Prochaine étape :
+schéma de base de données (pages, groupes, durées de vie), puis écrans.
 
 ## Stack technique
 Vite · React 19 · TypeScript · Tailwind v4 · shadcn/ui.
