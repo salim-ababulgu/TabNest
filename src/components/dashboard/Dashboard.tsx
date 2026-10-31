@@ -11,7 +11,6 @@ import {
   RefreshCw,
   Settings,
   Sparkles,
-  Star,
   Trash2,
   X,
   Zap,
@@ -37,17 +36,15 @@ import {
   createPage,
   fetchGroups,
   fetchPages,
-  toggleInteresting,
   visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
 
-type View = 'today' | 'all' | 'favorites' | 'resources' | 'ephemeral' | 'archives'
+type View = 'today' | 'all' | 'resources' | 'ephemeral' | 'archives'
 
 const VIEWS: { id: View; label: string; icon: ComponentType<{ className?: string }> }[] = [
   { id: 'today', label: "Aujourd'hui", icon: Clock },
   { id: 'all', label: 'Tous les retours', icon: LayoutGrid },
-  { id: 'favorites', label: 'Favoris', icon: Star },
   { id: 'resources', label: 'Ressources', icon: BookOpen },
   { id: 'ephemeral', label: 'Outils récurrents', icon: Zap },
   { id: 'archives', label: 'Archives', icon: Archive },
@@ -56,7 +53,6 @@ const VIEWS: { id: View; label: string; icon: ComponentType<{ className?: string
 const VIEW_TITLES: Record<View, string> = {
   today: "À décider aujourd'hui",
   all: 'Tous les retours',
-  favorites: 'Favoris',
   resources: 'Ressources',
   ephemeral: 'Outils récurrents',
   archives: 'Archives',
@@ -64,7 +60,6 @@ const VIEW_TITLES: Record<View, string> = {
 
 const NO_GROUP = 'none'
 const DUE_SOON_MS = 48 * 60 * 60 * 1000
-const FAVORITE_VISITS = 3
 const MAX_STACK = 4
 
 const GRADIENTS = [
@@ -83,7 +78,6 @@ type Site = {
   pages: Page[]
   visits: number
   lastVisit: string | null
-  favorite: boolean
   ogImage: string | null
   favicon: string | null
   themeColor: string | null
@@ -97,10 +91,6 @@ function isExpired(page: Page): boolean {
 function isDueSoon(page: Page): boolean {
   if (!page.expires_at) return false
   return new Date(page.expires_at).getTime() - Date.now() <= DUE_SOON_MS
-}
-
-function isFavorite(page: Page): boolean {
-  return page.is_interesting || page.visit_count >= FAVORITE_VISITS
 }
 
 function domainOf(url: string): string {
@@ -204,7 +194,6 @@ function aggregateSites(pages: Page[]): Site[] {
       ) {
         existing.lastVisit = page.last_visited_at
       }
-      existing.favorite = existing.favorite || isFavorite(page)
       existing.ogImage = existing.ogImage ?? page.og_image_url
       existing.favicon = existing.favicon ?? page.favicon_url
       existing.themeColor = existing.themeColor ?? page.theme_color
@@ -214,7 +203,6 @@ function aggregateSites(pages: Page[]): Site[] {
         pages: [page],
         visits: page.visit_count,
         lastVisit: page.last_visited_at,
-        favorite: isFavorite(page),
         ogImage: page.og_image_url,
         favicon: page.favicon_url,
         themeColor: page.theme_color,
@@ -225,10 +213,7 @@ function aggregateSites(pages: Page[]): Site[] {
 }
 
 function sortSites(sites: Site[]): Site[] {
-  return [...sites].sort((a, b) => {
-    if (a.favorite !== b.favorite) return a.favorite ? -1 : 1
-    return b.visits - a.visits
-  })
+  return [...sites].sort((a, b) => b.visits - a.visits)
 }
 
 function Modal({
@@ -383,16 +368,6 @@ export function Dashboard() {
     }
   }
 
-  async function handleToggleInteresting(page: Page) {
-    setError(null)
-    try {
-      await toggleInteresting(page.id, !page.is_interesting)
-      await load()
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Erreur')
-    }
-  }
-
   async function handleVisit(page: Page) {
     setError(null)
     try {
@@ -433,8 +408,7 @@ export function Dashboard() {
 
   function countFor(id: View): number {
     if (id === 'all') return pages.length
-    if (id === 'favorites') return pages.filter(isFavorite).length
-    if (id === 'resources') return pages.filter((page) => page.kind === 'documentation').length
+    if (id === 'resources') return pages.filter((page) => page.visit_count === 1).length
     if (id === 'ephemeral') return pages.filter((page) => page.kind === 'ephemeral').length
     if (id === 'archives') return pages.filter(isExpired).length
     return pages.filter((page) => !isExpired(page) && isDueSoon(page)).length
@@ -443,8 +417,7 @@ export function Dashboard() {
   const visiblePages = pages.filter((page) => {
     if (selectedGroup) return page.group_id === selectedGroup
     if (view === 'all') return true
-    if (view === 'favorites') return isFavorite(page)
-    if (view === 'resources') return page.kind === 'documentation'
+    if (view === 'resources') return page.visit_count === 1
     if (view === 'ephemeral') return page.kind === 'ephemeral'
     if (view === 'archives') return isExpired(page)
     return !isExpired(page) && isDueSoon(page)
@@ -810,11 +783,7 @@ export function Dashboard() {
                               }}
                             />
                             <span className="truncate">{site.domain}</span>
-                            {site.favorite && (
-                              <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-[10px] font-medium text-lime-foreground">
-                                Favori
-                              </span>
-                            )}
+
                           </div>
                         </button>
 
@@ -894,15 +863,6 @@ export function Dashboard() {
                         aria-label="J'ai visité"
                       >
                         <Clock className="size-3.5" />
-                      </Button>
-                      <Button
-                        size="icon-sm"
-                        variant={page.is_interesting ? 'default' : 'outline'}
-                        onClick={() => handleToggleInteresting(page)}
-                        title="Favori"
-                        aria-label="Favori"
-                      >
-                        <Star className="size-3.5" />
                       </Button>
                       <Button
                         size="icon-sm"
