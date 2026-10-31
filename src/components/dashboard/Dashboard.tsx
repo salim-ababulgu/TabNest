@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   ListTodo,
   LogOut,
+  Pin,
   Plus,
   RefreshCw,
   Settings,
@@ -41,6 +42,7 @@ import {
   createPage,
   fetchGroups,
   fetchPages,
+  setPinned,
   setReason,
   visitPage,
 } from '@/lib/pages'
@@ -101,6 +103,7 @@ type Site = {
   favicon: string | null
   themeColor: string | null
   reason: string | null
+  pinned: boolean
 }
 
 function isExpired(page: Page): boolean {
@@ -209,6 +212,7 @@ function aggregateSites(pages: Page[]): Site[] {
       ) {
         existing.lastVisit = page.last_visited_at
       }
+      existing.pinned = existing.pinned || page.pinned
       existing.ogImage = existing.ogImage ?? page.og_image_url
       existing.favicon = existing.favicon ?? page.favicon_url
       existing.themeColor = existing.themeColor ?? page.theme_color
@@ -222,6 +226,7 @@ function aggregateSites(pages: Page[]): Site[] {
         favicon: page.favicon_url,
         themeColor: page.theme_color,
         reason: page.reason,
+        pinned: page.pinned,
       })
     }
   }
@@ -246,7 +251,10 @@ function aggregateSites(pages: Page[]): Site[] {
 }
 
 function sortSites(sites: Site[]): Site[] {
-  return [...sites].sort((a, b) => b.visits - a.visits)
+  return [...sites].sort((a, b) => {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+    return b.visits - a.visits
+  })
 }
 
 function Modal({
@@ -421,6 +429,22 @@ export function Dashboard() {
     }
   }
 
+  async function handleTogglePin(site: Site) {
+    setError(null)
+    try {
+      await setPinned(
+        site.pages.map((page) => page.id),
+        !site.pinned,
+      )
+      setSelectedSite((current) =>
+        current && current.domain === site.domain ? { ...current, pinned: !site.pinned } : current,
+      )
+      await load()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Erreur')
+    }
+  }
+
   async function handleDelete(page: Page) {
     if (!window.confirm('Retirer cette page de votre liste ?')) return
     setError(null)
@@ -473,7 +497,12 @@ export function Dashboard() {
   })
 
   const sites = sortSites(aggregateSites(visiblePages))
-  const topSites = [...sites].sort((a, b) => b.visits - a.visits).slice(0, 10)
+  const topSites = [...sites]
+    .sort((a, b) => {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+      return b.visits - a.visits
+    })
+    .slice(0, 10)
   const currentTitle = selectedGroup ? groupName(selectedGroup) ?? 'Projet' : VIEW_TITLES[view]
   const mostVisited = [...pages].sort((a, b) => b.visit_count - a.visit_count).slice(0, 3)
   const recentPages = [...pages]
@@ -832,7 +861,11 @@ export function Dashboard() {
                               }}
                             />
                             <span className="truncate">{site.domain}</span>
-
+                            {site.pinned && (
+                              <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-[10px] font-medium text-lime-foreground">
+                                Épinglé
+                              </span>
+                            )}
                           </div>
                         </button>
 
@@ -861,9 +894,20 @@ export function Dashboard() {
                                 </Badge>
                               ))}
                             </div>
-                            <Button size="sm" variant="outline" onClick={() => setSelectedSite(site)}>
-                              Détails
-                            </Button>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                size="icon-sm"
+                                variant={site.pinned ? 'default' : 'outline'}
+                                onClick={() => void handleTogglePin(site)}
+                                title={site.pinned ? 'Désépingler' : 'Épingler'}
+                                aria-label={site.pinned ? 'Désépingler' : 'Épingler'}
+                              >
+                                <Pin className="size-3.5" />
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setSelectedSite(site)}>
+                                Détails
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </article>
@@ -881,13 +925,21 @@ export function Dashboard() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <SiteAvatar site={selectedSite} className="size-10 rounded-lg border" />
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{selectedSite.visits} visite(s) au total</p>
                 <p className="text-xs text-muted-foreground">
                   {selectedSite.pages.length} page(s) · dernière visite{' '}
                   {timeAgo(selectedSite.lastVisit)}
                 </p>
               </div>
+              <Button
+                size="sm"
+                variant={selectedSite.pinned ? 'default' : 'outline'}
+                onClick={() => void handleTogglePin(selectedSite)}
+              >
+                <Pin className="size-3.5" />
+                {selectedSite.pinned ? 'Épinglé' : 'Épingler'}
+              </Button>
             </div>
 
             <div className="space-y-2">

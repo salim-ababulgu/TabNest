@@ -16,6 +16,7 @@ export type Page = {
   og_image_url: string | null
   theme_color: string | null
   reason: string | null
+  pinned: boolean
   expires_at: string | null
   deleted_at: string | null
   created_at: string
@@ -120,5 +121,11 @@ export async function setReason(page: Page, reason: string | null): Promise<void
       expires_at: computeExpiry(page.kind, page.visit_count, new Date(), reason),
     })
     .eq('id', page.id)
+  if (error) throw error
+}
+
+export async function setPinned(ids: string[], value: boolean): Promise<void> {
+  if (ids.length === 0) return
+  const { error } = await supabase.from('pages').update({ pinned: value }).in('id', ids)
   if (error) throw error
 }
