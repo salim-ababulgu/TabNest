@@ -51,7 +51,32 @@ async function refreshSession(session) {
   }
 }
 
-async function capture(url, title) {
+async function rememberTab(tabId, url, title) {
+  const { tabs = {} } = await chrome.storage.session.get('tabs')
+  tabs[tabId] = { url, title }
+  await chrome.storage.session.set({ tabs })
+}
+
+async function forgetTab(tabId) {
+  const { tabs = {} } = await chrome.storage.session.get('tabs')
+  delete tabs[tabId]
+  await chrome.storage.session.set({ tabs })
+}
+
+async function bumpBadge() {
+  const { captures = 0 } = await chrome.storage.local.get('captures')
+  const next = captures + 1
+  await chrome.storage.local.set({ captures: next })
+  try {
+    await chrome.action.setBadgeBackgroundColor({ color: '#c8f05a' })
+    await chrome.action.setBadgeTextColor({ color: '#161613' })
+    await chrome.action.setBadgeText({ text: String(next) })
+  } catch {
+    // badge non critique
+  }
+}
+
+async function capture(url, title, increment = true) {
   if (!url || IGNORED.test(url)) return
   try {
     const parsed = new URL(url)
@@ -61,16 +86,15 @@ async function capture(url, title) {
   }
 
   const now = Date.now()
-  const last = lastCaptured.get(url)
-  if (last && now - last < CAPTURE_COOLDOWN_MS) return
-
-  const session = await getSession()
-  if (!session?.access_token) {
-    console.warn('[TabNest] pas connecté : capture ignorée')
-    return
+  if (increment) {
+    const last = lastCaptured.get(url)
+    if (last && now - last < CAPTURE_COOLDOWN_MS) return
   }
 
-  lastCaptured.set(url, now)
+  const session = await getSession()
+  if (!session?.access_token) return
+
+  if (increment) lastCaptured.set(url, now)
 
   const headers = {
     apikey: SUPABASE_ANON_KEY,
@@ -88,8 +112,10 @@ async function capture(url, title) {
       return
     }
     const rows = await existingRes.json()
+    const exists = Array.isArray(rows) && rows.length > 0
 
-    if (Array.isArray(rows) && rows.length > 0) {
+    if (exists) {
+      if (!increment) return
       const page = rows[0]
       const visits = (page.visit_count ?? 0) + 1
       const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/pages?id=eq.${page.id}`, {
@@ -126,35 +152,63 @@ async function capture(url, title) {
       }
     }
 
-    console.log('[TabNest] page capturée :', url)
+    console.log('[TabNest] capturée', increment ? '(visite)' : '(fermeture)', url)
     await chrome.storage.local.set({ lastCapture: { url, at: now } })
+    await bumpBadge()
   } catch (error) {
     console.warn('[TabNest] capture : erreur réseau', error)
   }
 }
 
-chrome.tabs.onUpdated.addListener((_tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.url) {
-    void capture(tab.url, tab.title ?? '')
+    void rememberTab(tabId, tab.url, tab.title ?? '')
+    void capture(tab.url, tab.title ?? '', true)
   }
+})
+
+chrome.tabs.onActivated.addListener(async ({ tabId }) => {
+  try {
+    const tab = await chrome.tabs.get(tabId)
+    if (tab?.url) await rememberTab(tabId, tab.url, tab.title ?? '')
+  } catch {
+    // onglet déjà fermé
+  }
+})
+
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+  const { tabs = {} } = await chrome.storage.session.get('tabs')
+  const entry = tabs[tabId]
+  await forgetTab(tabId)
+  if (entry?.url) {
+    void capture(entry.url, entry.title ?? '', false)
+  }
+})
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('[TabNest] extension installée / mise à jour')
 })
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === 'capture-current') {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0]
-      if (tab?.url) void capture(tab.url, tab.title ?? '')
+      if (tab?.url) void capture(tab.url, tab.title ?? '', true)
       sendResponse({ ok: true })
     })
     return true
   }
   if (message?.type === 'get-status') {
-    getSession().then((session) => {
-      sendResponse({
-        connected: Boolean(session),
-        email: session?.user?.email ?? null,
-      })
-    })
+    Promise.all([getSession(), chrome.storage.local.get(['captures', 'lastCapture'])]).then(
+      ([session, info]) => {
+        sendResponse({
+          connected: Boolean(session),
+          email: session?.user?.email ?? null,
+          captures: info.captures ?? 0,
+          lastCapture: info.lastCapture ?? null,
+        })
+      },
+    )
     return true
   }
   return false

@@ -4,6 +4,7 @@ const loggedOut = document.getElementById('logged-out')
 const loggedIn = document.getElementById('logged-in')
 const errorEl = document.getElementById('error')
 const accountEl = document.getElementById('account')
+const countEl = document.getElementById('count')
 const lastEl = document.getElementById('last')
 
 async function getSession() {
@@ -16,13 +17,14 @@ async function refreshUi() {
   const connected = Boolean(session)
   loggedOut.hidden = connected
   loggedIn.hidden = !connected
-  if (connected) {
-    accountEl.textContent = session.user?.email ?? ''
-    const { lastCapture } = await chrome.storage.local.get('lastCapture')
-    lastEl.textContent = lastCapture?.url
-      ? `Dernière : ${lastCapture.url}`
-      : 'Aucune capture encore. Visitez des pages !'
-  }
+  if (!connected) return
+
+  accountEl.textContent = session.user?.email ?? ''
+  const { captures = 0, lastCapture } = await chrome.storage.local.get(['captures', 'lastCapture'])
+  countEl.textContent = `${captures} page(s) capturée(s)`
+  lastEl.textContent = lastCapture?.url
+    ? `Dernière : ${lastCapture.url}`
+    : 'Aucune capture encore. Visitez des pages !'
 }
 
 document.getElementById('login-form').addEventListener('submit', async (event) => {
@@ -66,7 +68,7 @@ document.getElementById('capture-btn').addEventListener('click', async () => {
   status.textContent = 'Page capturée ✓'
   await refreshUi()
   window.setTimeout(() => {
-    status.textContent = 'Capture activée.'
+    status.textContent = 'Capture automatique activée.'
   }, 2000)
 })
 
