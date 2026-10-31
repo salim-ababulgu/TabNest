@@ -22,6 +22,7 @@ import { useAuth } from '@/lib/auth'
 import { KIND_LABELS, PAGE_KINDS, describeExpiry } from '@/lib/lifetime'
 import type { PageKind } from '@/lib/lifetime'
 import {
+  archivePage,
   createGroup,
   createPage,
   fetchGroups,
@@ -123,6 +124,17 @@ export function Dashboard() {
     setError(null)
     try {
       await visitPage(page)
+      await load()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Erreur')
+    }
+  }
+
+  async function handleDelete(page: Page) {
+    if (!window.confirm('Retirer cette page de votre liste ?')) return
+    setError(null)
+    try {
+      await archivePage(page.id)
       await load()
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur')
@@ -351,6 +363,14 @@ export function Dashboard() {
                           onClick={() => handleToggleInteresting(page)}
                         >
                           {page.is_interesting ? 'Intéressante' : 'Marquer intéressante'}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(page)}
+                        >
+                          Supprimer
                         </Button>
                       </div>
                     </div>

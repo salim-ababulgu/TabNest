@@ -13,6 +13,7 @@ export type Page = {
   last_visited_at: string | null
   kind: string
   expires_at: string | null
+  deleted_at: string | null
   created_at: string
 }
 
@@ -41,6 +42,7 @@ export async function fetchPages(): Promise<Page[]> {
   const { data, error } = await supabase
     .from('pages')
     .select('*')
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
   if (error) throw error
@@ -76,6 +78,14 @@ export async function createPage(input: {
 
 export async function toggleInteresting(id: string, value: boolean): Promise<void> {
   const { error } = await supabase.from('pages').update({ is_interesting: value }).eq('id', id)
+  if (error) throw error
+}
+
+export async function archivePage(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('pages')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', id)
   if (error) throw error
 }
 
