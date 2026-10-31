@@ -18,11 +18,15 @@ function readMeta() {
     document.querySelector('meta[name="twitter:image"]') ||
     document.querySelector('meta[name="twitter:image:src"]')
 
+  const themeColor =
+    document.querySelector('meta[name="theme-color"]')?.getAttribute('content') ?? ''
+
   return {
     url: window.location.href,
     title: document.title,
     favicon: absolute(icon?.getAttribute('href')),
     ogImage: absolute(og?.getAttribute('content')),
+    themeColor,
   }
 }
 

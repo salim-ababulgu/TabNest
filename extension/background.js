@@ -26,6 +26,12 @@ function sanitizeUrl(url) {
   return typeof url === 'string' && /^(https?:|data:image)/i.test(url) ? url : ''
 }
 
+function sanitizeColor(color) {
+  return typeof color === 'string' && /^(#[0-9a-f]{3,8}|rgb|hsl|oklch)/i.test(color.trim())
+    ? color.trim()
+    : ''
+}
+
 const BASE_HOURS = { normal: 72, documentation: 720, ephemeral: 168 }
 
 function computeExpiry(kind, visits) {
@@ -98,16 +104,17 @@ async function bumpBadge() {
 
 async function sendPage(url, method, headers, body) {
   let res = await fetch(url, { method, headers, body: JSON.stringify(body) })
-  if (!res.ok && ('favicon_url' in body || 'og_image_url' in body)) {
+  if (!res.ok && ('favicon_url' in body || 'og_image_url' in body || 'theme_color' in body)) {
     const fallback = { ...body }
     delete fallback.favicon_url
     delete fallback.og_image_url
+    delete fallback.theme_color
     res = await fetch(url, { method, headers, body: JSON.stringify(fallback) })
   }
   return res
 }
 
-async function capture(url, title, faviconUrl, increment = true, ogImageUrl = '') {
+async function capture(url, title, faviconUrl, increment = true, ogImageUrl = '', themeColor = '') {
   if (!url || IGNORED.test(url) || isSearchPage(url)) return
   try {
     const parsed = new URL(url)
@@ -130,6 +137,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
 
   const favicon = sanitizeUrl(faviconUrl)
   const ogImage = sanitizeUrl(ogImageUrl)
+  const theme = sanitizeColor(themeColor)
   if (increment) lastCaptured.set(url, now)
 
   const headers = {
@@ -165,6 +173,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
       }
       if (favicon) body.favicon_url = favicon
       if (ogImage) body.og_image_url = ogImage
+      if (theme) body.theme_color = theme
       if (Object.keys(body).length === 0) return
 
       const updateRes = await sendPage(
@@ -188,6 +197,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
           title: title || null,
           favicon_url: favicon || null,
           og_image_url: ogImage || null,
+          theme_color: theme || null,
           kind: 'normal',
           visit_count: 1,
           last_visited_at: new Date().toISOString(),
@@ -249,7 +259,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true
   }
   if (message?.type === 'page-meta') {
-    void capture(message.url, message.title, message.favicon, false, message.ogImage)
+    void capture(
+      message.url,
+      message.title,
+      message.favicon,
+      false,
+      message.ogImage,
+      message.themeColor,
+    )
     sendResponse({ ok: true })
     return true
   }

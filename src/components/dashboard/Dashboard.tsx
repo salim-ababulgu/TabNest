@@ -87,6 +87,25 @@ function domainOf(url: string): string {
   }
 }
 
+const GRADIENTS = [
+  'from-[#dfe7c8] to-[#b9d48a]',
+  'from-[#f3e2c7] to-[#e0b98a]',
+  'from-[#e6e1f5] to-[#c3b8e8]',
+  'from-[#d9ebf2] to-[#a9cfe0]',
+  'from-[#f5dcd6] to-[#e8b0a4]',
+  'from-[#e8e6dd] to-[#c9c5b4]',
+  'from-[#e3f0d8] to-[#b7d99c]',
+  'from-[#f0e6c8] to-[#d6c28a]',
+]
+
+function gradientFor(domain: string): string {
+  let hash = 0
+  for (let i = 0; i < domain.length; i += 1) {
+    hash = (hash * 31 + domain.charCodeAt(i)) >>> 0
+  }
+  return GRADIENTS[hash % GRADIENTS.length]
+}
+
 function formatToday(): string {
   const text = new Intl.DateTimeFormat('fr-FR', {
     weekday: 'long',
@@ -523,10 +542,19 @@ export function Dashboard() {
                       className="group flex flex-col overflow-hidden rounded-2xl border bg-card transition-shadow hover:shadow-md"
                     >
                       <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-                        <div className="absolute inset-0 grid place-items-center">
-                          <span className="font-heading text-4xl font-semibold uppercase text-muted-foreground/25">
-                            {domain.charAt(0)}
-                          </span>
+                        <div className={cn('absolute inset-0 bg-gradient-to-br', gradientFor(domain))}>
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(255,255,255,0.55),transparent_60%)]" />
+                          {page.theme_color && (
+                            <div
+                              className="absolute inset-0 opacity-30"
+                              style={{ backgroundColor: page.theme_color }}
+                            />
+                          )}
+                          <div className="grid h-full place-items-center">
+                            <span className="font-heading text-6xl font-semibold uppercase text-ink/20">
+                              {domain.charAt(0)}
+                            </span>
+                          </div>
                         </div>
                         {page.og_image_url && (
                           <img
