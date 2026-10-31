@@ -1,11 +1,22 @@
-function announce() {
-  window.postMessage({ source: 'tabnest-extension', version: '0.1.0' }, '*')
+function postState() {
+  chrome.storage.local.get('captureEnabled').then(({ captureEnabled }) => {
+    const enabled = captureEnabled ?? true
+    document.documentElement.setAttribute('data-tabnest-extension', enabled ? '1' : '0')
+    window.postMessage(
+      { source: 'tabnest-extension', version: '0.1.0', captureEnabled: enabled },
+      '*',
+    )
+  })
 }
 
 window.addEventListener('message', (event) => {
-  if (event.data?.source === 'tabnest-page' && event.data?.type === 'ping') {
-    announce()
+  const data = event.data
+  if (!data || data.source !== 'tabnest-page') return
+  if (data.type === 'ping') {
+    postState()
+  } else if (data.type === 'set-capture') {
+    chrome.storage.local.set({ captureEnabled: Boolean(data.enabled) }).then(postState)
   }
 })
 
-announce()
+postState()

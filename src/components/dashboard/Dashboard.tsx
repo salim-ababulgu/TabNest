@@ -7,6 +7,8 @@ import {
   LayoutGrid,
   LogOut,
   Plus,
+  RefreshCw,
+  Settings,
   Sparkles,
   Star,
   Trash2,
@@ -117,18 +119,21 @@ export function Dashboard() {
   const [view, setView] = useState<View>('all')
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
   const [extensionConnected, setExtensionConnected] = useState(false)
+  const [captureEnabled, setCaptureEnabled] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
+    if (!silent) setError(null)
     try {
       const [nextGroups, nextPages] = await Promise.all([fetchGroups(), fetchPages()])
       setGroups(nextGroups)
       setPages(nextPages)
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Erreur de chargement')
+      if (!silent) setError(cause instanceof Error ? cause.message : 'Erreur de chargement')
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }, [])
 
@@ -137,14 +142,37 @@ export function Dashboard() {
   }, [load])
 
   useEffect(() => {
+    const interval = window.setInterval(() => {
+      void load(true)
+    }, 20000)
+    return () => window.clearInterval(interval)
+  }, [load])
+
+  useEffect(() => {
     function handleMessage(event: MessageEvent) {
-      if (event.data?.source === 'tabnest-extension') {
-        setExtensionConnected(true)
+      if (event.data?.source !== 'tabnest-extension') return
+      setExtensionConnected(true)
+      if (typeof event.data.captureEnabled === 'boolean') {
+        setCaptureEnabled(event.data.captureEnabled)
       }
     }
+
+    function checkAttribute() {
+      const value = document.documentElement.getAttribute('data-tabnest-extension')
+      if (value) {
+        setExtensionConnected(true)
+        setCaptureEnabled(value !== '0')
+      }
+    }
+
     window.addEventListener('message', handleMessage)
     window.postMessage({ source: 'tabnest-page', type: 'ping' }, '*')
-    return () => window.removeEventListener('message', handleMessage)
+    checkAttribute()
+    const poll = window.setInterval(checkAttribute, 2000)
+    return () => {
+      window.removeEventListener('message', handleMessage)
+      window.clearInterval(poll)
+    }
   }, [])
 
   async function handleAddPage(event: FormEvent) {
@@ -218,6 +246,18 @@ export function Dashboard() {
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur')
     }
+  }
+
+  async function handleRefresh() {
+    setRefreshing(true)
+    await load(true)
+    setRefreshing(false)
+  }
+
+  function toggleCapture() {
+    const next = !captureEnabled
+    setCaptureEnabled(next)
+    window.postMessage({ source: 'tabnest-page', type: 'set-capture', enabled: next }, '*')
   }
 
   function groupName(id: string | null): string | null {
@@ -326,7 +366,26 @@ export function Dashboard() {
           )}
         </div>
 
-        <div className="mt-auto border-t border-sidebar-border px-5 py-4">
+        <div className="mt-auto px-3 pb-2">
+          <button
+            type="button"
+            onClick={() => {
+              setShowSettings(true)
+              setSelectedGroup(null)
+            }}
+            className={cn(
+              'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
+              showSettings
+                ? 'bg-sidebar-accent text-sidebar-foreground'
+                : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+            )}
+          >
+            <Settings className="size-4" />
+            Paramètres
+          </button>
+        </div>
+
+        <div className="border-t border-sidebar-border px-5 py-4">
           <p className="truncate text-xs text-sidebar-foreground/60">{user?.email}</p>
           <button
             type="button"
@@ -349,6 +408,15 @@ export function Dashboard() {
           </div>
           <p className="hidden text-sm text-muted-foreground md:block">{formatToday()}</p>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={() => void handleRefresh()}
+              title="Rafraîchir"
+              aria-label="Rafraîchir"
+            >
+              <RefreshCw className={cn('size-3.5', refreshing && 'animate-spin')} />
+            </Button>
             <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
               <span
                 className={
@@ -585,6 +653,67 @@ export function Dashboard() {
           </div>
         </main>
       </div>
+
+      {showSettings && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+          <div className="w-full max-w-md rounded-2xl border bg-card p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-xl font-semibold">Paramètres</h2>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => setShowSettings(false)}
+                aria-label="Fermer"
+              >
+                ✕
+              </Button>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+                <div>
+                  <p className="text-sm font-medium">Capture automatique</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Enregistre automatiquement les pages que vous visitez.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={captureEnabled}
+                  onClick={toggleCapture}
+                  className={cn(
+                    'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',
+                    captureEnabled ? 'bg-lime' : 'bg-muted',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'inline-block size-5 rounded-full bg-white shadow transition-transform',
+                      captureEnabled ? 'translate-x-5' : 'translate-x-0.5',
+                    )}
+                  />
+                </button>
+              </div>
+
+              <div className="rounded-xl border p-4 text-sm">
+                <p className="font-medium">Extension</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {extensionConnected
+                    ? captureEnabled
+                      ? 'Connectée et active.'
+                      : 'Connectée, capture désactivée.'
+                    : "Non détectée. Ouvre l'extension TabNest pour te connecter."}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button onClick={() => setShowSettings(false)}>Fermer</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

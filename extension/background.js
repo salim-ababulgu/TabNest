@@ -122,6 +122,9 @@ async function capture(url, title, faviconUrl, increment = true) {
     if (last && now - last < CAPTURE_COOLDOWN_MS) return
   }
 
+  const { captureEnabled = true } = await chrome.storage.local.get('captureEnabled')
+  if (!captureEnabled) return
+
   const session = await getSession()
   if (!session?.access_token) return
 
