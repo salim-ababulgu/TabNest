@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import gsap from 'gsap'
 import { ArrowRight, Check, Clock, Sparkles } from 'lucide-react'
-import { WindowFan } from '@/components/landing/WindowFan'
+import { HeroWindows, OrganizeStage } from '@/components/landing/WindowStory'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -79,22 +79,6 @@ const PROJECTS = [
 export function Landing({ onStart }: LandingProps) {
   const [email, setEmail] = useState('')
 
-  useEffect(() => {
-    const cards = gsap.utils.toArray<HTMLElement>('.float-card')
-    const tweens = cards.map((card, index) => {
-      gsap.set(card, { rotate: Number(card.dataset.rotate ?? 0) })
-      return gsap.to(card, {
-        y: index % 2 === 0 ? -12 : -8,
-        duration: 3 + index * 0.4,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-        delay: index * 0.15,
-      })
-    })
-    return () => tweens.forEach((tween) => tween.kill())
-  }, [])
-
   return (
     <div
       id="top"
@@ -127,24 +111,7 @@ export function Landing({ onStart }: LandingProps) {
 
       {/* Hero */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-ink px-6 pt-28 pb-16 text-cream">
-        <div className="pointer-events-none absolute inset-0 hidden lg:block">
-          <div data-rotate="-3" className="float-card absolute top-[24%] left-[5%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
-            <p className="text-[10px] text-cream/40">developer.mozilla.org</p>
-            <p className="font-heading text-sm">Web Storage API</p>
-          </div>
-          <div data-rotate="2" className="float-card absolute top-[18%] right-[5%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
-            <p className="text-[10px] text-cream/40">welcome-to-the-jungle.com</p>
-            <p className="font-heading text-sm">Product Designer — Linear</p>
-          </div>
-          <div data-rotate="2" className="float-card absolute bottom-[18%] left-[8%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
-            <p className="text-[10px] text-cream/40">citymapper.com</p>
-            <p className="font-heading text-sm">Paris — Tokyo</p>
-          </div>
-          <div data-rotate="-2" className="float-card absolute right-[9%] bottom-[15%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
-            <p className="text-[10px] text-cream/40">notion.so</p>
-            <p className="font-heading text-sm">A guide to habits</p>
-          </div>
-        </div>
+        <HeroWindows />
 
         <div className="relative mx-auto w-full max-w-5xl text-center">
           <Reveal>
@@ -194,22 +161,21 @@ export function Landing({ onStart }: LandingProps) {
         </a>
       </section>
 
-      {/* Le problème */}
+      {/* Le rangement */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-ink px-6 py-24 text-cream">
-        <div className="mx-auto w-full max-w-6xl">
+        <div className="mx-auto w-full max-w-5xl text-center">
           <Reveal>
             <p className="text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
-              Le problème
+              Le rangement
             </p>
-            <h2 className="mt-4 max-w-2xl font-heading text-4xl leading-[1.02] tracking-tight md:text-6xl">
-              Voici votre navigateur, aujourd'hui.
+            <h2 className="mt-4 font-heading text-4xl leading-[1.02] tracking-tight md:text-6xl">
+              Puis tout se range.
             </h2>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-cream/55">
-              Des dizaines de fenêtres empilées, ouvertes « au cas où ». Aucune idée de ce qui
-              compte vraiment.
+            <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-cream/55">
+              Les fenêtres tombent, se réunissent autour de TabNest, et prennent place.
             </p>
           </Reveal>
-          <WindowFan />
+          <OrganizeStage />
         </div>
       </section>
 
