@@ -14,10 +14,16 @@ import { useAuth } from '@/lib/auth'
 
 type Mode = 'login' | 'signup'
 
-export function AuthForm({ onBack }: { onBack?: () => void }) {
-  const { signIn, signUp } = useAuth()
-  const [mode, setMode] = useState<Mode>('login')
-  const [email, setEmail] = useState('')
+export function AuthForm({
+  onBack,
+  initialEmail = '',
+}: {
+  onBack?: () => void
+  initialEmail?: string
+}) {
+  const { signIn, signUp, resetPassword } = useAuth()
+  const [mode, setMode] = useState<Mode>(initialEmail ? 'signup' : 'login')
+  const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
@@ -45,6 +51,22 @@ export function AuthForm({ onBack }: { onBack?: () => void }) {
     setMode(next)
     setError(null)
     setInfo(null)
+  }
+
+  async function handleReset() {
+    if (!email.trim()) {
+      setError("Saisis ton e-mail d'abord.")
+      return
+    }
+    setBusy(true)
+    setError(null)
+    const result = await resetPassword(email.trim())
+    setBusy(false)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setInfo('Un e-mail de réinitialisation a été envoyé (vérifie tes spams).')
+    }
   }
 
   return (
@@ -109,6 +131,15 @@ export function AuthForm({ onBack }: { onBack?: () => void }) {
                 placeholder="6 caractères minimum"
               />
             </div>
+            {mode === 'login' && (
+              <button
+                type="button"
+                onClick={handleReset}
+                className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+              >
+                Mot de passe oublié ?
+              </button>
+            )}
             {error && <p className="text-sm text-destructive">{error}</p>}
             {info && <p className="text-sm text-muted-foreground">{info}</p>}
             <Button type="submit" className="w-full" disabled={busy}>

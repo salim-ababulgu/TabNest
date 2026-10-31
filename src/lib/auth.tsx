@@ -11,6 +11,7 @@ type AuthContextType = {
   loading: boolean
   signIn: (email: string, password: string) => Promise<AuthResult>
   signUp: (email: string, password: string) => Promise<AuthResult>
+  resetPassword: (email: string) => Promise<AuthResult>
   signOut: () => Promise<void>
 }
 
@@ -46,13 +47,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null, needsConfirmation: !data.session }
   }
 
+  async function resetPassword(email: string): Promise<AuthResult> {
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    return { error: error ? error.message : null }
+  }
+
   async function signOut(): Promise<void> {
     await supabase.auth.signOut()
   }
 
   return (
     <AuthContext.Provider
-      value={{ session, user: session?.user ?? null, loading, signIn, signUp, signOut }}
+      value={{
+        session,
+        user: session?.user ?? null,
+        loading,
+        signIn,
+        signUp,
+        resetPassword,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

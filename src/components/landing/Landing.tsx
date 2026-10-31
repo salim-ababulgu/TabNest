@@ -1,7 +1,8 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { ArrowRight, Check, Clock, Sparkles } from 'lucide-react'
 
-type LandingProps = { onStart: () => void }
+type LandingProps = { onStart: (email?: string) => void }
 
 function PillButton({
   children,
@@ -33,6 +34,8 @@ const PROJECTS = [
 ]
 
 export function Landing({ onStart }: LandingProps) {
+  const [email, setEmail] = useState('')
+
   return (
     <div id="top" className="min-h-screen bg-cream text-ink">
       <header className="sticky top-0 z-40 px-4 pt-4">
@@ -82,20 +85,93 @@ export function Landing({ onStart }: LandingProps) {
         </div>
 
         <div className="relative mx-auto max-w-4xl text-center">
-          <p className="text-[11px] font-medium tracking-[0.3em] text-lime uppercase">Avant → Après</p>
+          <p className="text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
+            Votre mémoire de navigation
+          </p>
           <h1 className="mt-6 font-heading text-5xl leading-[0.98] tracking-tight md:text-7xl">
-            Vous laissez les pages
-            <span className="block">ouvertes</span>
-            <span className="block text-[#8f9484] italic">pour ne pas perdre la suite.</span>
+            TabNest garde les pages
+            <span className="block">que vous visitez.</span>
+            <span className="block text-[#8f9484] italic">
+              Vous fermez vos onglets. Rien n'est perdu.
+            </span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-cream/55">
-            Puis les onglets s'empilent. Les favoris débordent. L'historique devient introuvable.
-            Le problème n'est pas de sauvegarder plus.
+            Une extension qui enregistre automatiquement vos pages, les range par projets et leur
+            donne une durée de vie. Fini les 50 onglets ouverts par peur de perdre le fil.
           </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => onStart()}
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-lime px-6 text-sm font-semibold text-lime-foreground transition-colors hover:bg-lime/90"
+            >
+              Commencer gratuitement <ArrowRight className="size-4" />
+            </button>
+            <a
+              href="#comment"
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-white/15 px-6 text-sm font-medium text-cream/80 transition-colors hover:border-white/30 hover:text-cream"
+            >
+              Comment ça marche
+            </a>
+          </div>
         </div>
 
         <div className="relative mt-16 text-center text-[10px] tracking-[0.3em] text-cream/35 uppercase">
           Faire défiler
+        </div>
+      </section>
+
+      {/* Comment ça marche */}
+      <section id="comment" className="bg-cream px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <div>
+            <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
+              Comment ça marche
+            </p>
+            <h2 className="mt-3 font-heading text-4xl leading-[1.02] tracking-tight md:text-5xl">
+              Trois étapes, et vous ne perdez plus rien.
+            </h2>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {[
+              {
+                n: '01',
+                title: "Installez l'extension",
+                text: 'Chrome ou Edge. Un dossier, deux clics, et la capture est active.',
+              },
+              {
+                n: '02',
+                title: 'Naviguez normalement',
+                text: 'Chaque page visitée est enregistrée, sans rien faire.',
+              },
+              {
+                n: '03',
+                title: 'Retrouvez tout',
+                text: 'Vos pages sont rangées par projets, avec une durée de vie.',
+              },
+            ].map((step) => (
+              <div key={step.n} className="rounded-2xl border bg-card p-6">
+                <span className="font-heading text-3xl text-[#5f6b4f]">{step.n}</span>
+                <h3 className="mt-3 font-heading text-xl">{step.title}</h3>
+                <p className="mt-2 text-sm text-ink/60">{step.text}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              { t: 'Documentation', g: 'from-[#dfe7c8] to-[#b9d48a]' },
+              { t: 'Emploi', g: 'from-[#dbe3ff] to-[#a9cfe0]' },
+              { t: 'Achat voiture', g: 'from-[#ffe0cf] to-[#e8b0a4]' },
+            ].map((item) => (
+              <div key={item.t} className="overflow-hidden rounded-xl border bg-card">
+                <div className={'h-20 bg-gradient-to-br ' + item.g} />
+                <div className="p-3">
+                  <p className="font-heading text-sm">{item.t}</p>
+                  <p className="text-[11px] text-ink/50">3 pages · Favori</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -265,13 +341,15 @@ export function Landing({ onStart }: LandingProps) {
         <form
           onSubmit={(event) => {
             event.preventDefault()
-            onStart()
+            onStart(email)
           }}
           className="mx-auto mt-8 flex max-w-md items-center gap-2 rounded-full bg-cream p-1.5"
         >
           <input
             type="email"
             aria-label="Votre adresse e-mail"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             placeholder="vous@exemple.fr"
             className="h-9 min-w-0 flex-1 bg-transparent px-4 text-left text-sm text-ink outline-none placeholder:text-ink/40"
           />
@@ -285,6 +363,20 @@ export function Landing({ onStart }: LandingProps) {
         <p className="mt-4 text-xs text-ink/50">Gratuit pour commencer. Aucun spam.</p>
       </section>
 
+      <section id="confidentialite" className="bg-cream px-6 py-16">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
+            Confidentialité
+          </p>
+          <h2 className="mt-3 font-heading text-3xl">Vos pages restent les vôtres.</h2>
+          <p className="mt-4 text-sm leading-relaxed text-ink/60">
+            TabNest stocke l'adresse, le titre et l'image publique de vos pages. Pas de capture
+            d'écran, pas de contenu privé, pas de revente. Vous supprimez ce que vous voulez, quand
+            vous voulez.
+          </p>
+        </div>
+      </section>
+
       <footer className="bg-cream px-6 py-10 text-ink">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm md:flex-row">
           <div className="flex items-center gap-2">
@@ -295,10 +387,10 @@ export function Landing({ onStart }: LandingProps) {
           </div>
           <p className="text-ink/50">Un onglet pour garder le fil.</p>
           <div className="flex gap-5 text-ink/50">
-            <a href="#top" className="hover:text-ink">
+            <a href="#confidentialite" className="hover:text-ink">
               Confidentialité
             </a>
-            <a href="#top" className="hover:text-ink">
+            <a href="mailto:salimababulgu@gmail.com" className="hover:text-ink">
               Contact
             </a>
           </div>

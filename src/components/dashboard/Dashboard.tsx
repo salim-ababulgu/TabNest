@@ -641,6 +641,54 @@ export function Dashboard() {
             </div>
           </section>
 
+          {!extensionConnected && (
+            <section className="mt-6 rounded-2xl border border-lime/40 bg-lime/10 p-6">
+              <div className="flex items-start gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-lime text-lime-foreground">
+                  <Sparkles className="size-5" />
+                </span>
+                <div className="flex-1">
+                  <h2 className="font-heading text-xl font-semibold">
+                    Activez la capture automatique
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    TabNest enregistre automatiquement les pages que vous visitez grâce à son
+                    extension. Sans elle, votre liste reste vide.
+                  </p>
+                  <ol className="mt-4 space-y-2 text-sm">
+                    <li>
+                      <span className="font-medium">1.</span> Ouvre{' '}
+                      <code className="rounded bg-secondary px-1 py-0.5">chrome://extensions</code> et
+                      active le mode développeur.
+                    </li>
+                    <li>
+                      <span className="font-medium">2.</span> « Charger l'extension non empaquetée » →
+                      le dossier{' '}
+                      <code className="rounded bg-secondary px-1 py-0.5">extension</code> du projet.
+                    </li>
+                    <li>
+                      <span className="font-medium">3.</span> Clique sur l'icône TabNest et
+                      connecte-toi.
+                    </li>
+                  </ol>
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        window.postMessage({ source: 'tabnest-page', type: 'ping' }, '*')
+                      }
+                    >
+                      J'ai installé l'extension
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setShowAddPage(true)}>
+                      Ajouter une page manuellement
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
           {topSites.length > 0 && (
             <section className="mt-8">
               <div className="flex items-center justify-between">
@@ -700,7 +748,8 @@ export function Dashboard() {
               <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
             ) : sites.length === 0 ? (
               <div className="mt-6 rounded-xl border border-dashed bg-card/50 px-4 py-12 text-center text-sm text-muted-foreground">
-                Aucun site ici pour l'instant.
+                Vos pages apparaîtront ici dès que l'extension sera active (ou ajoute-en une
+                manuellement).
               </div>
             ) : (
               <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">

@@ -7,6 +7,7 @@ import { Landing } from '@/components/landing/Landing'
 function AppContent() {
   const { loading, user } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
+  const [authEmail, setAuthEmail] = useState('')
 
   if (loading) {
     return (
@@ -17,8 +18,15 @@ function AppContent() {
   }
 
   if (user) return <Dashboard />
-  if (showAuth) return <AuthForm onBack={() => setShowAuth(false)} />
-  return <Landing onStart={() => setShowAuth(true)} />
+  if (showAuth) return <AuthForm initialEmail={authEmail} onBack={() => setShowAuth(false)} />
+  return (
+    <Landing
+      onStart={(email) => {
+        setAuthEmail(email ?? '')
+        setShowAuth(true)
+      }}
+    />
+  )
 }
 
 function App() {
