@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import gsap from 'gsap'
 import { ArrowRight, Check, Clock, Sparkles } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -15,15 +15,21 @@ function Reveal({
   delay?: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     const element = ref.current
     if (!element) return
+    gsap.set(element, { y: 42, opacity: 0 })
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
-          setVisible(true)
+          gsap.to(element, {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            delay: delay / 1000,
+            ease: 'power3.out',
+          })
           observer.disconnect()
         }
       },
@@ -31,18 +37,10 @@ function Reveal({
     )
     observer.observe(element)
     return () => observer.disconnect()
-  }, [])
+  }, [delay])
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        'transition-all duration-700 ease-out',
-        visible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0',
-        className,
-      )}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
+    <div ref={ref} className={className}>
       {children}
     </div>
   )
@@ -80,6 +78,22 @@ const PROJECTS = [
 export function Landing({ onStart }: LandingProps) {
   const [email, setEmail] = useState('')
 
+  useEffect(() => {
+    const cards = gsap.utils.toArray<HTMLElement>('.float-card')
+    const tweens = cards.map((card, index) => {
+      gsap.set(card, { rotate: Number(card.dataset.rotate ?? 0) })
+      return gsap.to(card, {
+        y: index % 2 === 0 ? -12 : -8,
+        duration: 3 + index * 0.4,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: index * 0.15,
+      })
+    })
+    return () => tweens.forEach((tween) => tween.kill())
+  }, [])
+
   return (
     <div
       id="top"
@@ -113,19 +127,19 @@ export function Landing({ onStart }: LandingProps) {
       {/* Hero */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-ink px-6 pt-28 pb-16 text-cream">
         <div className="pointer-events-none absolute inset-0 hidden lg:block">
-          <div className="animate-[float_7s_ease-in-out_infinite] absolute top-[24%] left-[5%] -rotate-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
+          <div data-rotate="-3" className="float-card absolute top-[24%] left-[5%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
             <p className="text-[10px] text-cream/40">developer.mozilla.org</p>
             <p className="font-heading text-sm">Web Storage API</p>
           </div>
-          <div className="animate-[float_9s_ease-in-out_infinite] absolute top-[18%] right-[5%] rotate-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
+          <div data-rotate="2" className="float-card absolute top-[18%] right-[5%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
             <p className="text-[10px] text-cream/40">welcome-to-the-jungle.com</p>
             <p className="font-heading text-sm">Product Designer — Linear</p>
           </div>
-          <div className="animate-[float_8s_ease-in-out_infinite] absolute bottom-[18%] left-[8%] rotate-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
+          <div data-rotate="2" className="float-card absolute bottom-[18%] left-[8%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
             <p className="text-[10px] text-cream/40">citymapper.com</p>
             <p className="font-heading text-sm">Paris — Tokyo</p>
           </div>
-          <div className="animate-[float_10s_ease-in-out_infinite] absolute right-[9%] bottom-[15%] -rotate-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
+          <div data-rotate="-2" className="float-card absolute right-[9%] bottom-[15%] rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left">
             <p className="text-[10px] text-cream/40">notion.so</p>
             <p className="font-heading text-sm">A guide to habits</p>
           </div>

@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
+import gsap from 'gsap'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -28,6 +29,13 @@ export function AuthForm({
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    const context = gsap.context(() => {
+      gsap.from('[data-auth-card]', { y: 24, opacity: 0, duration: 0.6, ease: 'power2.out' })
+    })
+    return () => context.revert()
+  }, [])
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -80,7 +88,7 @@ export function AuthForm({
           ← Retour à l'accueil
         </button>
       )}
-      <Card className="w-full max-w-sm">
+      <Card data-auth-card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-xl">TabNest</CardTitle>
           <CardDescription>Gardez vos pages, ne perdez plus rien.</CardDescription>

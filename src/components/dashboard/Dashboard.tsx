@@ -270,12 +270,28 @@ function Modal({
   onClose: () => void
   children: ReactNode
 }) {
+  useEffect(() => {
+    const context = gsap.context(() => {
+      gsap.from('[data-modal-backdrop]', { opacity: 0, duration: 0.25, ease: 'power1.out' })
+      gsap.from('[data-modal-panel]', {
+        y: 18,
+        opacity: 0,
+        scale: 0.97,
+        duration: 0.4,
+        ease: 'power3.out',
+      })
+    })
+    return () => context.revert()
+  }, [])
+
   return (
     <div
+      data-modal-backdrop
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
       onClick={onClose}
     >
       <div
+        data-modal-panel
         className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border bg-card p-6 shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
@@ -370,6 +386,21 @@ export function Dashboard() {
       window.clearInterval(poll)
     }
   }, [])
+
+  useEffect(() => {
+    if (loading) return
+    const context = gsap.context(() => {
+      gsap.from('[data-dash-anim]', {
+        y: 28,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.08,
+        ease: 'power2.out',
+        clearProps: 'all',
+      })
+    })
+    return () => context.revert()
+  }, [loading])
 
   useLayoutEffect(() => {
     const state = pendingFlip.current
@@ -702,7 +733,7 @@ export function Dashboard() {
             </p>
           )}
 
-          <section className="relative overflow-hidden rounded-2xl border bg-card px-8 py-10">
+          <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-8 py-10">
             <div className="absolute -top-24 -right-24 size-64 rounded-full bg-lime/25 blur-3xl" />
             <div className="relative">
               <p className="text-[11px] font-medium tracking-[0.22em] text-muted-foreground uppercase">
@@ -723,7 +754,7 @@ export function Dashboard() {
           </section>
 
           {!extensionConnected && (
-            <section className="mt-6 rounded-2xl border border-lime/40 bg-lime/10 p-6">
+            <section data-dash-anim className="mt-6 rounded-2xl border border-lime/40 bg-lime/10 p-6">
               <div className="flex items-start gap-3">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-lime text-lime-foreground">
                   <Sparkles className="size-5" />
@@ -771,7 +802,7 @@ export function Dashboard() {
           )}
 
           {topSites.length > 0 && (
-            <section className="mt-8">
+            <section data-dash-anim className="mt-8">
               <div className="flex items-center justify-between">
                 <h2 className="font-heading text-lg font-medium tracking-tight">Les plus visités</h2>
                 <span className="text-xs text-muted-foreground">Accès rapide</span>
@@ -802,7 +833,7 @@ export function Dashboard() {
           )}
 
           <section className="mt-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div data-dash-anim className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="font-heading text-2xl font-medium tracking-tight">{currentTitle}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -833,7 +864,7 @@ export function Dashboard() {
                 manuellement).
               </div>
             ) : (
-              <div ref={gridRef} className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <div ref={gridRef} data-dash-anim className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {sites.map((site) => {
                   const layers = Math.min(site.visits, MAX_STACK) - 1
                   return (
