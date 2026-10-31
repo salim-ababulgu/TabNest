@@ -1089,8 +1089,7 @@ export function Dashboard() {
       {pageToDelete && (
         <Modal title="Retirer cette page ?" onClose={() => setPageToDelete(null)}>
           <p className="text-sm text-muted-foreground">
-            « {pageToDelete.title || pageToDelete.url} » sera retirée de votre liste. Elle reste
-            récupérable dans les archives.
+            « {pageToDelete.title || pageToDelete.url} » sera retirée de votre liste.
           </p>
           <div className="mt-5 flex justify-end gap-2">
             <Button variant="outline" onClick={() => setPageToDelete(null)}>
