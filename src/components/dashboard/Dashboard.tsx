@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -155,7 +156,12 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <header className="flex items-center justify-between border-b px-6 py-4">
-        <h1 className="text-lg font-semibold">TabNest</h1>
+        <div className="flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-lime text-lime-foreground">
+            <Sparkles className="size-4" />
+          </span>
+          <h1 className="font-heading text-xl font-semibold">TabNest</h1>
+        </div>
         <div className="flex items-center gap-3">
           <span className="hidden text-sm text-muted-foreground sm:inline">{user?.email}</span>
           <Button variant="outline" size="sm" onClick={() => signOut()}>
