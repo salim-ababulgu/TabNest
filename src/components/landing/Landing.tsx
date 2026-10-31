@@ -81,7 +81,10 @@ export function Landing({ onStart }: LandingProps) {
   const [email, setEmail] = useState('')
 
   return (
-    <div id="top" className="bg-cream text-ink">
+    <div
+      id="top"
+      className="landing-snap h-screen snap-y snap-mandatory overflow-y-auto bg-cream text-ink"
+    >
       <header className="fixed top-0 right-0 left-0 z-40 px-4 pt-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-ink/90 px-4 py-2.5 backdrop-blur">
           <a href="#top" className="flex items-center gap-2">
