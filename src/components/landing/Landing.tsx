@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import gsap from 'gsap'
 import { ArrowRight, Check, Clock, Sparkles } from 'lucide-react'
-import { HeroWindows, OrganizeStage } from '@/components/landing/WindowStory'
+import { Cinematic } from '@/components/landing/Cinematic'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -80,10 +80,7 @@ export function Landing({ onStart }: LandingProps) {
   const [email, setEmail] = useState('')
 
   return (
-    <div
-      id="top"
-      className="landing-snap h-screen snap-y snap-mandatory overflow-y-auto bg-cream text-ink"
-    >
+    <div id="top" className="relative bg-cream text-ink">
       <header className="fixed top-0 right-0 left-0 z-40 px-4 pt-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-ink/90 px-4 py-2.5 backdrop-blur">
           <a href="#top" className="flex items-center gap-2">
@@ -109,90 +106,22 @@ export function Landing({ onStart }: LandingProps) {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative flex min-h-screen items-center overflow-hidden bg-ink px-6 pt-28 pb-16 text-cream">
-        <HeroWindows />
-
-        <div className="relative mx-auto w-full max-w-5xl text-center">
-          <Reveal>
-            <p className="text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
-              Votre mémoire de navigation
-            </p>
-          </Reveal>
-          <Reveal delay={100}>
-            <h1 className="mt-6 font-heading text-5xl leading-[0.98] tracking-tight md:text-7xl">
-              TabNest garde les pages
-              <span className="block">que vous visitez.</span>
-              <span className="block text-[#8f9484] italic">
-                Vous fermez vos onglets. Rien n'est perdu.
-              </span>
-            </h1>
-          </Reveal>
-          <Reveal delay={200}>
-            <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-cream/55">
-              Une extension qui enregistre automatiquement vos pages, les range par projets et leur
-              donne une durée de vie. Fini les 50 onglets ouverts par peur de perdre le fil.
-            </p>
-          </Reveal>
-          <Reveal delay={300}>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => onStart()}
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-lime px-6 text-sm font-semibold text-lime-foreground transition-colors hover:bg-lime/90"
-              >
-                Commencer gratuitement <ArrowRight className="size-4" />
-              </button>
-              <a
-                href="#comment"
-                className="inline-flex h-11 items-center gap-2 rounded-full border border-white/15 px-6 text-sm font-medium text-cream/80 transition-colors hover:border-white/30 hover:text-cream"
-              >
-                Comment ça marche
-              </a>
-            </div>
-          </Reveal>
-        </div>
-
-        <a
-          href="#comment"
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.3em] text-cream/40 uppercase"
-        >
-          <span className="block animate-bounce">↓</span>
-        </a>
-      </section>
-
-      {/* Le rangement */}
-      <section className="relative flex min-h-screen items-center overflow-hidden bg-ink px-6 py-24 text-cream">
-        <div className="mx-auto w-full max-w-5xl text-center">
-          <Reveal>
-            <p className="text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
-              Le rangement
-            </p>
-            <h2 className="mt-4 font-heading text-4xl leading-[1.02] tracking-tight md:text-6xl">
-              Puis tout se range.
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-cream/55">
-              Les fenêtres tombent, se réunissent autour de TabNest, et prennent place.
-            </p>
-          </Reveal>
-          <OrganizeStage />
-        </div>
-      </section>
+      <Cinematic onStart={() => onStart()} />
 
       {/* Comment ça marche */}
-      <section id="comment" className="flex min-h-screen items-center bg-cream px-6 py-24">
+      <section id="comment" className="px-6 py-24 md:px-10 md:py-32">
         <div className="mx-auto w-full max-w-6xl">
           <Reveal>
             <div className="max-w-2xl">
               <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
                 Comment ça marche
               </p>
-              <h2 className="mt-4 font-heading text-4xl leading-[1.02] tracking-tight md:text-5xl">
+              <h2 className="mt-4 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
                 Trois étapes, et vous ne perdez plus rien.
               </h2>
             </div>
           </Reveal>
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
             {[
               {
                 n: '01',
@@ -220,7 +149,7 @@ export function Landing({ onStart }: LandingProps) {
             ))}
           </div>
           <Reveal delay={400}>
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
                 { t: 'Documentation', g: 'from-[#dfe7c8] to-[#b9d48a]' },
                 { t: 'Emploi', g: 'from-[#dbe3ff] to-[#a9cfe0]' },
@@ -228,7 +157,7 @@ export function Landing({ onStart }: LandingProps) {
               ].map((item) => (
                 <div key={item.t} className="overflow-hidden rounded-xl border bg-card">
                   <div className={'h-24 bg-gradient-to-br ' + item.g} />
-                  <div className="p-3">
+                  <div className="p-4">
                     <p className="font-heading text-sm">{item.t}</p>
                     <p className="text-[11px] text-ink/50">3 pages · Favori</p>
                   </div>
@@ -240,13 +169,13 @@ export function Landing({ onStart }: LandingProps) {
       </section>
 
       {/* Le principe */}
-      <section id="principe" className="grid min-h-screen md:grid-cols-2">
-        <div className="flex items-center bg-cream px-8 py-24 md:px-16">
+      <section id="principe" className="grid md:grid-cols-2">
+        <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
             <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
               Le point de départ
             </p>
-            <h2 className="mt-6 font-heading text-5xl leading-[0.98] tracking-tight md:text-6xl">
+            <h2 className="mt-6 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Vous ne gardez pas des onglets.
               <span className="mt-2 block text-[#5f6b4f] italic">Vous gardez des intentions.</span>
             </h2>
@@ -256,7 +185,7 @@ export function Landing({ onStart }: LandingProps) {
             </p>
           </Reveal>
         </div>
-        <div className="flex items-center bg-ink px-8 py-24 md:px-16">
+        <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal delay={150} className="w-full">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
               <div className="grid grid-cols-3 gap-3 text-center text-[11px] text-cream/50">
@@ -277,9 +206,9 @@ export function Landing({ onStart }: LandingProps) {
       </section>
 
       {/* Dark centered */}
-      <section className="flex min-h-screen items-center bg-ink px-6 py-24 text-center text-cream">
+      <section className="flex items-center bg-ink px-6 py-24 text-center text-cream md:py-32">
         <Reveal className="mx-auto max-w-4xl">
-          <h2 className="font-heading text-4xl leading-[1.02] tracking-tight md:text-6xl">
+          <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-6xl">
             Réunir les pages ne suffit pas.
             <span className="mt-2 block text-[#8f9484] italic">
               Sinon TabNest ne serait qu'un favori de plus.
@@ -289,14 +218,14 @@ export function Landing({ onStart }: LandingProps) {
       </section>
 
       {/* L'automatisation */}
-      <section id="automatisation" className="grid min-h-screen md:grid-cols-2">
-        <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-16">
+      <section id="automatisation" className="grid md:grid-cols-2">
+        <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal className="w-full">
             <p className="text-[11px] font-medium tracking-[0.25em] text-lime uppercase">
               Ce qui change tout
             </p>
             <p className="mt-8 text-[11px] tracking-[0.25em] text-cream/40 uppercase">Observer</p>
-            <h2 className="mt-4 font-heading text-5xl leading-[0.98] tracking-tight md:text-6xl">
+            <h2 className="mt-4 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               TabNest comprend la page.
             </h2>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/55">
@@ -305,7 +234,7 @@ export function Landing({ onStart }: LandingProps) {
             </p>
           </Reveal>
         </div>
-        <div className="flex items-center bg-ink px-8 py-24 md:px-16">
+        <div className="flex items-center bg-ink px-8 py-24 md:px-14 md:py-28">
           <Reveal delay={150} className="w-full">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
               <div className="flex flex-wrap gap-2 text-[11px] text-cream/60">
@@ -335,13 +264,13 @@ export function Landing({ onStart }: LandingProps) {
       </section>
 
       {/* Les projets */}
-      <section id="projets" className="grid min-h-screen md:grid-cols-2">
-        <div className="flex items-center bg-cream px-8 py-24 md:px-16">
+      <section id="projets" className="grid md:grid-cols-2">
+        <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
             <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
               Et le contexte ?
             </p>
-            <h2 className="mt-6 font-heading text-5xl leading-[0.98] tracking-tight md:text-6xl">
+            <h2 className="mt-6 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Les pages ne vivent pas seules.
               <span className="mt-2 block text-[#5f6b4f] italic">
                 Elles appartiennent à vos projets.
@@ -354,7 +283,7 @@ export function Landing({ onStart }: LandingProps) {
             </p>
           </Reveal>
         </div>
-        <div className="flex items-center bg-cream px-8 py-24 md:px-16">
+        <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal delay={150} className="w-full">
             <div className="space-y-4">
               {PROJECTS.map((project) => (
@@ -376,13 +305,13 @@ export function Landing({ onStart }: LandingProps) {
       </section>
 
       {/* Espace de travail */}
-      <section className="grid min-h-screen md:grid-cols-2">
-        <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-16">
+      <section className="grid md:grid-cols-2">
+        <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal className="w-full">
             <p className="text-[11px] font-medium tracking-[0.25em] text-lime uppercase">
               Après TabNest
             </p>
-            <h2 className="mt-6 font-heading text-5xl leading-[0.98] tracking-tight md:text-6xl">
+            <h2 className="mt-6 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Votre navigateur peut enfin redevenir
               <span className="mt-2 block text-[#8f9484] italic">un espace de travail.</span>
             </h2>
@@ -400,11 +329,11 @@ export function Landing({ onStart }: LandingProps) {
             </ul>
           </Reveal>
         </div>
-        <div className="flex items-center justify-center bg-ink px-8 py-24">
+        <div className="flex items-center justify-center bg-ink px-8 py-24 md:px-14 md:py-28">
           <Reveal delay={150}>
-            <div className="grid size-72 place-items-center rounded-full border border-white/10">
-              <div className="grid size-52 place-items-center rounded-full border border-white/10">
-                <div className="grid size-32 place-items-center rounded-full bg-lime text-center text-lime-foreground">
+            <div className="grid size-64 place-items-center rounded-full border border-white/10 sm:size-72">
+              <div className="grid size-44 place-items-center rounded-full border border-white/10 sm:size-52">
+                <div className="grid size-28 place-items-center rounded-full bg-lime text-center text-lime-foreground sm:size-32">
                   <span>
                     <span className="block font-heading text-3xl">1</span>
                     <span className="block text-[10px] tracking-wider uppercase">onglet ouvert</span>
@@ -417,7 +346,7 @@ export function Landing({ onStart }: LandingProps) {
       </section>
 
       {/* CTA final */}
-      <section className="flex min-h-screen items-center bg-lime px-6 py-24 text-center text-lime-foreground">
+      <section className="flex items-center bg-lime px-6 py-24 text-center text-lime-foreground md:py-32">
         <div className="mx-auto w-full max-w-3xl">
           <Reveal>
             <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-ink text-lime">
@@ -426,7 +355,7 @@ export function Landing({ onStart }: LandingProps) {
             <p className="mt-6 text-[11px] font-medium tracking-[0.25em] uppercase opacity-70">
               La suite commence ici.
             </p>
-            <h2 className="mx-auto mt-4 max-w-3xl font-heading text-5xl leading-[0.98] tracking-tight md:text-7xl">
+            <h2 className="mx-auto mt-4 max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-5xl md:text-7xl">
               Fermez tous les autres.
               <span className="mt-2 block text-[#5f6b4f] italic">Gardez TabNest.</span>
             </h2>
@@ -460,12 +389,12 @@ export function Landing({ onStart }: LandingProps) {
       </section>
 
       {/* Confidentialité */}
-      <section id="confidentialite" className="flex min-h-screen items-center bg-cream px-6 py-24">
+      <section id="confidentialite" className="flex items-center bg-cream px-6 py-24 md:py-32">
         <Reveal className="mx-auto max-w-3xl text-center">
           <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
             Confidentialité
           </p>
-          <h2 className="mt-4 font-heading text-4xl leading-[1.02] tracking-tight md:text-5xl">
+          <h2 className="mt-4 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
             Vos pages restent les vôtres.
           </h2>
           <p className="mt-6 text-sm leading-relaxed text-ink/60">

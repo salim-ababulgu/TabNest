@@ -152,9 +152,4 @@
   }
 }
 
-/* Scroll « encadré » : chaque section se verrouille à l'écran */
-.landing-snap > section,
-.landing-snap > footer {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
+
