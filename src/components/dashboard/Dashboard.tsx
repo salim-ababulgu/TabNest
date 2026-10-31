@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { ComponentType, FormEvent, ReactNode } from 'react'
 import {
   Archive,
+  Bell,
   BookOpen,
   Clock,
   LayoutGrid,
@@ -64,6 +65,29 @@ const VIEW_TITLES: Record<View, string> = {
 const NO_GROUP = 'none'
 const DUE_SOON_MS = 48 * 60 * 60 * 1000
 const FAVORITE_VISITS = 3
+const MAX_STACK = 4
+
+const GRADIENTS = [
+  'from-[#dfe7c8] to-[#b9d48a]',
+  'from-[#f3e2c7] to-[#e0b98a]',
+  'from-[#e6e1f5] to-[#c3b8e8]',
+  'from-[#d9ebf2] to-[#a9cfe0]',
+  'from-[#f5dcd6] to-[#e8b0a4]',
+  'from-[#e8e6dd] to-[#c9c5b4]',
+  'from-[#e3f0d8] to-[#b7d99c]',
+  'from-[#f0e6c8] to-[#d6c28a]',
+]
+
+type Site = {
+  domain: string
+  pages: Page[]
+  visits: number
+  lastVisit: string | null
+  favorite: boolean
+  ogImage: string | null
+  favicon: string | null
+  themeColor: string | null
+}
 
 function isExpired(page: Page): boolean {
   if (!page.expires_at) return false
@@ -87,23 +111,16 @@ function domainOf(url: string): string {
   }
 }
 
-const GRADIENTS = [
-  'from-[#dfe7c8] to-[#b9d48a]',
-  'from-[#f3e2c7] to-[#e0b98a]',
-  'from-[#e6e1f5] to-[#c3b8e8]',
-  'from-[#d9ebf2] to-[#a9cfe0]',
-  'from-[#f5dcd6] to-[#e8b0a4]',
-  'from-[#e8e6dd] to-[#c9c5b4]',
-  'from-[#e3f0d8] to-[#b7d99c]',
-  'from-[#f0e6c8] to-[#d6c28a]',
-]
-
 function gradientFor(domain: string): string {
   let hash = 0
   for (let i = 0; i < domain.length; i += 1) {
     hash = (hash * 31 + domain.charCodeAt(i)) >>> 0
   }
   return GRADIENTS[hash % GRADIENTS.length]
+}
+
+function faviconFor(site: Site): string {
+  return site.favicon || `https://${site.domain}/favicon.ico`
 }
 
 function formatToday(): string {
@@ -113,6 +130,58 @@ function formatToday(): string {
     month: 'long',
   }).format(new Date())
   return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+function timeAgo(iso: string | null): string {
+  if (!iso) return '—'
+  const diff = Date.now() - new Date(iso).getTime()
+  const minutes = Math.round(diff / 60000)
+  if (minutes < 1) return "à l'instant"
+  if (minutes < 60) return `il y a ${minutes} min`
+  const hours = Math.round(minutes / 60)
+  if (hours < 24) return `il y a ${hours} h`
+  return `il y a ${Math.round(hours / 24)} j`
+}
+
+function aggregateSites(pages: Page[]): Site[] {
+  const map = new Map<string, Site>()
+  for (const page of pages) {
+    const domain = domainOf(page.url)
+    const existing = map.get(domain)
+    if (existing) {
+      existing.pages.push(page)
+      existing.visits += page.visit_count
+      if (
+        page.last_visited_at &&
+        (!existing.lastVisit || page.last_visited_at > existing.lastVisit)
+      ) {
+        existing.lastVisit = page.last_visited_at
+      }
+      existing.favorite = existing.favorite || isFavorite(page)
+      existing.ogImage = existing.ogImage ?? page.og_image_url
+      existing.favicon = existing.favicon ?? page.favicon_url
+      existing.themeColor = existing.themeColor ?? page.theme_color
+    } else {
+      map.set(domain, {
+        domain,
+        pages: [page],
+        visits: page.visit_count,
+        lastVisit: page.last_visited_at,
+        favorite: isFavorite(page),
+        ogImage: page.og_image_url,
+        favicon: page.favicon_url,
+        themeColor: page.theme_color,
+      })
+    }
+  }
+  return [...map.values()]
+}
+
+function sortSites(sites: Site[]): Site[] {
+  return [...sites].sort((a, b) => {
+    if (a.favorite !== b.favorite) return a.favorite ? -1 : 1
+    return b.visits - a.visits
+  })
 }
 
 function Modal({
@@ -126,7 +195,7 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-      <div className="w-full max-w-md rounded-2xl border bg-card p-6 shadow-xl">
+      <div className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border bg-card p-6 shadow-xl">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-xl font-semibold">{title}</h2>
           <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Fermer">
@@ -162,6 +231,8 @@ export function Dashboard() {
   const [showSettings, setShowSettings] = useState(false)
   const [showAddPage, setShowAddPage] = useState(false)
   const [showAddProject, setShowAddProject] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null)
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
@@ -326,7 +397,14 @@ export function Dashboard() {
     return !isExpired(page) && isDueSoon(page)
   })
 
+  const sites = sortSites(aggregateSites(visiblePages))
+  const topSites = [...sites].sort((a, b) => b.visits - a.visits).slice(0, 10)
   const currentTitle = selectedGroup ? groupName(selectedGroup) ?? 'Projet' : VIEW_TITLES[view]
+  const mostVisited = [...pages].sort((a, b) => b.visit_count - a.visit_count).slice(0, 3)
+  const recentPages = [...pages]
+    .filter((page) => page.last_visited_at)
+    .sort((a, b) => ((a.last_visited_at ?? '') < (b.last_visited_at ?? '') ? 1 : -1))
+    .slice(0, 3)
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -459,6 +537,15 @@ export function Dashboard() {
             >
               <RefreshCw className={cn('size-3.5', refreshing && 'animate-spin')} />
             </Button>
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={() => setShowNotifications(true)}
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell className="size-3.5" />
+            </Button>
             <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
               <span
                 className={
@@ -501,12 +588,55 @@ export function Dashboard() {
             </div>
           </section>
 
+          {topSites.length > 0 && (
+            <section className="mt-8">
+              <div className="flex items-center justify-between">
+                <h2 className="font-heading text-lg font-medium tracking-tight">Les plus visités</h2>
+                <span className="text-xs text-muted-foreground">Vos stories</span>
+              </div>
+              <div className="mt-3 flex gap-4 overflow-x-auto pb-2">
+                {topSites.map((site) => (
+                  <button
+                    key={site.domain}
+                    type="button"
+                    onClick={() => setSelectedSite(site)}
+                    className="flex w-20 shrink-0 flex-col items-center gap-1.5"
+                  >
+                    <span
+                      className={cn(
+                        'grid size-16 place-items-center rounded-full bg-gradient-to-br p-[2px]',
+                        gradientFor(site.domain),
+                      )}
+                    >
+                      <span className="grid size-full place-items-center overflow-hidden rounded-full bg-card">
+                        <img
+                          src={faviconFor(site)}
+                          alt=""
+                          className="size-7"
+                          onError={(event) => {
+                            event.currentTarget.style.display = 'none'
+                          }}
+                        />
+                        <span className="pointer-events-none font-heading text-xl font-semibold uppercase text-ink/40">
+                          {site.domain.charAt(0)}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="w-full truncate text-center text-[11px] text-muted-foreground">
+                      {site.domain}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
           <section className="mt-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="font-heading text-2xl font-medium tracking-tight">{currentTitle}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {visiblePages.length} page(s)
+                  {sites.length} site(s) · {visiblePages.length} page(s)
                   {view === 'today' && !selectedGroup ? ' à traiter sous 48 h' : ''}
                 </p>
               </div>
@@ -527,122 +657,104 @@ export function Dashboard() {
 
             {loading ? (
               <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
-            ) : visiblePages.length === 0 ? (
+            ) : sites.length === 0 ? (
               <div className="mt-6 rounded-xl border border-dashed bg-card/50 px-4 py-12 text-center text-sm text-muted-foreground">
-                Aucune page ici pour l'instant.
+                Aucun site ici pour l'instant.
               </div>
             ) : (
-              <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {visiblePages.map((page) => {
-                  const expiry = describeExpiry(page.expires_at)
-                  const domain = domainOf(page.url)
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {sites.map((site) => {
+                  const layers = Math.min(site.visits, MAX_STACK) - 1
                   return (
-                    <article
-                      key={page.id}
-                      className="group flex flex-col overflow-hidden rounded-2xl border bg-card transition-shadow hover:shadow-md"
-                    >
-                      <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-                        <div className={cn('absolute inset-0 bg-gradient-to-br', gradientFor(domain))}>
-                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(255,255,255,0.55),transparent_60%)]" />
-                          {page.theme_color && (
-                            <div
-                              className="absolute inset-0 opacity-30"
-                              style={{ backgroundColor: page.theme_color }}
-                            />
-                          )}
-                          <div className="grid h-full place-items-center">
-                            <span className="font-heading text-6xl font-semibold uppercase text-ink/20">
-                              {domain.charAt(0)}
-                            </span>
+                    <div key={site.domain} className="relative">
+                      {Array.from({ length: Math.max(0, layers) }).map((_, index) => (
+                        <div
+                          key={index}
+                          className="absolute inset-0 rounded-2xl border bg-card"
+                          style={{
+                            transform: `translate(${(index + 1) * 5}px, ${(index + 1) * 5}px)`,
+                            opacity: 0.5 - index * 0.12,
+                          }}
+                        />
+                      ))}
+                      <article className="relative flex flex-col overflow-hidden rounded-2xl border bg-card transition-shadow hover:shadow-md">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSite(site)}
+                          className="relative block aspect-[16/10] w-full overflow-hidden bg-secondary text-left"
+                        >
+                          <div
+                            className={cn('absolute inset-0 bg-gradient-to-br', gradientFor(site.domain))}
+                          >
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(255,255,255,0.55),transparent_60%)]" />
+                            {site.themeColor && (
+                              <div
+                                className="absolute inset-0 opacity-30"
+                                style={{ backgroundColor: site.themeColor }}
+                              />
+                            )}
+                            <div className="grid h-full place-items-center">
+                              <span className="font-heading text-6xl font-semibold uppercase text-ink/20">
+                                {site.domain.charAt(0)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        {page.og_image_url && (
-                          <img
-                            src={page.og_image_url}
-                            alt=""
-                            loading="lazy"
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                            onError={(event) => {
-                              event.currentTarget.style.display = 'none'
-                            }}
-                          />
-                        )}
-                        <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-3 text-xs text-white">
-                          {page.favicon_url && (
+                          {site.ogImage && (
                             <img
-                              src={page.favicon_url}
+                              src={site.ogImage}
                               alt=""
-                              className="size-4 rounded"
+                              loading="lazy"
+                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 hover:scale-[1.03]"
                               onError={(event) => {
                                 event.currentTarget.style.display = 'none'
                               }}
                             />
                           )}
-                          <span className="truncate">{domain}</span>
-                          {isFavorite(page) && (
-                            <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-[10px] font-medium text-lime-foreground">
-                              Favori
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                          <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-3 text-xs text-white">
+                            <img
+                              src={faviconFor(site)}
+                              alt=""
+                              className="size-5 rounded bg-white/90 p-0.5"
+                              onError={(event) => {
+                                event.currentTarget.style.display = 'none'
+                              }}
+                            />
+                            <span className="truncate">{site.domain}</span>
+                            {site.favorite && (
+                              <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-[10px] font-medium text-lime-foreground">
+                                Favori
+                              </span>
+                            )}
+                          </div>
+                        </button>
 
-                      <div className="flex flex-1 flex-col p-4">
-                        <a
-                          href={page.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="line-clamp-2 font-heading text-lg leading-snug hover:underline"
-                        >
-                          {page.title || page.url}
-                        </a>
-                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                          <Badge variant="outline">
-                            {KIND_LABELS[page.kind as PageKind] ?? page.kind}
-                          </Badge>
-                          {groupName(page.group_id) && (
-                            <Badge variant="secondary">{groupName(page.group_id)}</Badge>
-                          )}
-                        </div>
-                        <div className="mt-auto flex items-center justify-between pt-3 text-xs text-muted-foreground">
-                          <span>
-                            {page.visit_count} visite(s) ·{' '}
-                            <span className={expiry.expired ? 'font-medium text-destructive' : ''}>
-                              {expiry.text}
-                            </span>
-                          </span>
-                          <div className="flex gap-1">
-                            <Button
-                              size="icon-sm"
-                              variant="outline"
-                              onClick={() => handleVisit(page)}
-                              title="J'ai visité"
-                              aria-label="J'ai visité"
-                            >
-                              <Clock className="size-3.5" />
-                            </Button>
-                            <Button
-                              size="icon-sm"
-                              variant={page.is_interesting ? 'default' : 'outline'}
-                              onClick={() => handleToggleInteresting(page)}
-                              title="Favori"
-                              aria-label="Favori"
-                            >
-                              <Star className="size-3.5" />
-                            </Button>
-                            <Button
-                              size="icon-sm"
-                              variant="ghost"
-                              onClick={() => handleDelete(page)}
-                              title="Supprimer"
-                              aria-label="Supprimer"
-                            >
-                              <Trash2 className="size-3.5" />
+                        <div className="flex flex-1 flex-col p-4">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedSite(site)}
+                            className="text-left font-heading text-lg leading-snug hover:underline"
+                          >
+                            {site.domain}
+                          </button>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {site.pages.length} page(s) · {site.visits} visite(s) ·{' '}
+                            {timeAgo(site.lastVisit)}
+                          </p>
+                          <div className="mt-auto flex items-center justify-between pt-3">
+                            <div className="flex flex-wrap gap-1">
+                              {site.pages.slice(0, 3).map((page) => (
+                                <Badge key={page.id} variant="outline">
+                                  {KIND_LABELS[page.kind as PageKind] ?? page.kind}
+                                </Badge>
+                              ))}
+                            </div>
+                            <Button size="sm" variant="outline" onClick={() => setSelectedSite(site)}>
+                              Détails
                             </Button>
                           </div>
                         </div>
-                      </div>
-                    </article>
+                      </article>
+                    </div>
                   )
                 })}
               </div>
@@ -650,6 +762,127 @@ export function Dashboard() {
           </section>
         </main>
       </div>
+
+      {selectedSite && (
+        <Modal title={selectedSite.domain} onClose={() => setSelectedSite(null)}>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <img
+                src={faviconFor(selectedSite)}
+                alt=""
+                className="size-10 rounded-lg border bg-white p-1"
+                onError={(event) => {
+                  event.currentTarget.style.display = 'none'
+                }}
+              />
+              <div>
+                <p className="text-sm font-medium">{selectedSite.visits} visite(s) au total</p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedSite.pages.length} page(s) · dernière visite{' '}
+                  {timeAgo(selectedSite.lastVisit)}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {selectedSite.pages.map((page) => {
+                const expiry = describeExpiry(page.expires_at)
+                return (
+                  <div key={page.id} className="flex items-center gap-2 rounded-lg border p-2">
+                    <div className="min-w-0 flex-1">
+                      <a
+                        href={page.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block truncate text-sm hover:underline"
+                      >
+                        {page.title || page.url}
+                      </a>
+                      <p className="text-[11px] text-muted-foreground">
+                        {page.visit_count} visite(s) · {expiry.text}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        onClick={() => handleVisit(page)}
+                        title="J'ai visité"
+                        aria-label="J'ai visité"
+                      >
+                        <Clock className="size-3.5" />
+                      </Button>
+                      <Button
+                        size="icon-sm"
+                        variant={page.is_interesting ? 'default' : 'outline'}
+                        onClick={() => handleToggleInteresting(page)}
+                        title="Favori"
+                        aria-label="Favori"
+                      >
+                        <Star className="size-3.5" />
+                      </Button>
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        onClick={() => handleDelete(page)}
+                        title="Supprimer"
+                        aria-label="Supprimer"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {showNotifications && (
+        <Modal title="Notifications" onClose={() => setShowNotifications(false)}>
+          <div className="space-y-5 text-sm">
+            <div>
+              <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
+                Sites les plus visités
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {mostVisited.length === 0 ? (
+                  <li className="text-muted-foreground">Aucune visite pour l'instant.</li>
+                ) : (
+                  mostVisited.map((page) => (
+                    <li key={page.id} className="flex items-center justify-between gap-3">
+                      <span className="truncate">{domainOf(page.url)}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {page.visit_count} visite(s)
+                      </span>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
+                Dernières visites
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {recentPages.length === 0 ? (
+                  <li className="text-muted-foreground">Aucune activité récente.</li>
+                ) : (
+                  recentPages.map((page) => (
+                    <li key={page.id} className="flex items-center justify-between gap-3">
+                      <span className="truncate">{page.title || domainOf(page.url)}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {timeAgo(page.last_visited_at)}
+                      </span>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          </div>
+        </Modal>
+      )}
 
       {showAddPage && (
         <Modal title="Ajouter une page" onClose={() => setShowAddPage(false)}>
