@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import gsap from 'gsap'
 import { ArrowRight, Check, Clock, Sparkles } from 'lucide-react'
+import { WindowFan } from '@/components/landing/WindowFan'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -191,6 +192,25 @@ export function Landing({ onStart }: LandingProps) {
         >
           <span className="block animate-bounce">↓</span>
         </a>
+      </section>
+
+      {/* Le problème */}
+      <section className="relative flex min-h-screen items-center overflow-hidden bg-ink px-6 py-24 text-cream">
+        <div className="mx-auto w-full max-w-6xl">
+          <Reveal>
+            <p className="text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
+              Le problème
+            </p>
+            <h2 className="mt-4 max-w-2xl font-heading text-4xl leading-[1.02] tracking-tight md:text-6xl">
+              Voici votre navigateur, aujourd'hui.
+            </h2>
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-cream/55">
+              Des dizaines de fenêtres empilées, ouvertes « au cas où ». Aucune idée de ce qui
+              compte vraiment.
+            </p>
+          </Reveal>
+          <WindowFan />
+        </div>
       </section>
 
       {/* Comment ça marche */}
