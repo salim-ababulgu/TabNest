@@ -33,9 +33,11 @@ function sanitizeColor(color) {
 }
 
 const BASE_HOURS = { normal: 72, documentation: 720, ephemeral: 168 }
+const REASON_HOURS = { decide: 72, finish: 168, explore: 336, remember: 2160 }
 
-function computeExpiry(kind, visits) {
-  const base = BASE_HOURS[kind] ?? BASE_HOURS.normal
+function computeExpiry(kind, visits, reason) {
+  const base =
+    reason && REASON_HOURS[reason] ? REASON_HOURS[reason] : (BASE_HOURS[kind] ?? BASE_HOURS.normal)
   const ms = base * (1 + Math.max(0, visits) * 0.5) * 60 * 60 * 1000
   return new Date(Date.now() + ms).toISOString()
 }
@@ -148,7 +150,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
 
   try {
     const existingRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/pages?select=id,visit_count,kind&url=eq.${encodeURIComponent(url)}`,
+      `${SUPABASE_URL}/rest/v1/pages?select=id,visit_count,kind,reason&url=eq.${encodeURIComponent(url)}`,
       { headers },
     )
     if (!existingRes.ok) {
@@ -166,7 +168,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
         const visits = (page.visit_count ?? 0) + 1
         body.visit_count = visits
         body.last_visited_at = new Date().toISOString()
-        body.expires_at = computeExpiry(page.kind ?? 'normal', visits)
+        body.expires_at = computeExpiry(page.kind ?? 'normal', visits, page.reason)
         body.title = title || null
       } else if (title) {
         body.title = title

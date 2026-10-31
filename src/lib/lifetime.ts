@@ -1,3 +1,5 @@
+import { REASON_HOURS, isReason } from '@/lib/reason'
+
 export type PageKind = 'normal' | 'documentation' | 'ephemeral'
 
 export const KIND_LABELS: Record<PageKind, string> = {
@@ -20,8 +22,11 @@ export function computeExpiry(
   kind: string,
   visitCount: number,
   from: Date = new Date(),
+  reason?: string | null,
 ): string {
-  const base = BASE_HOURS[kind as PageKind] ?? BASE_HOURS.normal
+  const base = isReason(reason)
+    ? REASON_HOURS[reason]
+    : BASE_HOURS[kind as PageKind] ?? BASE_HOURS.normal
   const multiplier = 1 + Math.max(0, visitCount) * GROWTH_PER_VISIT
   const ms = base * multiplier * 60 * 60 * 1000
   return new Date(from.getTime() + ms).toISOString()

@@ -15,6 +15,7 @@ export type Page = {
   favicon_url: string | null
   og_image_url: string | null
   theme_color: string | null
+  reason: string | null
   expires_at: string | null
   deleted_at: string | null
   created_at: string
@@ -68,6 +69,7 @@ export async function createPage(input: {
       group_id: input.groupId,
       user_id: input.userId,
       kind: input.kind,
+      reason: null,
       visit_count: 0,
       last_visited_at: now.toISOString(),
       expires_at: computeExpiry(input.kind, 0, now),
@@ -100,7 +102,7 @@ export async function visitPage(page: Page): Promise<Page> {
     .update({
       visit_count: nextVisits,
       last_visited_at: now.toISOString(),
-      expires_at: computeExpiry(page.kind, nextVisits, now),
+      expires_at: computeExpiry(page.kind, nextVisits, now, page.reason),
     })
     .eq('id', page.id)
     .select()
@@ -108,4 +110,15 @@ export async function visitPage(page: Page): Promise<Page> {
 
   if (error) throw error
   return data as Page
+}
+
+export async function setReason(page: Page, reason: string | null): Promise<void> {
+  const { error } = await supabase
+    .from('pages')
+    .update({
+      reason,
+      expires_at: computeExpiry(page.kind, page.visit_count, new Date(), reason),
+    })
+    .eq('id', page.id)
+  if (error) throw error
 }

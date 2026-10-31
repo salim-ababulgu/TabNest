@@ -3,9 +3,12 @@ import type { ComponentType, FormEvent, ReactNode } from 'react'
 import {
   Archive,
   Bell,
+  Bookmark,
   BookOpen,
   Clock,
+  Compass,
   LayoutGrid,
+  ListTodo,
   LogOut,
   Plus,
   RefreshCw,
@@ -30,20 +33,34 @@ import {
 import { useAuth } from '@/lib/auth'
 import { KIND_LABELS, PAGE_KINDS, describeExpiry } from '@/lib/lifetime'
 import type { PageKind } from '@/lib/lifetime'
+import { REASON_LABELS, REASON_ORDER } from '@/lib/reason'
+import type { Reason } from '@/lib/reason'
 import {
   archivePage,
   createGroup,
   createPage,
   fetchGroups,
   fetchPages,
+  setReason,
   visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
 
-type View = 'today' | 'all' | 'resources' | 'ephemeral' | 'archives'
+type View =
+  | 'today'
+  | 'finish'
+  | 'explore'
+  | 'remember'
+  | 'all'
+  | 'resources'
+  | 'ephemeral'
+  | 'archives'
 
 const VIEWS: { id: View; label: string; icon: ComponentType<{ className?: string }> }[] = [
   { id: 'today', label: "Aujourd'hui", icon: Clock },
+  { id: 'finish', label: 'À finir', icon: ListTodo },
+  { id: 'explore', label: 'Pistes', icon: Compass },
+  { id: 'remember', label: 'À retenir', icon: Bookmark },
   { id: 'all', label: 'Tous les retours', icon: LayoutGrid },
   { id: 'resources', label: 'Ressources', icon: BookOpen },
   { id: 'ephemeral', label: 'Outils récurrents', icon: Zap },
@@ -52,6 +69,9 @@ const VIEWS: { id: View; label: string; icon: ComponentType<{ className?: string
 
 const VIEW_TITLES: Record<View, string> = {
   today: "À décider aujourd'hui",
+  finish: 'À finir',
+  explore: 'Pistes',
+  remember: 'À retenir',
   all: 'Tous les retours',
   resources: 'Ressources',
   ephemeral: 'Outils récurrents',
@@ -59,7 +79,6 @@ const VIEW_TITLES: Record<View, string> = {
 }
 
 const NO_GROUP = 'none'
-const DUE_SOON_MS = 48 * 60 * 60 * 1000
 const MAX_STACK = 4
 
 const GRADIENTS = [
@@ -81,16 +100,12 @@ type Site = {
   ogImage: string | null
   favicon: string | null
   themeColor: string | null
+  reason: string | null
 }
 
 function isExpired(page: Page): boolean {
   if (!page.expires_at) return false
   return new Date(page.expires_at).getTime() < Date.now()
-}
-
-function isDueSoon(page: Page): boolean {
-  if (!page.expires_at) return false
-  return new Date(page.expires_at).getTime() - Date.now() <= DUE_SOON_MS
 }
 
 function domainOf(url: string): string {
@@ -206,9 +221,27 @@ function aggregateSites(pages: Page[]): Site[] {
         ogImage: page.og_image_url,
         favicon: page.favicon_url,
         themeColor: page.theme_color,
+        reason: page.reason,
       })
     }
   }
+
+  for (const site of map.values()) {
+    const counts = new Map<string, number>()
+    for (const page of site.pages) {
+      if (page.reason) counts.set(page.reason, (counts.get(page.reason) ?? 0) + 1)
+    }
+    let best: string | null = null
+    let bestCount = 0
+    for (const [reason, count] of counts) {
+      if (count > bestCount) {
+        best = reason
+        bestCount = count
+      }
+    }
+    site.reason = best
+  }
+
   return [...map.values()]
 }
 
@@ -378,6 +411,16 @@ export function Dashboard() {
     }
   }
 
+  async function handleSetReason(page: Page, reason: string | null) {
+    setError(null)
+    try {
+      await setReason(page, reason)
+      await load()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Erreur')
+    }
+  }
+
   async function handleDelete(page: Page) {
     if (!window.confirm('Retirer cette page de votre liste ?')) return
     setError(null)
@@ -408,19 +451,25 @@ export function Dashboard() {
 
   function countFor(id: View): number {
     if (id === 'all') return pages.length
+    if (id === 'finish') return pages.filter((page) => page.reason === 'finish').length
+    if (id === 'explore') return pages.filter((page) => page.reason === 'explore').length
+    if (id === 'remember') return pages.filter((page) => page.reason === 'remember').length
     if (id === 'resources') return pages.filter((page) => page.visit_count === 1).length
     if (id === 'ephemeral') return pages.filter((page) => page.kind === 'ephemeral').length
     if (id === 'archives') return pages.filter(isExpired).length
-    return pages.filter((page) => !isExpired(page) && isDueSoon(page)).length
+    return pages.filter((page) => !page.reason || page.reason === 'decide').length
   }
 
   const visiblePages = pages.filter((page) => {
     if (selectedGroup) return page.group_id === selectedGroup
     if (view === 'all') return true
+    if (view === 'finish') return page.reason === 'finish'
+    if (view === 'explore') return page.reason === 'explore'
+    if (view === 'remember') return page.reason === 'remember'
     if (view === 'resources') return page.visit_count === 1
     if (view === 'ephemeral') return page.kind === 'ephemeral'
     if (view === 'archives') return isExpired(page)
-    return !isExpired(page) && isDueSoon(page)
+    return !page.reason || page.reason === 'decide'
   })
 
   const sites = sortSites(aggregateSites(visiblePages))
@@ -799,6 +848,11 @@ export function Dashboard() {
                             {site.pages.length} page(s) · {site.visits} visite(s) ·{' '}
                             {timeAgo(site.lastVisit)}
                           </p>
+                          {site.reason && (
+                            <span className="mt-2 inline-flex w-fit rounded-full border px-2 py-0.5 text-[10px] text-muted-foreground">
+                              {REASON_LABELS[site.reason as Reason] ?? site.reason}
+                            </span>
+                          )}
                           <div className="mt-auto flex items-center justify-between pt-3">
                             <div className="flex flex-wrap gap-1">
                               {site.pages.slice(0, 3).map((page) => (
@@ -854,6 +908,24 @@ export function Dashboard() {
                         {pagePath(page.url)} · {page.visit_count} visite(s) · {expiry.text}
                       </p>
                     </div>
+                    <Select
+                      value={page.reason ?? 'none'}
+                      onValueChange={(value) =>
+                        handleSetReason(page, value === 'none' ? null : value)
+                      }
+                    >
+                      <SelectTrigger size="sm" className="w-28">
+                        <SelectValue placeholder="Pourquoi ?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Non décidé</SelectItem>
+                        {REASON_ORDER.map((reason) => (
+                          <SelectItem key={reason} value={reason}>
+                            {REASON_LABELS[reason]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <div className="flex shrink-0 gap-1">
                       <Button
                         size="icon-sm"
