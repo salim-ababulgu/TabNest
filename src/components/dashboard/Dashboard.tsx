@@ -123,6 +123,53 @@ function faviconFor(site: Site): string {
   return site.favicon || `https://${site.domain}/favicon.ico`
 }
 
+function pagePath(url: string): string {
+  try {
+    const parsed = new URL(url)
+    return `${parsed.pathname}${parsed.search}`.replace(/\/$/, '') || '/'
+  } catch {
+    return url
+  }
+}
+
+function uniquePages(pages: Page[]): Page[] {
+  const map = new Map<string, Page>()
+  for (const page of pages) {
+    let key = page.url
+    try {
+      const parsed = new URL(page.url)
+      key = `${parsed.hostname}${parsed.pathname}`
+    } catch {
+      // garde l'URL brute
+    }
+    const existing = map.get(key)
+    if (!existing || page.visit_count > existing.visit_count) {
+      map.set(key, page)
+    }
+  }
+  return [...map.values()].sort((a, b) => b.visit_count - a.visit_count)
+}
+
+function SiteAvatar({ site, className }: { site: Site; className?: string }) {
+  const [failed, setFailed] = useState(false)
+  return (
+    <span className={cn('grid place-items-center overflow-hidden bg-card p-1.5', className)}>
+      {failed ? (
+        <span className="font-heading text-lg font-semibold uppercase text-ink/40">
+          {site.domain.charAt(0)}
+        </span>
+      ) : (
+        <img
+          src={faviconFor(site)}
+          alt=""
+          className="size-full object-contain"
+          onError={() => setFailed(true)}
+        />
+      )}
+    </span>
+  )
+}
+
 function formatToday(): string {
   const text = new Intl.DateTimeFormat('fr-FR', {
     weekday: 'long',
@@ -194,8 +241,14 @@ function Modal({
   children: ReactNode
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-      <div className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border bg-card p-6 shadow-xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border bg-card p-6 shadow-xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-xl font-semibold">{title}</h2>
           <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Fermer">
@@ -592,7 +645,7 @@ export function Dashboard() {
             <section className="mt-8">
               <div className="flex items-center justify-between">
                 <h2 className="font-heading text-lg font-medium tracking-tight">Les plus visités</h2>
-                <span className="text-xs text-muted-foreground">Vos stories</span>
+                <span className="text-xs text-muted-foreground">Accès rapide</span>
               </div>
               <div className="mt-3 flex gap-4 overflow-x-auto pb-2">
                 {topSites.map((site) => (
@@ -608,19 +661,7 @@ export function Dashboard() {
                         gradientFor(site.domain),
                       )}
                     >
-                      <span className="grid size-full place-items-center overflow-hidden rounded-full bg-card">
-                        <img
-                          src={faviconFor(site)}
-                          alt=""
-                          className="size-7"
-                          onError={(event) => {
-                            event.currentTarget.style.display = 'none'
-                          }}
-                        />
-                        <span className="pointer-events-none font-heading text-xl font-semibold uppercase text-ink/40">
-                          {site.domain.charAt(0)}
-                        </span>
-                      </span>
+                      <SiteAvatar site={site} className="size-full rounded-full" />
                     </span>
                     <span className="w-full truncate text-center text-[11px] text-muted-foreground">
                       {site.domain}
@@ -767,14 +808,7 @@ export function Dashboard() {
         <Modal title={selectedSite.domain} onClose={() => setSelectedSite(null)}>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img
-                src={faviconFor(selectedSite)}
-                alt=""
-                className="size-10 rounded-lg border bg-white p-1"
-                onError={(event) => {
-                  event.currentTarget.style.display = 'none'
-                }}
-              />
+              <SiteAvatar site={selectedSite} className="size-10 rounded-lg border" />
               <div>
                 <p className="text-sm font-medium">{selectedSite.visits} visite(s) au total</p>
                 <p className="text-xs text-muted-foreground">
@@ -785,7 +819,7 @@ export function Dashboard() {
             </div>
 
             <div className="space-y-2">
-              {selectedSite.pages.map((page) => {
+              {uniquePages(selectedSite.pages).map((page) => {
                 const expiry = describeExpiry(page.expires_at)
                 return (
                   <div key={page.id} className="flex items-center gap-2 rounded-lg border p-2">
@@ -798,8 +832,8 @@ export function Dashboard() {
                       >
                         {page.title || page.url}
                       </a>
-                      <p className="text-[11px] text-muted-foreground">
-                        {page.visit_count} visite(s) · {expiry.text}
+                      <p className="truncate text-[11px] text-muted-foreground">
+                        {pagePath(page.url)} · {page.visit_count} visite(s) · {expiry.text}
                       </p>
                     </div>
                     <div className="flex shrink-0 gap-1">
