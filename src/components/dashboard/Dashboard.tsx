@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { Flip } from 'gsap/Flip'
 import type { ComponentType, FormEvent, ReactNode } from 'react'
 import {
   Archive,
@@ -47,6 +49,8 @@ import {
   visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
+
+gsap.registerPlugin(Flip)
 
 type View =
   | 'today'
@@ -312,6 +316,8 @@ export function Dashboard() {
   const [showAddProject, setShowAddProject] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [selectedSite, setSelectedSite] = useState<Site | null>(null)
+  const pendingFlip = useRef<ReturnType<typeof Flip.getState> | null>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
@@ -364,6 +370,18 @@ export function Dashboard() {
       window.clearInterval(poll)
     }
   }, [])
+
+  useLayoutEffect(() => {
+    const state = pendingFlip.current
+    if (!state) return
+    pendingFlip.current = null
+    Flip.from(state, {
+      duration: 0.55,
+      ease: 'power2.out',
+      absolute: false,
+      scale: true,
+    })
+  })
 
   async function handleAddPage(event: FormEvent) {
     event.preventDefault()
@@ -431,16 +449,28 @@ export function Dashboard() {
 
   async function handleTogglePin(site: Site) {
     setError(null)
+    const next = !site.pinned
+    const ids = site.pages.map((page) => page.id)
+    const idSet = new Set(ids)
+
+    const cards = gridRef.current?.querySelectorAll('[data-site]')
+    if (cards && cards.length > 0) {
+      pendingFlip.current = Flip.getState(cards)
+    }
+
+    setPages((current) =>
+      current.map((page) => (idSet.has(page.id) ? { ...page, pinned: next } : page)),
+    )
+    setSelectedSite((current) =>
+      current && current.domain === site.domain ? { ...current, pinned: next } : current,
+    )
+
     try {
-      await setPinned(
-        site.pages.map((page) => page.id),
-        !site.pinned,
-      )
-      setSelectedSite((current) =>
-        current && current.domain === site.domain ? { ...current, pinned: !site.pinned } : current,
-      )
-      await load()
+      await setPinned(ids, next)
     } catch (cause) {
+      setPages((current) =>
+        current.map((page) => (idSet.has(page.id) ? { ...page, pinned: !next } : page)),
+      )
       setError(cause instanceof Error ? cause.message : 'Erreur')
     }
   }
@@ -803,11 +833,11 @@ export function Dashboard() {
                 manuellement).
               </div>
             ) : (
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <div ref={gridRef} className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {sites.map((site) => {
                   const layers = Math.min(site.visits, MAX_STACK) - 1
                   return (
-                    <div key={site.domain} className="relative">
+                    <div key={site.domain} data-site={site.domain} className="relative">
                       {Array.from({ length: Math.max(0, layers) }).map((_, index) => (
                         <div
                           key={index}
