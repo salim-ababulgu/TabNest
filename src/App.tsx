@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { AuthProvider, useAuth } from '@/lib/auth'
 import { AuthForm } from '@/components/auth/AuthForm'
 import { Dashboard } from '@/components/dashboard/Dashboard'
+import { Landing } from '@/components/landing/Landing'
 
 function AppContent() {
   const { loading, user } = useAuth()
+  const [showAuth, setShowAuth] = useState(false)
 
   if (loading) {
     return (
@@ -13,7 +16,9 @@ function AppContent() {
     )
   }
 
-  return user ? <Dashboard /> : <AuthForm />
+  if (user) return <Dashboard />
+  if (showAuth) return <AuthForm onBack={() => setShowAuth(false)} />
+  return <Landing onStart={() => setShowAuth(true)} />
 }
 
 function App() {

@@ -14,7 +14,7 @@ import { useAuth } from '@/lib/auth'
 
 type Mode = 'login' | 'signup'
 
-export function AuthForm() {
+export function AuthForm({ onBack }: { onBack?: () => void }) {
   const { signIn, signUp } = useAuth()
   const [mode, setMode] = useState<Mode>('login')
   const [email, setEmail] = useState('')
@@ -48,7 +48,16 @@ export function AuthForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← Retour à l'accueil
+        </button>
+      )}
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-xl">TabNest</CardTitle>
