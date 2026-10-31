@@ -106,8 +106,9 @@ export function Dashboard() {
   const [newGroup, setNewGroup] = useState('')
   const [busy, setBusy] = useState(false)
 
-  const [view, setView] = useState<View>('today')
+  const [view, setView] = useState<View>('all')
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
+  const [extensionConnected, setExtensionConnected] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -126,6 +127,17 @@ export function Dashboard() {
   useEffect(() => {
     void load()
   }, [load])
+
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.data?.source === 'tabnest-extension') {
+        setExtensionConnected(true)
+      }
+    }
+    window.addEventListener('message', handleMessage)
+    window.postMessage({ source: 'tabnest-page', type: 'ping' }, '*')
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
 
   async function handleAddPage(event: FormEvent) {
     event.preventDefault()
@@ -327,6 +339,15 @@ export function Dashboard() {
           </div>
           <p className="hidden text-sm text-muted-foreground md:block">{formatToday()}</p>
           <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
+              <span
+                className={
+                  'size-1.5 rounded-full ' +
+                  (extensionConnected ? 'bg-lime' : 'bg-muted-foreground/40')
+                }
+              />
+              {extensionConnected ? 'Extension connectée' : 'Extension non détectée'}
+            </span>
             <Button variant="outline" size="sm" onClick={() => signOut()} className="md:hidden">
               Se déconnecter
             </Button>

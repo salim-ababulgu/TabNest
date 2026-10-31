@@ -125,3 +125,18 @@ button.ghost:hover {
   margin: 0 0 12px;
   word-break: break-all;
 }
+
+.last {
+  color: var(--muted);
+  margin: 0 0 10px;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--ink);
+  font-size: 12px;
+  text-decoration: underline;
+}
