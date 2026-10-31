@@ -18,7 +18,6 @@ import {
   Settings,
   Sparkles,
   Trash2,
-  X,
   Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -33,6 +32,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useAuth } from '@/lib/auth'
 import { KIND_LABELS, PAGE_KINDS, describeExpiry } from '@/lib/lifetime'
 import type { PageKind } from '@/lib/lifetime'
@@ -270,40 +285,20 @@ function Modal({
   onClose: () => void
   children: ReactNode
 }) {
-  useEffect(() => {
-    const context = gsap.context(() => {
-      gsap.from('[data-modal-backdrop]', { opacity: 0, duration: 0.25, ease: 'power1.out' })
-      gsap.from('[data-modal-panel]', {
-        y: 18,
-        opacity: 0,
-        scale: 0.97,
-        duration: 0.4,
-        ease: 'power3.out',
-      })
-    })
-    return () => context.revert()
-  }, [])
-
   return (
-    <div
-      data-modal-backdrop
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
-      onClick={onClose}
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
     >
-      <div
-        data-modal-panel
-        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border bg-card p-6 shadow-xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="font-heading text-xl font-semibold">{title}</h2>
-          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Fermer">
-            <X className="size-4" />
-          </Button>
-        </div>
-        <div className="mt-5">{children}</div>
-      </div>
-    </div>
+      <DialogContent className="max-h-[85vh] overflow-y-auto p-6 sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="font-heading text-xl font-semibold">{title}</DialogTitle>
+        </DialogHeader>
+        {children}
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -1086,21 +1081,32 @@ export function Dashboard() {
         </Modal>
       )}
 
-      {pageToDelete && (
-        <Modal title="Retirer cette page ?" onClose={() => setPageToDelete(null)}>
-          <p className="text-sm text-muted-foreground">
-            « {pageToDelete.title || pageToDelete.url} » sera retirée de votre liste.
-          </p>
-          <div className="mt-5 flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setPageToDelete(null)}>
-              Annuler
-            </Button>
-            <Button variant="destructive" onClick={() => void confirmDelete(pageToDelete)}>
+      <AlertDialog
+        open={Boolean(pageToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setPageToDelete(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Retirer cette page ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              « {pageToDelete?.title || pageToDelete?.url || ''} » sera retirée de votre liste.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                if (pageToDelete) void confirmDelete(pageToDelete)
+              }}
+            >
               Retirer
-            </Button>
-          </div>
-        </Modal>
-      )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {showNotifications && (
         <Modal title="Notifications" onClose={() => setShowNotifications(false)}>
