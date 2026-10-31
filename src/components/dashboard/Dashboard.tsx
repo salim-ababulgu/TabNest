@@ -332,6 +332,7 @@ export function Dashboard() {
   const [showAddProject, setShowAddProject] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [selectedSite, setSelectedSite] = useState<Site | null>(null)
+  const [pageToDelete, setPageToDelete] = useState<Page | null>(null)
   const pendingFlip = useRef<ReturnType<typeof Flip.getState> | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
 
@@ -506,14 +507,32 @@ export function Dashboard() {
     }
   }
 
-  async function handleDelete(page: Page) {
-    if (!window.confirm('Retirer cette page de votre liste ?')) return
+  function handleDelete(page: Page) {
+    setPageToDelete(page)
+  }
+
+  async function confirmDelete(page: Page) {
+    setPageToDelete(null)
     setError(null)
+
+    const cards = gridRef.current?.querySelectorAll('[data-site]')
+    if (cards && cards.length > 0) {
+      pendingFlip.current = Flip.getState(cards)
+    }
+
+    setPages((current) => current.filter((item) => item.id !== page.id))
+    setSelectedSite((current) => {
+      if (!current) return current
+      const remaining = current.pages.filter((item) => item.id !== page.id)
+      if (remaining.length === 0) return null
+      return { ...current, pages: remaining }
+    })
+
     try {
       await archivePage(page.id)
-      await load()
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur')
+      await load(true)
     }
   }
 
@@ -1063,6 +1082,23 @@ export function Dashboard() {
                 )
               })}
             </div>
+          </div>
+        </Modal>
+      )}
+
+      {pageToDelete && (
+        <Modal title="Retirer cette page ?" onClose={() => setPageToDelete(null)}>
+          <p className="text-sm text-muted-foreground">
+            « {pageToDelete.title || pageToDelete.url} » sera retirée de votre liste. Elle reste
+            récupérable dans les archives.
+          </p>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setPageToDelete(null)}>
+              Annuler
+            </Button>
+            <Button variant="destructive" onClick={() => void confirmDelete(pageToDelete)}>
+              Retirer
+            </Button>
           </div>
         </Modal>
       )}
