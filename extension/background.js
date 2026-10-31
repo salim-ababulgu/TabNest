@@ -6,6 +6,27 @@ const APP_HOSTS = ['localhost:5173', '127.0.0.1:5173']
 const CAPTURE_COOLDOWN_MS = 15000
 const lastCaptured = new Map()
 
+// Pages de moteurs de recherche : transitoires, on ne les garde pas.
+const SEARCH_PATTERNS = [
+  /^https?:\/\/(www\.)?google\.[a-z.]+\/search/i,
+  /^https?:\/\/(www\.)?bing\.com\/search/i,
+  /^https?:\/\/duckduckgo\.com\//i,
+  /^https?:\/\/search\.yahoo\.com\//i,
+  /^https?:\/\/(www\.)?ecosia\.org\/search/i,
+  /^https?:\/\/www\.qwant\.com\//i,
+  /^https?:\/\/www\.startpage\.com\//i,
+  /^https?:\/\/search\.brave\.com\//i,
+  /^https?:\/\/yandex\.[a-z.]+\/search/i,
+]
+
+function isSearchPage(url) {
+  return SEARCH_PATTERNS.some((pattern) => pattern.test(url))
+}
+
+function sanitizeFavicon(url) {
+  return typeof url === 'string' && /^(https?:|data:image)/i.test(url) ? url : ''
+}
+
 const BASE_HOURS = { normal: 72, documentation: 720, ephemeral: 168 }
 
 function computeExpiry(kind, visits) {
@@ -51,9 +72,9 @@ async function refreshSession(session) {
   }
 }
 
-async function rememberTab(tabId, url, title) {
+async function rememberTab(tabId, url, title, faviconUrl) {
   const { tabs = {} } = await chrome.storage.session.get('tabs')
-  tabs[tabId] = { url, title }
+  tabs[tabId] = { url, title, faviconUrl }
   await chrome.storage.session.set({ tabs })
 }
 
@@ -76,8 +97,18 @@ async function bumpBadge() {
   }
 }
 
-async function capture(url, title, increment = true) {
-  if (!url || IGNORED.test(url)) return
+async function sendPage(url, method, headers, body) {
+  let res = await fetch(url, { method, headers, body: JSON.stringify(body) })
+  if (!res.ok && 'favicon_url' in body) {
+    const fallback = { ...body }
+    delete fallback.favicon_url
+    res = await fetch(url, { method, headers, body: JSON.stringify(fallback) })
+  }
+  return res
+}
+
+async function capture(url, title, faviconUrl, increment = true) {
+  if (!url || IGNORED.test(url) || isSearchPage(url)) return
   try {
     const parsed = new URL(url)
     if (APP_HOSTS.includes(parsed.host)) return
@@ -94,6 +125,7 @@ async function capture(url, title, increment = true) {
   const session = await getSession()
   if (!session?.access_token) return
 
+  const favicon = sanitizeFavicon(faviconUrl)
   if (increment) lastCaptured.set(url, now)
 
   const headers = {
@@ -115,44 +147,54 @@ async function capture(url, title, increment = true) {
     const exists = Array.isArray(rows) && rows.length > 0
 
     if (exists) {
-      if (!increment) return
       const page = rows[0]
-      const visits = (page.visit_count ?? 0) + 1
-      const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/pages?id=eq.${page.id}`, {
-        method: 'PATCH',
+      const body = {}
+
+      if (increment) {
+        const visits = (page.visit_count ?? 0) + 1
+        body.visit_count = visits
+        body.last_visited_at = new Date().toISOString()
+        body.expires_at = computeExpiry(page.kind ?? 'normal', visits)
+        body.title = title || null
+      } else if (title) {
+        body.title = title
+      }
+      if (favicon) body.favicon_url = favicon
+      if (Object.keys(body).length === 0) return
+
+      const updateRes = await sendPage(
+        `${SUPABASE_URL}/rest/v1/pages?id=eq.${page.id}`,
+        'PATCH',
         headers,
-        body: JSON.stringify({
-          visit_count: visits,
-          last_visited_at: new Date().toISOString(),
-          expires_at: computeExpiry(page.kind ?? 'normal', visits),
-          title: title || null,
-        }),
-      })
+        body,
+      )
       if (!updateRes.ok) {
         console.warn('[TabNest] mise à jour de la page échouée', updateRes.status)
         return
       }
     } else {
-      const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/pages`, {
-        method: 'POST',
-        headers: { ...headers, Prefer: 'return=minimal' },
-        body: JSON.stringify({
+      const insertRes = await sendPage(
+        `${SUPABASE_URL}/rest/v1/pages`,
+        'POST',
+        { ...headers, Prefer: 'return=minimal' },
+        {
           user_id: session.user.id,
           url,
           title: title || null,
+          favicon_url: favicon || null,
           kind: 'normal',
           visit_count: 1,
           last_visited_at: new Date().toISOString(),
           expires_at: computeExpiry('normal', 0),
-        }),
-      })
+        },
+      )
       if (!insertRes.ok) {
         console.warn('[TabNest] insertion de la page échouée', insertRes.status)
         return
       }
     }
 
-    console.log('[TabNest] capturée', increment ? '(visite)' : '(fermeture)', url)
+    console.log('[TabNest] capturée', increment ? '(visite)' : '(maj)', url)
     await chrome.storage.local.set({ lastCapture: { url, at: now } })
     await bumpBadge()
   } catch (error) {
@@ -161,16 +203,18 @@ async function capture(url, title, increment = true) {
 }
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    void rememberTab(tabId, tab.url, tab.title ?? '')
-    void capture(tab.url, tab.title ?? '', true)
-  }
+  if (!tab.url) return
+  const isComplete = changeInfo.status === 'complete'
+  const hasFavicon = Boolean(changeInfo.favIconUrl)
+  if (!isComplete && !hasFavicon) return
+  void rememberTab(tabId, tab.url, tab.title ?? '', tab.favIconUrl ?? '')
+  void capture(tab.url, tab.title ?? '', tab.favIconUrl ?? '', isComplete)
 })
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   try {
     const tab = await chrome.tabs.get(tabId)
-    if (tab?.url) await rememberTab(tabId, tab.url, tab.title ?? '')
+    if (tab?.url) await rememberTab(tabId, tab.url, tab.title ?? '', tab.favIconUrl ?? '')
   } catch {
     // onglet déjà fermé
   }
@@ -181,7 +225,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   const entry = tabs[tabId]
   await forgetTab(tabId)
   if (entry?.url) {
-    void capture(entry.url, entry.title ?? '', false)
+    void capture(entry.url, entry.title ?? '', entry.faviconUrl ?? '', false)
   }
 })
 
@@ -193,7 +237,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === 'capture-current') {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0]
-      if (tab?.url) void capture(tab.url, tab.title ?? '', true)
+      if (tab?.url) void capture(tab.url, tab.title ?? '', tab.favIconUrl ?? '', true)
       sendResponse({ ok: true })
     })
     return true

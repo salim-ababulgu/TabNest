@@ -8,6 +8,7 @@ import {
   LogOut,
   Plus,
   Sparkles,
+  Star,
   Trash2,
   Zap,
 } from 'lucide-react'
@@ -44,11 +45,12 @@ import {
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
 
-type View = 'today' | 'all' | 'resources' | 'ephemeral' | 'archives'
+type View = 'today' | 'all' | 'favorites' | 'resources' | 'ephemeral' | 'archives'
 
 const VIEWS: { id: View; label: string; icon: ComponentType<{ className?: string }> }[] = [
   { id: 'today', label: "Aujourd'hui", icon: Clock },
   { id: 'all', label: 'Tous les retours', icon: LayoutGrid },
+  { id: 'favorites', label: 'Favoris', icon: Star },
   { id: 'resources', label: 'Ressources', icon: BookOpen },
   { id: 'ephemeral', label: 'Outils récurrents', icon: Zap },
   { id: 'archives', label: 'Archives', icon: Archive },
@@ -57,6 +59,7 @@ const VIEWS: { id: View; label: string; icon: ComponentType<{ className?: string
 const VIEW_TITLES: Record<View, string> = {
   today: "À décider aujourd'hui",
   all: 'Tous les retours',
+  favorites: 'Favoris',
   resources: 'Ressources',
   ephemeral: 'Outils récurrents',
   archives: 'Archives',
@@ -64,6 +67,7 @@ const VIEW_TITLES: Record<View, string> = {
 
 const NO_GROUP = 'none'
 const DUE_SOON_MS = 48 * 60 * 60 * 1000
+const FAVORITE_VISITS = 3
 
 function isExpired(page: Page): boolean {
   if (!page.expires_at) return false
@@ -73,6 +77,10 @@ function isExpired(page: Page): boolean {
 function isDueSoon(page: Page): boolean {
   if (!page.expires_at) return false
   return new Date(page.expires_at).getTime() - Date.now() <= DUE_SOON_MS
+}
+
+function isFavorite(page: Page): boolean {
+  return page.is_interesting || page.visit_count >= FAVORITE_VISITS
 }
 
 function domainOf(url: string): string {
@@ -219,6 +227,7 @@ export function Dashboard() {
 
   function countFor(id: View): number {
     if (id === 'all') return pages.length
+    if (id === 'favorites') return pages.filter(isFavorite).length
     if (id === 'resources') return pages.filter((page) => page.kind === 'documentation').length
     if (id === 'ephemeral') return pages.filter((page) => page.kind === 'ephemeral').length
     if (id === 'archives') return pages.filter(isExpired).length
@@ -228,6 +237,7 @@ export function Dashboard() {
   const visiblePages = pages.filter((page) => {
     if (selectedGroup) return page.group_id === selectedGroup
     if (view === 'all') return true
+    if (view === 'favorites') return isFavorite(page)
     if (view === 'resources') return page.kind === 'documentation'
     if (view === 'ephemeral') return page.kind === 'ephemeral'
     if (view === 'archives') return isExpired(page)
@@ -414,8 +424,18 @@ export function Dashboard() {
                         key={page.id}
                         className="flex items-start gap-3 rounded-xl border bg-card p-4"
                       >
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary font-heading text-lg font-semibold uppercase">
+                        <div className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary font-heading text-lg font-semibold uppercase">
                           {domain.charAt(0)}
+                          {page.favicon_url && (
+                            <img
+                              src={page.favicon_url}
+                              alt=""
+                              className="absolute inset-0 m-auto size-5"
+                              onError={(event) => {
+                                event.currentTarget.style.display = 'none'
+                              }}
+                            />
+                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -423,6 +443,11 @@ export function Dashboard() {
                             <Badge variant="outline">
                               {KIND_LABELS[page.kind as PageKind] ?? page.kind}
                             </Badge>
+                            {isFavorite(page) && (
+                              <span className="inline-flex h-5 items-center rounded-full bg-lime px-2 text-[11px] font-medium text-lime-foreground">
+                                Favori
+                              </span>
+                            )}
                             {groupName(page.group_id) && (
                               <Badge variant="secondary">{groupName(page.group_id)}</Badge>
                             )}

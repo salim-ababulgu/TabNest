@@ -12,6 +12,7 @@ export type Page = {
   visit_count: number
   last_visited_at: string | null
   kind: string
+  favicon_url: string | null
   expires_at: string | null
   deleted_at: string | null
   created_at: string
