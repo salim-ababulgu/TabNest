@@ -1,0 +1,127 @@
+:root {
+  --cream: #f4f1e8;
+  --ink: #161613;
+  --lime: #c8f05a;
+  --muted: #6b6a60;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 320px;
+  padding: 16px;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--lime);
+  font-size: 14px;
+}
+
+.name {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+.hint {
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0 0 12px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+input {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #e2ddcf;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+input:focus {
+  outline: 2px solid var(--lime);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+button {
+  height: 34px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid #e2ddcf;
+}
+
+button.ghost:hover {
+  color: var(--ink);
+}
+
+.error {
+  color: #b5462f;
+  margin: 8px 0 0;
+}
+
+.status {
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.account {
+  color: var(--muted);
+  margin: 0 0 12px;
+  word-break: break-all;
+}

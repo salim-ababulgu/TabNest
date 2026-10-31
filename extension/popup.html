@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>TabNest Capture</title>
+  </head>
+  <body>
+    <div class="brand">
+      <span class="logo">✦</span>
+      <span class="name">TabNest</span>
+    </div>
+
+    <section id="logged-out">
+      <p class="hint">Connecte-toi avec ton compte TabNest pour capturer automatiquement tes pages.</p>
+      <form id="login-form">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" required placeholder="toi@exemple.fr" autocomplete="email" />
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" required placeholder="••••••••" autocomplete="current-password" />
+        <button type="submit" id="login-btn">Se connecter</button>
+      </form>
+      <p id="error" class="error" hidden></p>
+    </section>
+
+    <section id="logged-in" hidden>
+      <p id="status" class="status">Capture activée.</p>
+      <p id="account" class="account"></p>
+      <button id="capture-btn" type="button">Capturer cette page</button>
+      <button id="logout-btn" type="button" class="ghost">Se déconnecter</button>
+    </section>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "TabNest Capture",
+  "version": "0.1.0",
+  "description": "Capture automatiquement les pages que vous visitez pour TabNest.",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["https://*.supabase.co/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "TabNest Capture",
+    "default_popup": "popup.html"
+  }
+}
