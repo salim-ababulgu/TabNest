@@ -6,7 +6,6 @@ const APP_HOSTS = ['localhost:5173', '127.0.0.1:5173']
 const CAPTURE_COOLDOWN_MS = 15000
 const lastCaptured = new Map()
 
-// Pages de moteurs de recherche : transitoires, on ne les garde pas.
 const SEARCH_PATTERNS = [
   /^https?:\/\/(www\.)?google\.[a-z.]+\/search/i,
   /^https?:\/\/(www\.)?bing\.com\/search/i,
@@ -23,7 +22,7 @@ function isSearchPage(url) {
   return SEARCH_PATTERNS.some((pattern) => pattern.test(url))
 }
 
-function sanitizeFavicon(url) {
+function sanitizeUrl(url) {
   return typeof url === 'string' && /^(https?:|data:image)/i.test(url) ? url : ''
 }
 
@@ -99,15 +98,16 @@ async function bumpBadge() {
 
 async function sendPage(url, method, headers, body) {
   let res = await fetch(url, { method, headers, body: JSON.stringify(body) })
-  if (!res.ok && 'favicon_url' in body) {
+  if (!res.ok && ('favicon_url' in body || 'og_image_url' in body)) {
     const fallback = { ...body }
     delete fallback.favicon_url
+    delete fallback.og_image_url
     res = await fetch(url, { method, headers, body: JSON.stringify(fallback) })
   }
   return res
 }
 
-async function capture(url, title, faviconUrl, increment = true) {
+async function capture(url, title, faviconUrl, increment = true, ogImageUrl = '') {
   if (!url || IGNORED.test(url) || isSearchPage(url)) return
   try {
     const parsed = new URL(url)
@@ -128,7 +128,8 @@ async function capture(url, title, faviconUrl, increment = true) {
   const session = await getSession()
   if (!session?.access_token) return
 
-  const favicon = sanitizeFavicon(faviconUrl)
+  const favicon = sanitizeUrl(faviconUrl)
+  const ogImage = sanitizeUrl(ogImageUrl)
   if (increment) lastCaptured.set(url, now)
 
   const headers = {
@@ -163,6 +164,7 @@ async function capture(url, title, faviconUrl, increment = true) {
         body.title = title
       }
       if (favicon) body.favicon_url = favicon
+      if (ogImage) body.og_image_url = ogImage
       if (Object.keys(body).length === 0) return
 
       const updateRes = await sendPage(
@@ -185,6 +187,7 @@ async function capture(url, title, faviconUrl, increment = true) {
           url,
           title: title || null,
           favicon_url: favicon || null,
+          og_image_url: ogImage || null,
           kind: 'normal',
           visit_count: 1,
           last_visited_at: new Date().toISOString(),
@@ -243,6 +246,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       if (tab?.url) void capture(tab.url, tab.title ?? '', tab.favIconUrl ?? '', true)
       sendResponse({ ok: true })
     })
+    return true
+  }
+  if (message?.type === 'page-meta') {
+    void capture(message.url, message.title, message.favicon, false, message.ogImage)
+    sendResponse({ ok: true })
     return true
   }
   if (message?.type === 'get-status') {

@@ -13,6 +13,7 @@ export type Page = {
   last_visited_at: string | null
   kind: string
   favicon_url: string | null
+  og_image_url: string | null
   expires_at: string | null
   deleted_at: string | null
   created_at: string

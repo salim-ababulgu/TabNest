@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { ComponentType, FormEvent } from 'react'
+import type { ComponentType, FormEvent, ReactNode } from 'react'
 import {
   Archive,
   BookOpen,
@@ -12,18 +12,12 @@ import {
   Sparkles,
   Star,
   Trash2,
+  X,
   Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -102,6 +96,30 @@ function formatToday(): string {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
+function Modal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string
+  onClose: () => void
+  children: ReactNode
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+      <div className="w-full max-w-md rounded-2xl border bg-card p-6 shadow-xl">
+        <div className="flex items-center justify-between">
+          <h2 className="font-heading text-xl font-semibold">{title}</h2>
+          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Fermer">
+            <X className="size-4" />
+          </Button>
+        </div>
+        <div className="mt-5">{children}</div>
+      </div>
+    </div>
+  )
+}
+
 export function Dashboard() {
   const { user, signOut } = useAuth()
   const [groups, setGroups] = useState<Group[]>([])
@@ -120,8 +138,11 @@ export function Dashboard() {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
   const [extensionConnected, setExtensionConnected] = useState(false)
   const [captureEnabled, setCaptureEnabled] = useState(true)
-  const [showSettings, setShowSettings] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+
+  const [showSettings, setShowSettings] = useState(false)
+  const [showAddPage, setShowAddPage] = useState(false)
+  const [showAddProject, setShowAddProject] = useState(false)
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
@@ -192,6 +213,7 @@ export function Dashboard() {
       setTitle('')
       setKind('normal')
       setGroupId(NO_GROUP)
+      setShowAddPage(false)
       await load()
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Erreur lors de l'ajout")
@@ -209,6 +231,7 @@ export function Dashboard() {
       const group = await createGroup(newGroup.trim(), user.id)
       setNewGroup('')
       setGroupId(group.id)
+      setShowAddProject(false)
       await load()
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur lors de la création du projet')
@@ -330,9 +353,9 @@ export function Dashboard() {
           </span>
           <button
             type="button"
-            onClick={() => setSelectedGroup(null)}
+            onClick={() => setShowAddProject(true)}
             className="text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            aria-label="Tous les projets"
+            aria-label="Nouveau projet"
           >
             <Plus className="size-3.5" />
           </button>
@@ -432,7 +455,7 @@ export function Dashboard() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
           {error && (
             <p className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {error}
@@ -459,260 +482,268 @@ export function Dashboard() {
             </div>
           </section>
 
-          <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <section>
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-heading text-2xl font-medium tracking-tight">{currentTitle}</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {visiblePages.length} page(s)
-                    {view === 'today' && !selectedGroup ? ' à traiter sous 48 h' : ''}
-                  </p>
-                </div>
+          <section className="mt-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="font-heading text-2xl font-medium tracking-tight">{currentTitle}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {visiblePages.length} page(s)
+                  {view === 'today' && !selectedGroup ? ' à traiter sous 48 h' : ''}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
                 {selectedGroup && (
                   <Button variant="outline" size="sm" onClick={() => setSelectedGroup(null)}>
                     Tout voir
                   </Button>
                 )}
+                <Button variant="outline" size="sm" onClick={() => setShowAddProject(true)}>
+                  <Plus className="size-3.5" /> Projet
+                </Button>
+                <Button size="sm" onClick={() => setShowAddPage(true)}>
+                  <Plus className="size-3.5" /> Nouvelle page
+                </Button>
               </div>
+            </div>
 
-              <div className="mt-4 flex flex-col gap-3">
-                {loading ? (
-                  <p className="text-sm text-muted-foreground">Chargement…</p>
-                ) : visiblePages.length === 0 ? (
-                  <div className="rounded-xl border border-dashed bg-card/50 px-4 py-10 text-center text-sm text-muted-foreground">
-                    Aucune page ici pour l'instant.
-                  </div>
-                ) : (
-                  visiblePages.map((page) => {
-                    const expiry = describeExpiry(page.expires_at)
-                    const domain = domainOf(page.url)
-                    return (
-                      <article
-                        key={page.id}
-                        className="flex items-start gap-3 rounded-xl border bg-card p-4"
-                      >
-                        <div className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary font-heading text-lg font-semibold uppercase">
-                          {domain.charAt(0)}
+            {loading ? (
+              <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
+            ) : visiblePages.length === 0 ? (
+              <div className="mt-6 rounded-xl border border-dashed bg-card/50 px-4 py-12 text-center text-sm text-muted-foreground">
+                Aucune page ici pour l'instant.
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {visiblePages.map((page) => {
+                  const expiry = describeExpiry(page.expires_at)
+                  const domain = domainOf(page.url)
+                  return (
+                    <article
+                      key={page.id}
+                      className="group flex flex-col overflow-hidden rounded-2xl border bg-card transition-shadow hover:shadow-md"
+                    >
+                      <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+                        <div className="absolute inset-0 grid place-items-center">
+                          <span className="font-heading text-4xl font-semibold uppercase text-muted-foreground/25">
+                            {domain.charAt(0)}
+                          </span>
+                        </div>
+                        {page.og_image_url && (
+                          <img
+                            src={page.og_image_url}
+                            alt=""
+                            loading="lazy"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                            onError={(event) => {
+                              event.currentTarget.style.display = 'none'
+                            }}
+                          />
+                        )}
+                        <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-3 text-xs text-white">
                           {page.favicon_url && (
                             <img
                               src={page.favicon_url}
                               alt=""
-                              className="absolute inset-0 m-auto size-5"
+                              className="size-4 rounded"
                               onError={(event) => {
                                 event.currentTarget.style.display = 'none'
                               }}
                             />
                           )}
+                          <span className="truncate">{domain}</span>
+                          {isFavorite(page) && (
+                            <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-[10px] font-medium text-lime-foreground">
+                              Favori
+                            </span>
+                          )}
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                            <span className="truncate">{domain}</span>
-                            <Badge variant="outline">
-                              {KIND_LABELS[page.kind as PageKind] ?? page.kind}
-                            </Badge>
-                            {isFavorite(page) && (
-                              <span className="inline-flex h-5 items-center rounded-full bg-lime px-2 text-[11px] font-medium text-lime-foreground">
-                                Favori
-                              </span>
-                            )}
-                            {groupName(page.group_id) && (
-                              <Badge variant="secondary">{groupName(page.group_id)}</Badge>
-                            )}
-                          </div>
-                          <a
-                            href={page.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="mt-1 block truncate font-heading text-lg leading-snug hover:underline"
-                          >
-                            {page.title || page.url}
-                          </a>
-                          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                            <span>{page.visit_count} visite(s)</span>
+                      </div>
+
+                      <div className="flex flex-1 flex-col p-4">
+                        <a
+                          href={page.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="line-clamp-2 font-heading text-lg leading-snug hover:underline"
+                        >
+                          {page.title || page.url}
+                        </a>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline">
+                            {KIND_LABELS[page.kind as PageKind] ?? page.kind}
+                          </Badge>
+                          {groupName(page.group_id) && (
+                            <Badge variant="secondary">{groupName(page.group_id)}</Badge>
+                          )}
+                        </div>
+                        <div className="mt-auto flex items-center justify-between pt-3 text-xs text-muted-foreground">
+                          <span>
+                            {page.visit_count} visite(s) ·{' '}
                             <span className={expiry.expired ? 'font-medium text-destructive' : ''}>
                               {expiry.text}
                             </span>
-                          </div>
-                        </div>
-                        <div className="flex shrink-0 flex-col items-end gap-1.5">
-                          <Button size="sm" variant="outline" onClick={() => handleVisit(page)}>
-                            J'ai visité
-                          </Button>
+                          </span>
                           <div className="flex gap-1">
+                            <Button
+                              size="icon-sm"
+                              variant="outline"
+                              onClick={() => handleVisit(page)}
+                              title="J'ai visité"
+                              aria-label="J'ai visité"
+                            >
+                              <Clock className="size-3.5" />
+                            </Button>
                             <Button
                               size="icon-sm"
                               variant={page.is_interesting ? 'default' : 'outline'}
                               onClick={() => handleToggleInteresting(page)}
-                              title="Marquer intéressante"
+                              title="Favori"
+                              aria-label="Favori"
                             >
-                              <Sparkles className="size-3.5" />
+                              <Star className="size-3.5" />
                             </Button>
                             <Button
                               size="icon-sm"
                               variant="ghost"
                               onClick={() => handleDelete(page)}
-                              title="Supprimer (archiver)"
+                              title="Supprimer"
+                              aria-label="Supprimer"
                             >
                               <Trash2 className="size-3.5" />
                             </Button>
                           </div>
                         </div>
-                      </article>
-                    )
-                  })
-                )}
+                      </div>
+                    </article>
+                  )
+                })}
               </div>
-            </section>
-
-            <aside className="flex flex-col gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Ajouter une page</CardTitle>
-                  <CardDescription>Colle l'adresse d'une page à garder.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleAddPage} className="space-y-3">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="url">Adresse</Label>
-                      <Input
-                        id="url"
-                        type="url"
-                        required
-                        value={url}
-                        onChange={(event) => setUrl(event.target.value)}
-                        placeholder="https://exemple.com/article"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="title">Titre (facultatif)</Label>
-                      <Input
-                        id="title"
-                        value={title}
-                        onChange={(event) => setTitle(event.target.value)}
-                        placeholder="Ex. Documentation React"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="kind">Type</Label>
-                      <Select value={kind} onValueChange={(value) => setKind(value as PageKind)}>
-                        <SelectTrigger id="kind" className="w-full">
-                          <SelectValue placeholder="Normale" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PAGE_KINDS.map((pageKind) => (
-                            <SelectItem key={pageKind} value={pageKind}>
-                              {KIND_LABELS[pageKind]}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="group">Projet</Label>
-                      <Select value={groupId} onValueChange={setGroupId}>
-                        <SelectTrigger id="group" className="w-full">
-                          <SelectValue placeholder="Aucun projet" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={NO_GROUP}>Aucun projet</SelectItem>
-                          {groups.map((group) => (
-                            <SelectItem key={group.id} value={group.id}>
-                              {group.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button type="submit" className="w-full" disabled={busy}>
-                      Ajouter la page
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Créer un projet</CardTitle>
-                  <CardDescription>Ex. emploi, achat de voiture.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleAddGroup} className="flex gap-2">
-                    <Input
-                      value={newGroup}
-                      onChange={(event) => setNewGroup(event.target.value)}
-                      placeholder="Nom du projet"
-                    />
-                    <Button type="submit" variant="secondary" disabled={busy || !newGroup.trim()}>
-                      Créer
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </aside>
-          </div>
+            )}
+          </section>
         </main>
       </div>
 
-      {showSettings && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-          <div className="w-full max-w-md rounded-2xl border bg-card p-6 shadow-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="font-heading text-xl font-semibold">Paramètres</h2>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setShowSettings(false)}
-                aria-label="Fermer"
-              >
-                ✕
-              </Button>
+      {showAddPage && (
+        <Modal title="Ajouter une page" onClose={() => setShowAddPage(false)}>
+          <form onSubmit={handleAddPage} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="url">Adresse</Label>
+              <Input
+                id="url"
+                type="url"
+                required
+                value={url}
+                onChange={(event) => setUrl(event.target.value)}
+                placeholder="https://exemple.com/article"
+              />
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="title">Titre (facultatif)</Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="Ex. Documentation React"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="kind">Type</Label>
+              <Select value={kind} onValueChange={(value) => setKind(value as PageKind)}>
+                <SelectTrigger id="kind" className="w-full">
+                  <SelectValue placeholder="Normale" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_KINDS.map((pageKind) => (
+                    <SelectItem key={pageKind} value={pageKind}>
+                      {KIND_LABELS[pageKind]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="group">Projet</Label>
+              <Select value={groupId} onValueChange={setGroupId}>
+                <SelectTrigger id="group" className="w-full">
+                  <SelectValue placeholder="Aucun projet" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_GROUP}>Aucun projet</SelectItem>
+                  {groups.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" className="w-full" disabled={busy}>
+              Ajouter la page
+            </Button>
+          </form>
+        </Modal>
+      )}
 
-            <div className="mt-5 space-y-4">
-              <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
-                <div>
-                  <p className="text-sm font-medium">Capture automatique</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    Enregistre automatiquement les pages que vous visitez.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={captureEnabled}
-                  onClick={toggleCapture}
-                  className={cn(
-                    'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',
-                    captureEnabled ? 'bg-lime' : 'bg-muted',
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'inline-block size-5 rounded-full bg-white shadow transition-transform',
-                      captureEnabled ? 'translate-x-5' : 'translate-x-0.5',
-                    )}
-                  />
-                </button>
-              </div>
+      {showAddProject && (
+        <Modal title="Créer un projet" onClose={() => setShowAddProject(false)}>
+          <form onSubmit={handleAddGroup} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="new-group">Nom du projet</Label>
+              <Input
+                id="new-group"
+                value={newGroup}
+                onChange={(event) => setNewGroup(event.target.value)}
+                placeholder="Ex. emploi, achat de voiture"
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={busy || !newGroup.trim()}>
+              Créer
+            </Button>
+          </form>
+        </Modal>
+      )}
 
-              <div className="rounded-xl border p-4 text-sm">
-                <p className="font-medium">Extension</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {extensionConnected
-                    ? captureEnabled
-                      ? 'Connectée et active.'
-                      : 'Connectée, capture désactivée.'
-                    : "Non détectée. Ouvre l'extension TabNest pour te connecter."}
+      {showSettings && (
+        <Modal title="Paramètres" onClose={() => setShowSettings(false)}>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+              <div>
+                <p className="text-sm font-medium">Capture automatique</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Enregistre automatiquement les pages que vous visitez.
                 </p>
               </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={captureEnabled}
+                onClick={toggleCapture}
+                className={cn(
+                  'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',
+                  captureEnabled ? 'bg-lime' : 'bg-muted',
+                )}
+              >
+                <span
+                  className={cn(
+                    'inline-block size-5 rounded-full bg-white shadow transition-transform',
+                    captureEnabled ? 'translate-x-5' : 'translate-x-0.5',
+                  )}
+                />
+              </button>
             </div>
 
-            <div className="mt-6 flex justify-end">
-              <Button onClick={() => setShowSettings(false)}>Fermer</Button>
+            <div className="rounded-xl border p-4 text-sm">
+              <p className="font-medium">Extension</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {extensionConnected
+                  ? captureEnabled
+                    ? 'Connectée et active.'
+                    : 'Connectée, capture désactivée.'
+                  : "Non détectée. Ouvre l'extension TabNest pour te connecter."}
+              </p>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

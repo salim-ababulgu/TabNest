@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TabNest Capture",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Capture automatiquement les pages que vous visitez pour TabNest.",
   "permissions": ["tabs", "storage"],
   "host_permissions": ["https://*.supabase.co/*"],
@@ -13,6 +13,11 @@
     {
       "matches": ["http://localhost:5173/*", "http://127.0.0.1:5173/*"],
       "js": ["content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["page-meta.js"],
       "run_at": "document_idle"
     }
   ],
