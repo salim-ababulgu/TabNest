@@ -23,10 +23,9 @@ Service public, multi-utilisateur, avec formules payantes.
 Chaque utilisateur a son propre compte.
 
 ## Où on en est
-Squelette en place : Vite + React 19 + TypeScript + Tailwind v4 + shadcn/ui.
-Supabase connecté, authentification e-mail/mot de passe fonctionnelle
-(inscription, connexion, déconnexion, tableau de bord). Prochaine étape :
-schéma de base de données (pages, groupes, durées de vie), puis écrans.
+Voir la mémoire du projet : `docs/MEMOIRE.md` (état détaillé, décisions,
+à-faire). En bref : landing + dashboard + extension fonctionnels,
+modèle « raison de garder » en place, épinglage, enrichissement Microlink.
 
 ## Stack technique
 Vite · React 19 · TypeScript · Tailwind v4 · shadcn/ui.
@@ -58,10 +57,21 @@ Vite · React 19 · TypeScript · Tailwind v4 · shadcn/ui.
   demander de coller un mot de passe ou un jeton dans la conversation.
 - Répondre en français courant, sans jargon non expliqué.
 - L'utilisateur ne lit pas le code : il pilote le produit. Expliquer en mots simples.
+- Au début d'une session : relire `docs/MEMOIRE.md`. En fin de session :
+  le mettre à jour (décisions prises, état, à-faire).
 
 ## Ligne rouge sécurité
 - Ne jamais écrire de secret (mot de passe, jeton, clé) dans ce fichier ni dans le code.
 - Ne jamais stocker de carte bancaire : les paiements passent par Lemon Squeezy.
+
+## Checklist de fin de tâche (avant d'annoncer « terminé »)
+- Types OK : `npx tsc -b` sans erreur.
+- Build OK : `npm run build` sans erreur (avec l'autorisation étendue si besoin).
+- Serveur : un seul serveur dev actif sur http://localhost:5173/ et qui répond.
+- Extension : `node --check` sur les fichiers modifiés, et rappeler de recharger
+  l'extension si elle a été touchée.
+- Commit : un commit conventional par lot de travail.
+- Annoncer : quoi tester à la main, en français simple.
 
 ## Ce que l'utilisateur attend en retour (à chaque étape)
 - Ce qui a été vérifié.
