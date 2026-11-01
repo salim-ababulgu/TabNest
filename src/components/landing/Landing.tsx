@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Check, Clock, Sparkles } from 'lucide-react'
 import { Cinematic } from '@/components/landing/Cinematic'
+import { BentoSection, FaqSection, PinnedSteps, SiteMarquee } from '@/components/landing/Sections'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -62,6 +63,9 @@ export function Landing({ onStart }: LandingProps) {
             <a href="#principe" className="transition-colors hover:text-cream">
               Le principe
             </a>
+            <a href="#produit" className="transition-colors hover:text-cream">
+              Le produit
+            </a>
             <a href="#automatisation" className="transition-colors hover:text-cream">
               L'automatisation
             </a>
@@ -77,45 +81,14 @@ export function Landing({ onStart }: LandingProps) {
 
       <Cinematic onStart={() => onStart()} />
 
+      <SiteMarquee />
+
       {/* Comment ça marche */}
-      <section id="comment" className="px-6 py-24 md:px-10 md:py-32">
-        <div className="mx-auto w-full max-w-6xl">
-          <Reveal>
-            <div className="max-w-2xl">
-              <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-                Trois étapes, et vous ne perdez plus rien.
-              </h2>
-            </div>
-          </Reveal>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {[
-              {
-                n: '01',
-                title: "Installez l'extension",
-                text: 'Chrome ou Edge. Un dossier, deux clics, et la capture est active.',
-              },
-              {
-                n: '02',
-                title: 'Naviguez normalement',
-                text: 'Chaque page visitée est enregistrée, sans rien faire.',
-              },
-              {
-                n: '03',
-                title: 'Retrouvez tout',
-                text: 'Vos pages sont rangées par projets, avec une durée de vie.',
-              },
-            ].map((step, index) => (
-              <Reveal key={step.n} delay={index * 120}>
-                <div className="h-full rounded-2xl border bg-card p-7">
-                  <span className="font-heading text-3xl text-[#5f6b4f]">{step.n}</span>
-                  <h3 className="mt-4 font-heading text-xl">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink/60">{step.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div id="comment">
+        <PinnedSteps />
+      </div>
+
+      <BentoSection />
 
       {/* Le principe */}
       <section id="principe" className="grid md:grid-cols-2">
@@ -280,6 +253,8 @@ export function Landing({ onStart }: LandingProps) {
         </div>
       </section>
 
+      <FaqSection />
+
       {/* CTA final */}
       <section className="flex items-center bg-lime px-6 py-24 text-center text-lime-foreground md:py-32">
         <div className="mx-auto w-full max-w-3xl">
@@ -334,31 +309,77 @@ export function Landing({ onStart }: LandingProps) {
         </Reveal>
       </section>
 
-      <footer className="bg-cream px-6 py-10 text-ink">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm md:flex-row">
-          <div className="flex items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="font-heading text-lg font-semibold">TabNest</span>
+      <footer className="border-t border-border bg-cream px-6 py-12 text-ink">
+        <div className="mx-auto grid max-w-6xl gap-10 text-sm sm:grid-cols-2 md:grid-cols-4">
+          <div className="sm:col-span-2 md:col-span-1">
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
+                <Sparkles className="size-4" />
+              </span>
+              <span className="font-heading text-lg font-semibold">TabNest</span>
+            </div>
+            <p className="mt-3 max-w-[22ch] text-ink/50">Un onglet pour garder le fil.</p>
           </div>
-          <p className="text-ink/50">Un onglet pour garder le fil.</p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-ink/50">
-            <a href="/confidentialite" className="hover:text-ink">
-              Confidentialité
-            </a>
-            <a href="/cgu" className="hover:text-ink">
-              Conditions
-            </a>
-            <a href="/cookies" className="hover:text-ink">
-              Cookies
-            </a>
-            <a href="/remboursement" className="hover:text-ink">
-              Remboursement
-            </a>
-            <a href="mailto:salimababulgu@gmail.com" className="hover:text-ink">
-              Contact
-            </a>
+
+          <div>
+            <p className="text-xs font-medium text-ink/45">Produit</p>
+            <ul className="mt-3 space-y-2 text-ink/70">
+              <li>
+                <a href="#comment" className="hover:text-ink">
+                  Comment ça marche
+                </a>
+              </li>
+              <li>
+                <a href="#produit" className="hover:text-ink">
+                  Le produit
+                </a>
+              </li>
+              <li>
+                <a href="#faq" className="hover:text-ink">
+                  Questions fréquentes
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium text-ink/45">Légal</p>
+            <ul className="mt-3 space-y-2 text-ink/70">
+              <li>
+                <a href="/confidentialite" className="hover:text-ink">
+                  Confidentialité
+                </a>
+              </li>
+              <li>
+                <a href="/cgu" className="hover:text-ink">
+                  Conditions d’utilisation
+                </a>
+              </li>
+              <li>
+                <a href="/cookies" className="hover:text-ink">
+                  Cookies
+                </a>
+              </li>
+              <li>
+                <a href="/remboursement" className="hover:text-ink">
+                  Remboursement
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium text-ink/45">Contact</p>
+            <ul className="mt-3 space-y-2 text-ink/70">
+              <li>
+                <a href="mailto:salimababulgu@gmail.com" className="hover:text-ink">
+                  Écrire un e-mail
+                </a>
+              </li>
+            </ul>
+            <p className="mt-4 text-[11px] leading-relaxed text-ink/40">
+              Édité par ABA, personne physique. Activité non immatriculée à ce jour.
+            </p>
           </div>
         </div>
       </footer>
