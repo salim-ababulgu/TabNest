@@ -1,7 +1,7 @@
 // Textes légaux de TabNest.
-// ⚠️ Brouillons rédigés selon le droit français (RGPD, loi Informatique et Libertés,
+// Brouillons rédigés selon le droit français (RGPD, loi Informatique et Libertés,
 // Code de la consommation). Ils doivent être relus par un juriste avant publication.
-// Les mentions [À COMPLÉTER …] doivent être renseignées (identité de l'éditeur).
+// Éditeur : ABA (personne physique, activité non immatriculée à ce jour).
 
 export type LegalSlug = 'confidentialite' | 'cgu' | 'cookies' | 'remboursement'
 
@@ -32,8 +32,9 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '1. Responsable du traitement',
         paragraphs: [
-          "Le responsable du traitement est [À COMPLÉTER : nom ou raison sociale], [À COMPLÉTER : forme juridique et SIRET le cas échéant], dont le siège est situé [À COMPLÉTER : adresse complète].",
-          "Pour toute question relative à vos données : [À COMPLÉTER : e-mail de contact RGPD].",
+          "Le responsable du traitement est ABA, personne physique, exerçant sous le nom TabNest. Contact : salimababulgu@gmail.com.",
+          "L’activité n’est pas immatriculée à ce jour : aucun numéro SIRET ne peut donc être communiqué. Conformément à l’article 6, III de la LCEN, l’adresse d’un éditeur non professionnel n’est pas publiée ; elle est communiquée à l’hébergeur du site.",
+          "Pour toute question relative à vos données : salimababulgu@gmail.com.",
         ],
       },
       {
@@ -91,7 +92,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
           "Vos données ne sont jamais vendues. Elles sont traitées par les prestataires suivants, uniquement pour les besoins décrits :",
         ],
         list: [
-          'Supabase — hébergement de la base de données et de l’authentification. Les données sont hébergées dans la région choisie du projet [À COMPLÉTER : région Supabase].',
+          'Supabase — hébergement de la base de données et de l’authentification. Supabase peut traiter des données en dehors de l’Union européenne ; ces transferts sont encadrés par les clauses contractuelles types (voir ci-après).',
           'Google — si vous choisissez « Continuer avec Google », Google nous transmet votre adresse e-mail et votre nom, dans le cadre de son service d’authentification.',
           'Microlink — plateforme d’extraction de métadonnées. Elle reçoit l’adresse des pages enregistrées lorsque l’extension n’a pas pu récupérer le titre ou l’image directement, afin de compléter votre fiche.',
           'Lemon Squeezy — à venir : paiement et facturation. Lemon Squeezy agit comme vendeur enregistré (merchant of record) et applique ses propres conditions.',
@@ -114,7 +115,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '6. Vos droits',
         paragraphs: [
-          "Vous disposez des droits suivants, que vous pouvez exercer à tout moment en écrivant à [À COMPLÉTER : e-mail de contact RGPD] :",
+          "Vous disposez des droits suivants, que vous pouvez exercer à tout moment en écrivant à salimababulgu@gmail.com :",
         ],
         list: [
           'Droit d’accès : obtenir une copie des données que nous détenons sur vous.',
@@ -161,7 +162,8 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '1. Éditeur du service',
         paragraphs: [
-          "TabNest est édité par [À COMPLÉTER : nom ou raison sociale], [À COMPLÉTER : adresse], [À COMPLÉTER : SIRET le cas échéant]. Contact : [À COMPLÉTER : e-mail de contact].",
+          "TabNest est édité par ABA, personne physique, sous le nom TabNest. Contact : salimababulgu@gmail.com.",
+          "L’activité n’est pas immatriculée à ce jour : aucun numéro SIRET ne peut donc être communiqué. Conformément à l’article 6, III de la LCEN, l’adresse d’un éditeur non professionnel n’est pas publiée ; elle est communiquée à l’hébergeur du site. Dès l’immatriculation de l’activité, les mentions SIRET seront ajoutées.",
         ],
       },
       {
@@ -231,7 +233,8 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '11. Réclamations et médiation',
         paragraphs: [
-          "Toute réclamation doit être adressée à [À COMPLÉTER : e-mail de contact]. Conformément aux articles L611-1 et suivants du Code de la consommation, vous pouvez recourir gratuitement à un médiateur de la consommation : [À COMPLÉTER : nom et coordonnées du médiateur choisi].",
+          "Toute réclamation doit être adressée à salimababulgu@gmail.com. Nous répondons sous 15 jours.",
+          "Le service est actuellement gratuit : aucune vente à des consommateurs n’est proposée à ce jour. Dès la commercialisation des formules payantes, un médiateur de la consommation sera désigné et ses coordonnées publiées ici, conformément aux articles L611-1 et suivants du Code de la consommation.",
         ],
       },
       {
@@ -320,7 +323,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
     title: 'Remboursement et rétractation',
     updated: '1er novembre 2025',
     intro:
-      "Cette page explique vos droits en cas d'achat d'une formule payante de TabNest, et notre politique commerciale de remboursement.",
+      "Le service TabNest est actuellement gratuit. Cette page décrit les règles qui s'appliqueront aux formules payantes, lorsqu'elles seront proposées, ainsi que vos droits légaux.",
     sections: [
       {
         title: '1. Qui vend le service',
@@ -332,7 +335,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
         title: '2. Droit de rétractation de 14 jours',
         paragraphs: [
           "Conformément à l’article L221-18 du Code de la consommation, si vous êtes consommateur, vous disposez d’un délai de 14 jours à compter de la conclusion du contrat pour exercer votre droit de rétractation, sans avoir à justifier de motif.",
-          "Pour l’exercer, écrivez à [À COMPLÉTER : e-mail de contact] ou utilisez le formulaire de rétractation fourni avec votre confirmation de commande. Le remboursement intervient dans les 14 jours suivant la réception de votre demande.",
+          "Pour l’exercer, écrivez à salimababulgu@gmail.com ou utilisez le formulaire de rétractation fourni avec votre confirmation de commande. Le remboursement intervient dans les 14 jours suivant la réception de votre demande.",
         ],
       },
       {
@@ -345,13 +348,13 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '4. Notre politique commerciale',
         paragraphs: [
-          "Au-delà des droits légaux, nous appliquons une garantie commerciale : si vous n’êtes pas satisfait, écrivez-nous dans les 14 jours suivant votre premier paiement et nous procéderons au remboursement intégral de ce paiement, sans justification. [À COMPLÉTER : confirmer ou modifier cette politique commerciale avant la mise en vente.]",
+          "Au-delà des droits légaux, nous appliquons une garantie commerciale : si vous n’êtes pas satisfait, écrivez-nous dans les 14 jours suivant votre premier paiement et nous procéderons au remboursement intégral de ce paiement, sans justification. Cette garantie s’appliquera aux formules payantes et sera confirmée avant leur mise en vente.",
         ],
       },
       {
         title: '5. Comment demander un remboursement',
         list: [
-          'Écrivez à [À COMPLÉTER : e-mail de contact] en précisant l’adresse e-mail du compte et la date du paiement.',
+          "Écrivez à salimababulgu@gmail.com en précisant l’adresse e-mail du compte et la date du paiement.",
           'Nous confirmons la demande sous 2 jours ouvrés.',
           'Le remboursement est effectué via Lemon Squeezy sur le moyen de paiement d’origine, sous 5 à 10 jours ouvrés selon votre banque.',
         ],

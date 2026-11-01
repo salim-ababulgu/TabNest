@@ -149,13 +149,18 @@ pages (déjà `lang="fr"`), taille de police minimale (12 px utilisée pour les 
 
 ## 7. Mentions à compléter avant mise en ligne
 
-- [ ] Identité de l’éditeur : nom / raison sociale, forme juridique, **SIRET**, adresse complète.
-- [ ] **E-mail de contact** (et e-mail RGPD si différent).
-- [ ] **Médiateur de la consommation** (obligatoire pour vendre à des consommateurs) + adhésion.
+- [x] Éditeur : **ABA** (personne physique), contact **salimababulgu@gmail.com**. Pas de SIRET :
+      l'activité n'est pas immatriculée. La LCEN (art. 6, III) permet à un éditeur non
+      professionnel de ne pas publier son adresse (elle reste communiquée à l'hébergeur).
+- [ ] **Obligatoire avant toute vente** : créer une immatriculation (micro-entreprise, gratuite et
+      100 % en ligne sur formalites.entreprises.gouv.fr) pour obtenir un **SIRET**. Sans SIRET,
+      aucune facturation ni vente n'est possible (et Lemon Squeezy le demandera).
+- [ ] **Médiateur de la consommation** : à désigner dès la première vente à des consommateurs
+      (obligatoire, art. L611-1 et suivants). Le service est gratuit aujourd'hui : la CGU le précise.
 - [ ] Région d’hébergement Supabase et **DPA** signés (Supabase, Google, Microlink, Lemon Squeezy).
 - [ ] **Case à cocher** « je demande l’exécution immédiate et renonce à mon droit de rétractation »
       sur la page de paiement (art. L221-28 13°).
-- [ ] Politique commerciale de remboursement validée (14 jours satisfait ou remboursé ?).
+- [ ] Politique commerciale de remboursement confirmée au moment de la mise en vente.
 - [ ] Registre des traitements + procédure de violation de données (72 h).
 - [ ] Durée des journaux techniques réellement configurée chez l’hébergeur.
 - [ ] Purge `pg_cron` activée (section 3).

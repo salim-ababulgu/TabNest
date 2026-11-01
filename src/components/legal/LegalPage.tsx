@@ -109,7 +109,7 @@ export function LegalPage({ slug }: { slug: LegalSlug }) {
             ))}
             <li>
               <a
-                href="mailto:[À COMPLÉTER : e-mail de contact]"
+                href="mailto:salimababulgu@gmail.com"
                 className="underline-offset-2 hover:text-foreground hover:underline"
               >
                 Contact
@@ -121,8 +121,8 @@ export function LegalPage({ slug }: { slug: LegalSlug }) {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-3xl px-6 py-6 text-xs text-muted-foreground">
-          TabNest — les mentions « [À COMPLÉTER …] » doivent être renseignées avant la mise en
-          ligne, et ces documents relus par un professionnel du droit.
+          TabNest — édité par ABA (personne physique, activité non immatriculée à ce jour). Contact :
+          salimababulgu@gmail.com. Ces documents doivent être relus par un professionnel du droit.
         </div>
       </footer>
     </div>

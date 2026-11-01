@@ -19,6 +19,7 @@
 - **Docs** : `docs/UX_UI_TECHNIQUE.md` (document technique UX/UI & frontend), `docs/CONFORMITE.md` (audit données/accessibilité/RGPD).
 - **Conformité (brouillons)** : pages `/confidentialite`, `/cgu`, `/cookies`, `/remboursement` + bandeau d'information cookies (aucun traceur non nécessaire → pas de consentement requis) + `public/llms.txt` + meta SEO. Contrastes WCAG mesurés et corrigés (texte atténué, focus, bordure de champ).
 - **À compléter avant mise en ligne** : identité de l'éditeur (raison sociale, adresse, SIRET, e-mails de contact), médiateur de la consommation, case de renonciation à la rétractation au paiement, purge `pg_cron` des pages expirées, relecture par un juriste.
+- **Éditeur renseigné** : ABA (personne physique), contact `salimababulgu@gmail.com`, **aucun SIRET** (activité non immatriculée). Conséquence : le service reste **gratuit** ; **toute vente exige une immatriculation** (micro-entreprise) et un médiateur de la consommation.
 
 **Décisions produit à respecter**
 - **Pas de captures d'écran** (données sensibles + coût) — décidé avec l'utilisateur.
