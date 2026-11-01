@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, MICROLINK_API_KEY } from './config.js'
 
 const IGNORED =
   /^(chrome|edge|about|chrome-extension|devtools|view-source|file|data|blob):/i
@@ -116,6 +116,22 @@ async function sendPage(url, method, headers, body) {
   return res
 }
 
+const enrichedOnce = new Set()
+
+async function enrichWithMicrolink(url) {
+  if (!MICROLINK_API_KEY) return null
+  try {
+    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`, {
+      headers: { 'x-api-key': MICROLINK_API_KEY },
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return data?.data ?? null
+  } catch {
+    return null
+  }
+}
+
 async function capture(url, title, faviconUrl, increment = true, ogImageUrl = '', themeColor = '') {
   if (!url || IGNORED.test(url) || isSearchPage(url)) return
   try {
@@ -137,8 +153,9 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
   const session = await getSession()
   if (!session?.access_token) return
 
-  const favicon = sanitizeUrl(faviconUrl)
-  const ogImage = sanitizeUrl(ogImageUrl)
+  let favicon = sanitizeUrl(faviconUrl)
+  let ogImage = sanitizeUrl(ogImageUrl)
+  let finalTitle = title || ''
   const theme = sanitizeColor(themeColor)
   if (increment) lastCaptured.set(url, now)
 
@@ -150,7 +167,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
 
   try {
     const existingRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/pages?select=id,visit_count,kind,reason&url=eq.${encodeURIComponent(url)}`,
+      `${SUPABASE_URL}/rest/v1/pages?select=id,visit_count,kind,reason,og_image_url&url=eq.${encodeURIComponent(url)}`,
       { headers },
     )
     if (!existingRes.ok) {
@@ -159,6 +176,19 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
     }
     const rows = await existingRes.json()
     const exists = Array.isArray(rows) && rows.length > 0
+
+    const rowMissingImage = !exists || !rows[0]?.og_image_url
+    if (rowMissingImage && !enrichedOnce.has(url) && (!ogImage || !favicon || !finalTitle)) {
+      enrichedOnce.add(url)
+      const enriched = await enrichWithMicrolink(url)
+      if (enriched) {
+        finalTitle = finalTitle || enriched.title || ''
+        const image = sanitizeUrl(enriched.image?.url)
+        const logo = sanitizeUrl(enriched.logo?.url)
+        if (!favicon && logo) favicon = logo
+        if (!ogImage && image) ogImage = image
+      }
+    }
 
     if (exists) {
       const page = rows[0]
@@ -169,9 +199,9 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
         body.visit_count = visits
         body.last_visited_at = new Date().toISOString()
         body.expires_at = computeExpiry(page.kind ?? 'normal', visits, page.reason)
-        body.title = title || null
-      } else if (title) {
-        body.title = title
+        body.title = finalTitle || null
+      } else if (finalTitle) {
+        body.title = finalTitle
       }
       if (favicon) body.favicon_url = favicon
       if (ogImage) body.og_image_url = ogImage
@@ -196,7 +226,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
         {
           user_id: session.user.id,
           url,
-          title: title || null,
+          title: finalTitle || null,
           favicon_url: favicon || null,
           og_image_url: ogImage || null,
           theme_color: theme || null,
