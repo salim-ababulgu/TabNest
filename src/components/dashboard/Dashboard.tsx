@@ -302,6 +302,30 @@ function Modal({
   )
 }
 
+function AnimatedNumber({ value }: { value: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      element.textContent = String(value)
+      return
+    }
+    const counter = { value: 0 }
+    gsap.to(counter, {
+      value,
+      duration: 1.2,
+      ease: 'power2.out',
+      onUpdate: () => {
+        element.textContent = String(Math.round(counter.value))
+      },
+    })
+  }, [value])
+
+  return <span ref={ref}>{value}</span>
+}
+
 export function Dashboard() {
   const { user, signOut } = useAuth()
   const [groups, setGroups] = useState<Group[]>([])
@@ -397,6 +421,53 @@ export function Dashboard() {
     })
     return () => context.revert()
   }, [loading])
+
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const handlers = new Map<
+      Element,
+      { enter: () => void; leave: () => void }
+    >()
+    const attach = () => {
+      grid.querySelectorAll<HTMLElement>('[data-site-card]').forEach((card) => {
+        if (handlers.has(card)) return
+        const enter = () => {
+          gsap.to(card, {
+            y: -6,
+            duration: 0.3,
+            ease: 'power2.out',
+            boxShadow: '0 18px 36px -18px rgba(22,22,19,0.3)',
+          })
+        }
+        const leave = () => {
+          gsap.to(card, {
+            y: 0,
+            duration: 0.3,
+            ease: 'power2.out',
+            boxShadow: '0 0 0 0 rgba(0,0,0,0)',
+          })
+        }
+        card.addEventListener('mouseenter', enter)
+        card.addEventListener('mouseleave', leave)
+        handlers.set(card, { enter, leave })
+      })
+    }
+    attach()
+
+    const observer = new MutationObserver(attach)
+    observer.observe(grid, { childList: true, subtree: true })
+
+    return () => {
+      observer.disconnect()
+      handlers.forEach(({ enter, leave }, card) => {
+        card.removeEventListener('mouseenter', enter)
+        card.removeEventListener('mouseleave', leave)
+      })
+    }
+  }, [])
 
   useLayoutEffect(() => {
     const state = pendingFlip.current
@@ -698,7 +769,7 @@ export function Dashboard() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-4 border-b px-6 py-4">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b bg-background/85 px-6 py-4 backdrop-blur">
           <div className="flex items-center gap-2 md:hidden">
             <span className="flex size-7 items-center justify-center rounded-lg bg-lime text-lime-foreground">
               <Sparkles className="size-4" />
@@ -762,7 +833,7 @@ export function Dashboard() {
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-xs">
                 <span className="size-1.5 rounded-full bg-lime" />
-                {pages.length} page(s) gardée(s)
+                <AnimatedNumber value={pages.length} /> page(s) gardée(s)
               </div>
             </div>
           </section>
@@ -871,7 +942,21 @@ export function Dashboard() {
             </div>
 
             {loading ? (
-              <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="animate-pulse overflow-hidden rounded-2xl border bg-card"
+                  >
+                    <div className="aspect-[16/10] bg-muted/60" />
+                    <div className="space-y-2 p-4">
+                      <div className="h-4 w-1/2 rounded bg-muted/60" />
+                      <div className="h-3 w-3/4 rounded bg-muted/50" />
+                      <div className="h-3 w-2/5 rounded bg-muted/50" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : sites.length === 0 ? (
               <div className="mt-6 rounded-xl border border-dashed bg-card/50 px-4 py-12 text-center text-sm text-muted-foreground">
                 Vos pages apparaîtront ici dès que l'extension sera active (ou ajoute-en une
@@ -893,7 +978,7 @@ export function Dashboard() {
                           }}
                         />
                       ))}
-                      <article className="relative flex flex-col overflow-hidden rounded-2xl border bg-card transition-shadow hover:shadow-md">
+                      <article data-site-card className="relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm will-change-transform">
                         <button
                           type="button"
                           onClick={() => setSelectedSite(site)}

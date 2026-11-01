@@ -105,6 +105,36 @@ export function Cinematic({ onStart }: { onStart: () => void }) {
       gsap.set('.cine-logo', { opacity: 0, scale: 0.7 })
       gsap.set('.cine-page', { opacity: 0, scale: 0.9 })
 
+      gsap.from('.cine-line', {
+        y: 90,
+        opacity: 0,
+        duration: 1.1,
+        stagger: 0.14,
+        ease: 'power4.out',
+        delay: 0.25,
+      })
+      gsap.from('.cine-eyebrow', {
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: 0.05,
+      })
+      gsap.from('.cine-sub', {
+        y: 30,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+        delay: 0.55,
+      })
+      gsap.from('.cine-cta', {
+        y: 24,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        delay: 0.75,
+      })
+
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: wrapper,
@@ -194,21 +224,21 @@ export function Cinematic({ onStart }: { onStart: () => void }) {
 
         {/* texte du hero */}
         <div className="cine-hero relative z-20 mx-auto w-full max-w-3xl px-6 text-center text-cream">
-          <p className="text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
+          <p className="cine-eyebrow text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
             Votre mémoire de navigation
           </p>
           <h1 className="mt-6 font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
-            TabNest garde les pages
-            <span className="block">que vous visitez.</span>
-            <span className="block text-[#8f9484] italic">
+            <span className="cine-line block">TabNest garde les pages</span>
+            <span className="cine-line block">que vous visitez.</span>
+            <span className="cine-line block text-[#8f9484] italic">
               Vous fermez vos onglets. Rien n'est perdu.
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-cream/55">
+          <p className="cine-sub mx-auto mt-6 max-w-xl text-sm leading-relaxed text-cream/55">
             Une extension qui enregistre automatiquement vos pages, les range par projets et leur
             donne une durée de vie. Fini les 50 onglets ouverts par peur de perdre le fil.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="cine-cta mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
               onClick={onStart}

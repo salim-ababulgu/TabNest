@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight, Check, Clock, Sparkles } from 'lucide-react'
 import { Cinematic } from '@/components/landing/Cinematic'
+
+gsap.registerPlugin(ScrollTrigger)
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -47,6 +50,31 @@ function Reveal({
   )
 }
 
+function ScrollProgress() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const bar = ref.current
+    if (!bar) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const context = gsap.context(() => {
+      gsap.to(bar, {
+        scaleX: 1,
+        ease: 'none',
+        scrollTrigger: { start: 0, end: 'max', scrub: 0.3 },
+      })
+    })
+    return () => context.revert()
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      className="fixed top-0 left-0 z-50 h-0.5 w-full origin-left scale-x-0 bg-lime"
+    />
+  )
+}
+
 function PillButton({
   children,
   onClick,
@@ -81,6 +109,7 @@ export function Landing({ onStart }: LandingProps) {
 
   return (
     <div id="top" className="relative bg-cream text-ink">
+      <ScrollProgress />
       <header className="fixed top-0 right-0 left-0 z-40 px-4 pt-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-ink/90 px-4 py-2.5 backdrop-blur">
           <a href="#top" className="flex items-center gap-2">
