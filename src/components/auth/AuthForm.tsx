@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import gsap from 'gsap'
 import { Button } from '@/components/ui/button'
@@ -36,15 +36,6 @@ export function AuthForm({
     })
     return () => context.revert()
   }, [])
-
-  const formRef = useRef<HTMLFormElement>(null)
-
-  useEffect(() => {
-    const form = formRef.current
-    if (!form) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    gsap.fromTo(form, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' })
-  }, [mode])
 
   useEffect(() => {
     if (!error) return
@@ -134,7 +125,7 @@ export function AuthForm({
             </Button>
           </div>
 
-          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
               <Input

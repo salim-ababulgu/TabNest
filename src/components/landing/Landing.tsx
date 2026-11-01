@@ -1,78 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { ReactNode } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, Check, Clock, Sparkles } from 'lucide-react'
+import { Check, Clock, Sparkles } from 'lucide-react'
 import { Cinematic } from '@/components/landing/Cinematic'
-
-gsap.registerPlugin(ScrollTrigger)
 
 type LandingProps = { onStart: (email?: string) => void }
 
 function Reveal({
   children,
   className,
-  delay = 0,
 }: {
   children: ReactNode
   className?: string
   delay?: number
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element) return
-    gsap.set(element, { y: 42, opacity: 0 })
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          gsap.to(element, {
-            y: 0,
-            opacity: 1,
-            duration: 0.9,
-            delay: delay / 1000,
-            ease: 'power3.out',
-          })
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.15 },
-    )
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [delay])
-
-  return (
-    <div ref={ref} className={className}>
-      {children}
-    </div>
-  )
-}
-
-function ScrollProgress() {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const bar = ref.current
-    if (!bar) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const context = gsap.context(() => {
-      gsap.to(bar, {
-        scaleX: 1,
-        ease: 'none',
-        scrollTrigger: { start: 0, end: 'max', scrub: 0.3 },
-      })
-    })
-    return () => context.revert()
-  }, [])
-
-  return (
-    <div
-      ref={ref}
-      className="fixed top-0 left-0 z-50 h-0.5 w-full origin-left scale-x-0 bg-lime"
-    />
-  )
+  return <div className={className}>{children}</div>
 }
 
 function PillButton({
@@ -109,7 +50,6 @@ export function Landing({ onStart }: LandingProps) {
 
   return (
     <div id="top" className="relative bg-cream text-ink">
-      <ScrollProgress />
       <header className="fixed top-0 right-0 left-0 z-40 px-4 pt-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-ink/90 px-4 py-2.5 backdrop-blur">
           <a href="#top" className="flex items-center gap-2">
@@ -130,7 +70,7 @@ export function Landing({ onStart }: LandingProps) {
             </a>
           </nav>
           <PillButton onClick={() => onStart()} className="bg-lime text-lime-foreground hover:bg-lime/90">
-            Essayer <ArrowRight className="size-3.5" />
+            Essayer
           </PillButton>
         </div>
       </header>
@@ -142,10 +82,7 @@ export function Landing({ onStart }: LandingProps) {
         <div className="mx-auto w-full max-w-6xl">
           <Reveal>
             <div className="max-w-2xl">
-              <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
-                Comment ça marche
-              </p>
-              <h2 className="mt-4 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+              <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
                 Trois étapes, et vous ne perdez plus rien.
               </h2>
             </div>
@@ -169,7 +106,7 @@ export function Landing({ onStart }: LandingProps) {
               },
             ].map((step, index) => (
               <Reveal key={step.n} delay={index * 120}>
-                <div className="h-full rounded-2xl border bg-card p-7 transition-transform hover:-translate-y-1">
+                <div className="h-full rounded-2xl border bg-card p-7">
                   <span className="font-heading text-3xl text-[#5f6b4f]">{step.n}</span>
                   <h3 className="mt-4 font-heading text-xl">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink/60">{step.text}</p>
@@ -177,23 +114,6 @@ export function Landing({ onStart }: LandingProps) {
               </Reveal>
             ))}
           </div>
-          <Reveal delay={400}>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {[
-                { t: 'Documentation', g: 'from-[#dfe7c8] to-[#b9d48a]' },
-                { t: 'Emploi', g: 'from-[#dbe3ff] to-[#a9cfe0]' },
-                { t: 'Achat voiture', g: 'from-[#ffe0cf] to-[#e8b0a4]' },
-              ].map((item) => (
-                <div key={item.t} className="overflow-hidden rounded-xl border bg-card">
-                  <div className={'h-24 bg-gradient-to-br ' + item.g} />
-                  <div className="p-4">
-                    <p className="font-heading text-sm">{item.t}</p>
-                    <p className="text-[11px] text-ink/50">3 pages · Favori</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Reveal>
         </div>
       </section>
 
@@ -201,10 +121,7 @@ export function Landing({ onStart }: LandingProps) {
       <section id="principe" className="grid md:grid-cols-2">
         <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
-            <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
-              Le point de départ
-            </p>
-            <h2 className="mt-6 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Vous ne gardez pas des onglets.
               <span className="mt-2 block text-[#5f6b4f] italic">Vous gardez des intentions.</span>
             </h2>
@@ -250,11 +167,7 @@ export function Landing({ onStart }: LandingProps) {
       <section id="automatisation" className="grid md:grid-cols-2">
         <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal className="w-full">
-            <p className="text-[11px] font-medium tracking-[0.25em] text-lime uppercase">
-              Ce qui change tout
-            </p>
-            <p className="mt-8 text-[11px] tracking-[0.25em] text-cream/40 uppercase">Observer</p>
-            <h2 className="mt-4 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               TabNest comprend la page.
             </h2>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/55">
@@ -296,10 +209,7 @@ export function Landing({ onStart }: LandingProps) {
       <section id="projets" className="grid md:grid-cols-2">
         <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
-            <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
-              Et le contexte ?
-            </p>
-            <h2 className="mt-6 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Les pages ne vivent pas seules.
               <span className="mt-2 block text-[#5f6b4f] italic">
                 Elles appartiennent à vos projets.
@@ -318,9 +228,8 @@ export function Landing({ onStart }: LandingProps) {
               {PROJECTS.map((project) => (
                 <div
                   key={project.n}
-                  className={'flex items-center gap-4 rounded-2xl px-5 py-5 transition-transform hover:translate-x-1 ' + project.color}
+                  className={'flex items-center gap-4 rounded-2xl px-5 py-5 ' + project.color}
                 >
-                  <span className="font-heading text-2xl">{project.n}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] tracking-wider text-ink/40 uppercase">Projet actif</p>
                     <p className="font-heading text-lg">{project.name}</p>
@@ -337,10 +246,7 @@ export function Landing({ onStart }: LandingProps) {
       <section className="grid md:grid-cols-2">
         <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal className="w-full">
-            <p className="text-[11px] font-medium tracking-[0.25em] text-lime uppercase">
-              Après TabNest
-            </p>
-            <h2 className="mt-6 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Votre navigateur peut enfin redevenir
               <span className="mt-2 block text-[#8f9484] italic">un espace de travail.</span>
             </h2>
@@ -381,9 +287,6 @@ export function Landing({ onStart }: LandingProps) {
             <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-ink text-lime">
               <Sparkles className="size-5" />
             </span>
-            <p className="mt-6 text-[11px] font-medium tracking-[0.25em] uppercase opacity-70">
-              La suite commence ici.
-            </p>
             <h2 className="mx-auto mt-4 max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-5xl md:text-7xl">
               Fermez tous les autres.
               <span className="mt-2 block text-[#5f6b4f] italic">Gardez TabNest.</span>
@@ -409,7 +312,7 @@ export function Landing({ onStart }: LandingProps) {
                 type="submit"
                 className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-medium text-cream transition-colors hover:bg-ink/90"
               >
-                Commencer <ArrowRight className="size-3.5" />
+                Commencer
               </button>
             </form>
             <p className="mt-4 text-xs text-ink/50">Gratuit pour commencer. Aucun spam.</p>
@@ -420,10 +323,7 @@ export function Landing({ onStart }: LandingProps) {
       {/* Confidentialité */}
       <section id="confidentialite" className="flex items-center bg-cream px-6 py-24 md:py-32">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="text-[11px] font-medium tracking-[0.25em] text-[#5f6b4f] uppercase">
-            Confidentialité
-          </p>
-          <h2 className="mt-4 font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+          <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
             Vos pages restent les vôtres.
           </h2>
           <p className="mt-6 text-sm leading-relaxed text-ink/60">

@@ -54,80 +54,80 @@
 }
 
 :root {
-    --background: #f4f1e8;
-    --foreground: #1a1a16;
-    --card: #faf8f1;
-    --card-foreground: #1a1a16;
-    --popover: #faf8f1;
-    --popover-foreground: #1a1a16;
-    --primary: #1a1a16;
-    --primary-foreground: #f4f1e8;
-    --secondary: #e9e5d8;
-    --secondary-foreground: #1a1a16;
-    --muted: #e9e5d8;
-    --muted-foreground: #6b6a60;
-    --accent: #e4e0d2;
-    --accent-foreground: #1a1a16;
-    --destructive: #b5462f;
-    --border: #e2ddcf;
-    --input: #e2ddcf;
-    --ring: #a8a494;
-    --chart-1: #c8f05a;
-    --chart-2: #8a8a76;
-    --chart-3: #6b6a60;
-    --chart-4: #4a4a40;
-    --chart-5: #2a2a24;
-    --radius: 0.75rem;
-    --sidebar: #161613;
-    --sidebar-foreground: #f4f1e8;
-    --sidebar-primary: #c8f05a;
-    --sidebar-primary-foreground: #161613;
-    --sidebar-accent: #24241f;
-    --sidebar-accent-foreground: #f4f1e8;
-    --sidebar-border: #2a2a24;
-    --sidebar-ring: #c8f05a;
-    --lime: #c8f05a;
-    --lime-foreground: #161613;
-    --ink: #1a1a16;
-    --cream: #f4f1e8;
+    --background: #f6f1e4;
+    --foreground: #26312a;
+    --card: #fcf9f0;
+    --card-foreground: #26312a;
+    --popover: #fcf9f0;
+    --popover-foreground: #26312a;
+    --primary: #26312a;
+    --primary-foreground: #f6f1e4;
+    --secondary: #ece5d2;
+    --secondary-foreground: #26312a;
+    --muted: #ece5d2;
+    --muted-foreground: #6f7265;
+    --accent: #f4e3c2;
+    --accent-foreground: #26312a;
+    --destructive: #b3402f;
+    --border: #e4dcc6;
+    --input: #e4dcc6;
+    --ring: #c98a2e;
+    --chart-1: #e8a13c;
+    --chart-2: #7d8a78;
+    --chart-3: #6f7265;
+    --chart-4: #4c5348;
+    --chart-5: #26312a;
+    --radius: 0.5rem;
+    --sidebar: #1f2c25;
+    --sidebar-foreground: #f1ecdd;
+    --sidebar-primary: #e8a13c;
+    --sidebar-primary-foreground: #241a08;
+    --sidebar-accent: #2a3a31;
+    --sidebar-accent-foreground: #f1ecdd;
+    --sidebar-border: #2e3e34;
+    --sidebar-ring: #e8a13c;
+    --lime: #e8a13c;
+    --lime-foreground: #241a08;
+    --ink: #1f2c25;
+    --cream: #f6f1e4;
 }
 
 .dark {
-    --background: #161613;
-    --foreground: #f4f1e8;
-    --card: #1e1e19;
-    --card-foreground: #f4f1e8;
-    --popover: #1e1e19;
-    --popover-foreground: #f4f1e8;
-    --primary: #c8f05a;
-    --primary-foreground: #161613;
-    --secondary: #24241f;
-    --secondary-foreground: #f4f1e8;
-    --muted: #24241f;
-    --muted-foreground: #a8a494;
-    --accent: #24241f;
-    --accent-foreground: #f4f1e8;
+    --background: #1c251f;
+    --foreground: #f3eee0;
+    --card: #243028;
+    --card-foreground: #f3eee0;
+    --popover: #243028;
+    --popover-foreground: #f3eee0;
+    --primary: #e8a13c;
+    --primary-foreground: #241a08;
+    --secondary: #2b3a31;
+    --secondary-foreground: #f3eee0;
+    --muted: #2b3a31;
+    --muted-foreground: #a9b3a6;
+    --accent: #33443a;
+    --accent-foreground: #f3eee0;
     --destructive: #e06a55;
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
-    --ring: #c8f05a;
-    --chart-1: #c8f05a;
-    --chart-2: #8a8a76;
-    --chart-3: #6b6a60;
-    --chart-4: #4a4a40;
-    --chart-5: #2a2a24;
-    --sidebar: #0f0f0c;
-    --sidebar-foreground: #f4f1e8;
-    --sidebar-primary: #c8f05a;
-    --sidebar-primary-foreground: #161613;
-    --sidebar-accent: #24241f;
-    --sidebar-accent-foreground: #f4f1e8;
-    --sidebar-border: #2a2a24;
-    --sidebar-ring: #c8f05a;
-    --lime: #c8f05a;
-    --lime-foreground: #161613;
-    --ink: #f4f1e8;
-    --cream: #161613;
+    --ring: #e8a13c;
+    --chart-1: #e8a13c;
+    --chart-2: #7d8a78;
+    --chart-3: #a9b3a6;
+    --chart-4: #4c5348;
+    --chart-5: #26312a;
+    --sidebar: #162019;
+    --sidebar-foreground: #f3eee0;
+    --sidebar-primary: #e8a13c;
+    --sidebar-primary-foreground: #241a08;
+    --sidebar-accent: #26352c;
+    --sidebar-accent-foreground: #f3eee0;
+    --sidebar-border: #2a3a31;
+    --sidebar-ring: #e8a13c;
+    --lime: #e8a13c;
+    --lime-foreground: #241a08;
+    --ink: #f3eee0;
+    --cream: #1c251f;
 }
 
 @layer base {
@@ -142,8 +142,8 @@
     scroll-behavior: smooth;
   }
   ::selection {
-    background-color: #c8f05a;
-    color: #161613;
+    background-color: #e8a13c;
+    color: #241a08;
   }
 }
 

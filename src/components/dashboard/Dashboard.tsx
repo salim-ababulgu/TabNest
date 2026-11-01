@@ -162,15 +162,6 @@ function faviconSources(site: Site): string[] {
   return sources
 }
 
-function pagePath(url: string): string {
-  try {
-    const parsed = new URL(url)
-    return `${parsed.pathname}${parsed.search}`.replace(/\/$/, '') || '/'
-  } catch {
-    return url
-  }
-}
-
 function uniquePages(pages: Page[]): Page[] {
   const map = new Map<string, Page>()
   for (const page of pages) {
@@ -316,30 +307,6 @@ function Modal({
   )
 }
 
-function AnimatedNumber({ value }: { value: number }) {
-  const ref = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      element.textContent = String(value)
-      return
-    }
-    const counter = { value: 0 }
-    gsap.to(counter, {
-      value,
-      duration: 1.2,
-      ease: 'power2.out',
-      onUpdate: () => {
-        element.textContent = String(Math.round(counter.value))
-      },
-    })
-  }, [value])
-
-  return <span ref={ref}>{value}</span>
-}
-
 export function Dashboard() {
   const { user, signOut } = useAuth()
   const [groups, setGroups] = useState<Group[]>([])
@@ -418,68 +385,6 @@ export function Dashboard() {
     return () => {
       window.removeEventListener('message', handleMessage)
       window.clearInterval(poll)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (loading) return
-    const context = gsap.context(() => {
-      gsap.from('[data-dash-anim]', {
-        y: 28,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.08,
-        ease: 'power2.out',
-        clearProps: 'all',
-      })
-    })
-    return () => context.revert()
-  }, [loading])
-
-  useEffect(() => {
-    const grid = gridRef.current
-    if (!grid) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    const handlers = new Map<
-      Element,
-      { enter: () => void; leave: () => void }
-    >()
-    const attach = () => {
-      grid.querySelectorAll<HTMLElement>('[data-site-card]').forEach((card) => {
-        if (handlers.has(card)) return
-        const enter = () => {
-          gsap.to(card, {
-            y: -6,
-            duration: 0.3,
-            ease: 'power2.out',
-            boxShadow: '0 18px 36px -18px rgba(22,22,19,0.3)',
-          })
-        }
-        const leave = () => {
-          gsap.to(card, {
-            y: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-            boxShadow: '0 0 0 0 rgba(0,0,0,0)',
-          })
-        }
-        card.addEventListener('mouseenter', enter)
-        card.addEventListener('mouseleave', leave)
-        handlers.set(card, { enter, leave })
-      })
-    }
-    attach()
-
-    const observer = new MutationObserver(attach)
-    observer.observe(grid, { childList: true, subtree: true })
-
-    return () => {
-      observer.disconnect()
-      handlers.forEach(({ enter, leave }, card) => {
-        card.removeEventListener('mouseenter', enter)
-        card.removeEventListener('mouseleave', leave)
-      })
     }
   }, [])
 
@@ -709,7 +614,7 @@ export function Dashboard() {
         </nav>
 
         <div className="mt-6 flex items-center justify-between px-5">
-          <span className="text-[11px] font-medium tracking-[0.18em] text-sidebar-foreground/45 uppercase">
+          <span className="text-xs font-medium text-sidebar-foreground/60">
             Projets
           </span>
           <button
@@ -835,9 +740,6 @@ export function Dashboard() {
           <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-8 py-10">
             <div className="absolute -top-24 -right-24 size-64 rounded-full bg-lime/25 blur-3xl" />
             <div className="relative">
-              <p className="text-[11px] font-medium tracking-[0.22em] text-muted-foreground uppercase">
-                Votre mémoire de navigation
-              </p>
               <h1 className="mt-3 max-w-xl font-heading text-4xl leading-[1.05] font-medium tracking-tight md:text-5xl">
                 Ce qui compte <em className="text-lime-foreground italic">revient</em> au bon moment.
               </h1>
@@ -847,7 +749,7 @@ export function Dashboard() {
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-xs">
                 <span className="size-1.5 rounded-full bg-lime" />
-                <AnimatedNumber value={pages.length} /> page(s) gardée(s)
+                {pages.length} pages gardées
               </div>
             </div>
           </section>
@@ -992,7 +894,7 @@ export function Dashboard() {
                           }}
                         />
                       ))}
-                      <article data-site-card className="relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm will-change-transform">
+                      <article className="relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm">
                         <button
                           type="button"
                           onClick={() => setSelectedSite(site)}
@@ -1052,7 +954,7 @@ export function Dashboard() {
                             {site.domain}
                           </button>
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {site.pages.length} page(s) · {site.visits} visite(s) ·{' '}
+                            {site.pages.length} pages, {site.visits} visites,{' '}
                             {timeAgo(site.lastVisit)}
                           </p>
                           {site.reason && (
@@ -1102,7 +1004,7 @@ export function Dashboard() {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{selectedSite.visits} visite(s) au total</p>
                 <p className="text-xs text-muted-foreground">
-                  {selectedSite.pages.length} page(s) · dernière visite{' '}
+                  {selectedSite.pages.length} pages, dernière visite{' '}
                   {timeAgo(selectedSite.lastVisit)}
                 </p>
               </div>
@@ -1126,12 +1028,13 @@ export function Dashboard() {
                         href={page.url}
                         target="_blank"
                         rel="noreferrer"
+                        title={page.url}
                         className="block truncate text-sm hover:underline"
                       >
                         {page.title || page.url}
                       </a>
                       <p className="truncate text-[11px] text-muted-foreground">
-                        {pagePath(page.url)} · {page.visit_count} visite(s) · {expiry.text}
+                        {page.visit_count} visite(s), {expiry.text}
                       </p>
                     </div>
                     <Select

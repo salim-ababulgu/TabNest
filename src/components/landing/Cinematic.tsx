@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, Sparkles } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -25,7 +25,7 @@ const TONES: Record<
   { card: string; bar: string; line: string; title: string; border: string }
 > = {
   dark: {
-    card: 'bg-[#1b1b1b]',
+    card: 'bg-[#1f2c25]',
     bar: 'border-white/10 bg-white/[0.03]',
     line: 'bg-white/10',
     title: 'text-white/45',
@@ -113,13 +113,6 @@ export function Cinematic({ onStart }: { onStart: () => void }) {
         ease: 'power4.out',
         delay: 0.25,
       })
-      gsap.from('.cine-eyebrow', {
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.05,
-      })
       gsap.from('.cine-sub', {
         y: 30,
         opacity: 0,
@@ -195,12 +188,12 @@ export function Cinematic({ onStart }: { onStart: () => void }) {
         </div>
 
         {/* logo */}
-        <div className="cine-logo absolute top-1/2 left-1/2 z-30 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl bg-lime text-lime-foreground shadow-[0_0_80px_rgba(200,240,90,0.35)]">
+        <div className="cine-logo absolute top-1/2 left-1/2 z-30 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl bg-lime text-lime-foreground shadow-[0_0_80px_rgba(232,161,60,0.35)]">
           <Sparkles className="size-9" />
         </div>
 
         {/* page finale */}
-        <div className="cine-page absolute top-1/2 left-1/2 z-40 w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#1b1b1b] p-5 shadow-2xl">
+        <div className="cine-page absolute top-1/2 left-1/2 z-40 w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#1f2c25] p-5 shadow-2xl">
           <div className="flex items-center gap-2">
             <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
               <Sparkles className="size-4" />
@@ -223,28 +216,25 @@ export function Cinematic({ onStart }: { onStart: () => void }) {
         </div>
 
         {/* texte du hero */}
-        <div className="cine-hero relative z-20 mx-auto w-full max-w-3xl px-6 text-center text-cream">
-          <p className="cine-eyebrow text-[11px] font-medium tracking-[0.3em] text-lime uppercase">
-            Votre mémoire de navigation
-          </p>
-          <h1 className="mt-6 font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
+        <div className="cine-hero relative z-20 mx-auto w-full max-w-6xl px-6 text-left text-cream">
+          <h1 className="max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
             <span className="cine-line block">TabNest garde les pages</span>
             <span className="cine-line block">que vous visitez.</span>
-            <span className="cine-line block text-[#8f9484] italic">
+            <span className="cine-line block text-[#96a08e] italic">
               Vous fermez vos onglets. Rien n'est perdu.
             </span>
           </h1>
-          <p className="cine-sub mx-auto mt-6 max-w-xl text-sm leading-relaxed text-cream/55">
+          <p className="cine-sub mt-6 max-w-xl text-sm leading-relaxed text-cream/55">
             Une extension qui enregistre automatiquement vos pages, les range par projets et leur
             donne une durée de vie. Fini les 50 onglets ouverts par peur de perdre le fil.
           </p>
-          <div className="cine-cta mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="cine-cta mt-8 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={onStart}
               className="inline-flex h-11 items-center gap-2 rounded-full bg-lime px-6 text-sm font-semibold text-lime-foreground transition-colors hover:bg-lime/90"
             >
-              Commencer gratuitement <ArrowRight className="size-4" />
+              Commencer gratuitement
             </button>
             <a
               href="#comment"
