@@ -38,7 +38,7 @@
 - **Recharger l'extension** après toute modification de `extension/`.
 
 ## À faire (priorités)
-1. « Continuer avec Google » (Supabase OAuth + Google Cloud).
+1. **Finaliser « Continuer avec Google »** : le code est prêt (bouton + OAuth) ; il manque la config côté utilisateur — Google Cloud (ID client OAuth, URI de redirection `https://kgrkujedgqsmdlltzyzs.supabase.co/auth/v1/callback`), Supabase → Providers → Google, et Redirect URL `http://localhost:5173/**`.
 2. E-mails transactionnels (Amazon SES).
 3. Navigation mobile du dashboard (sidebar masquée aujourd'hui).
 4. Découper `Dashboard.tsx` (~1 200 lignes) en composants (signalé par react-doctor).
