@@ -16,7 +16,9 @@
 - **Extension Chrome MV3** : capture automatique, favicon/OG/theme-color, respecte `reason`, enrichissement **Microlink** en secours (clé dans `extension/config.js`, fichier gitignoré).
 - **Favicons** : chaîne de secours extension → Google s2 → `/favicon.ico` → lettre.
 - **Modales** : shadcn `Dialog` / `AlertDialog` (plus de `window.confirm`).
-- **Docs** : `docs/UX_UI_TECHNIQUE.md` (document technique UX/UI & frontend).
+- **Docs** : `docs/UX_UI_TECHNIQUE.md` (document technique UX/UI & frontend), `docs/CONFORMITE.md` (audit données/accessibilité/RGPD).
+- **Conformité (brouillons)** : pages `/confidentialite`, `/cgu`, `/cookies`, `/remboursement` + bandeau d'information cookies (aucun traceur non nécessaire → pas de consentement requis) + `public/llms.txt` + meta SEO. Contrastes WCAG mesurés et corrigés (texte atténué, focus, bordure de champ).
+- **À compléter avant mise en ligne** : identité de l'éditeur (raison sociale, adresse, SIRET, e-mails de contact), médiateur de la consommation, case de renonciation à la rétractation au paiement, purge `pg_cron` des pages expirées, relecture par un juriste.
 
 **Décisions produit à respecter**
 - **Pas de captures d'écran** (données sensibles + coût) — décidé avec l'utilisateur.
