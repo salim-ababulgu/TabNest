@@ -24,7 +24,7 @@
 - **Mouvement discipliné** (leçon du skill « frontend-design » d'Anthropic) : **un seul grand moment** (la cinématique) + du mouvement **qui répond aux actions** (épingler, supprimer, modales). Pas de fondu/glissement sur chaque section, pas de hover sur chaque carte. `prefers-reduced-motion` respecté.
 - **Plus de signaux « page générée »** : pas d'étiquettes MAJUSCULES au-dessus des titres, pas de « · » entre métadonnées (virgules), pas de flèche « → » sur les boutons, numérotation seulement pour les vraies séquences (les 3 étapes).
 - Identité « le nid » : papier/pin/miel — remplace l'ancienne palette crème/lime (jugée « générique »).
-- Bundle > 500 kB : **code-splitting prévu, pas encore fait**.
+- **Code-splitting fait** : écrans chargés à la demande (`React.lazy`), bundle principal **443 kB** (gzip 127 kB), le warning Vite a disparu.
 
 ## Services & accès
 - **Supabase** : projet `kgrkujedgqsmdlltzyzs` ; URL et clé anon dans `.env.local` (jamais affichées).
@@ -38,8 +38,12 @@
 - **Recharger l'extension** après toute modification de `extension/`.
 
 ## À faire (priorités)
-1. **Code-splitting** (alléger le bundle).
-2. « Continuer avec Google » (Supabase OAuth + Google Cloud).
-3. E-mails transactionnels (Amazon SES).
-4. Navigation mobile du dashboard (sidebar masquée aujourd'hui).
+1. « Continuer avec Google » (Supabase OAuth + Google Cloud).
+2. E-mails transactionnels (Amazon SES).
+3. Navigation mobile du dashboard (sidebar masquée aujourd'hui).
+4. Découper `Dashboard.tsx` (~1 200 lignes) en composants (signalé par react-doctor).
 5. Faire tester le tunnel complet à 3–5 vrais utilisateurs.
+
+## Outils de qualité
+- `npx react-doctor` : score initial **47/100** (18 points). Corrigés : `setBusy`/`setRefreshing` en `finally`, formateur `Intl` hissé, `aria-label` du switch, valeur de contexte mémoïsée. Restants (acceptés ou à traiter plus tard) : gros composants, exports variants shadcn, « client écrit user_id » (protégé par RLS — à revoir avec un défaut `auth.uid()` côté base si on veut être irréprochable).
+- Skill appliqué : `vercel-labs/agent-skills@react-best-practices` (règles bundle/rerender).
