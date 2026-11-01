@@ -146,8 +146,20 @@ function gradientFor(domain: string): string {
   return GRADIENTS[hash % GRADIENTS.length]
 }
 
+function googleFavicon(domain: string): string {
+  return `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(domain)}`
+}
+
 function faviconFor(site: Site): string {
-  return site.favicon || `https://${site.domain}/favicon.ico`
+  return site.favicon || googleFavicon(site.domain)
+}
+
+function faviconSources(site: Site): string[] {
+  const sources: string[] = []
+  if (site.favicon) sources.push(site.favicon)
+  sources.push(googleFavicon(site.domain))
+  sources.push(`https://${site.domain}/favicon.ico`)
+  return sources
 }
 
 function pagePath(url: string): string {
@@ -178,7 +190,9 @@ function uniquePages(pages: Page[]): Page[] {
 }
 
 function SiteAvatar({ site, className }: { site: Site; className?: string }) {
-  const [failed, setFailed] = useState(false)
+  const [sourceIndex, setSourceIndex] = useState(0)
+  const sources = faviconSources(site)
+  const failed = sourceIndex >= sources.length
   return (
     <span className={cn('grid place-items-center overflow-hidden bg-card p-1.5', className)}>
       {failed ? (
@@ -187,10 +201,10 @@ function SiteAvatar({ site, className }: { site: Site; className?: string }) {
         </span>
       ) : (
         <img
-          src={faviconFor(site)}
+          src={sources[sourceIndex]}
           alt=""
           className="size-full object-contain"
-          onError={() => setFailed(true)}
+          onError={() => setSourceIndex((index) => index + 1)}
         />
       )}
     </span>
