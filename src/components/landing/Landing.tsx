@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Check, Clock, Sparkles } from 'lucide-react'
-import { Cinematic } from '@/components/landing/Cinematic'
+import { Hero } from '@/components/landing/Hero'
 import { BentoSection, FaqSection, PageTypeMarquee, PinnedSteps } from '@/components/landing/Sections'
 
 type LandingProps = { onStart: (email?: string) => void }
@@ -79,7 +79,7 @@ export function Landing({ onStart }: LandingProps) {
         </div>
       </header>
 
-      <Cinematic onStart={() => onStart()} />
+      <Hero onStart={() => onStart()} />
 
       <PageTypeMarquee />
 
