@@ -202,12 +202,14 @@ function SiteAvatar({ site, className }: { site: Site; className?: string }) {
   )
 }
 
+const TODAY_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+})
+
 function formatToday(): string {
-  const text = new Intl.DateTimeFormat('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  }).format(new Date())
+  const text = TODAY_FORMATTER.format(new Date())
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
@@ -523,8 +525,11 @@ export function Dashboard() {
 
   async function handleRefresh() {
     setRefreshing(true)
-    await load(true)
-    setRefreshing(false)
+    try {
+      await load(true)
+    } finally {
+      setRefreshing(false)
+    }
   }
 
   function toggleCapture() {
@@ -1249,6 +1254,7 @@ export function Dashboard() {
                 type="button"
                 role="switch"
                 aria-checked={captureEnabled}
+                aria-label="Capture automatique"
                 onClick={toggleCapture}
                 className={cn(
                   'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',

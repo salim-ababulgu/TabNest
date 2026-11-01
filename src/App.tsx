@@ -1,8 +1,26 @@
-import { useState } from 'react'
+import { Suspense, lazy, useState } from 'react'
+import { Sparkles } from 'lucide-react'
 import { AuthProvider, useAuth } from '@/lib/auth'
-import { AuthForm } from '@/components/auth/AuthForm'
-import { Dashboard } from '@/components/dashboard/Dashboard'
-import { Landing } from '@/components/landing/Landing'
+
+const AuthForm = lazy(() =>
+  import('@/components/auth/AuthForm').then((module) => ({ default: module.AuthForm })),
+)
+const Dashboard = lazy(() =>
+  import('@/components/dashboard/Dashboard').then((module) => ({ default: module.Dashboard })),
+)
+const Landing = lazy(() =>
+  import('@/components/landing/Landing').then((module) => ({ default: module.Landing })),
+)
+
+function Splash() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <span className="flex size-9 animate-pulse items-center justify-center rounded-lg bg-lime text-lime-foreground">
+        <Sparkles className="size-4" />
+      </span>
+    </div>
+  )
+}
 
 function AppContent() {
   const { loading, user } = useAuth()
@@ -10,22 +28,34 @@ function AppContent() {
   const [authEmail, setAuthEmail] = useState('')
 
   if (loading) {
+    return <Splash />
+  }
+
+  if (user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground">
-        Chargement…
-      </div>
+      <Suspense fallback={<Splash />}>
+        <Dashboard />
+      </Suspense>
     )
   }
 
-  if (user) return <Dashboard />
-  if (showAuth) return <AuthForm initialEmail={authEmail} onBack={() => setShowAuth(false)} />
+  if (showAuth) {
+    return (
+      <Suspense fallback={<Splash />}>
+        <AuthForm initialEmail={authEmail} onBack={() => setShowAuth(false)} />
+      </Suspense>
+    )
+  }
+
   return (
-    <Landing
-      onStart={(email) => {
-        setAuthEmail(email ?? '')
-        setShowAuth(true)
-      }}
-    />
+    <Suspense fallback={<Splash />}>
+      <Landing
+        onStart={(email) => {
+          setAuthEmail(email ?? '')
+          setShowAuth(true)
+        }}
+      />
+    </Suspense>
   )
 }
 

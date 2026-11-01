@@ -54,16 +54,19 @@ export function AuthForm({
     setError(null)
     setInfo(null)
     setBusy(true)
-    const result =
-      mode === 'login' ? await signIn(email, password) : await signUp(email, password)
-    setBusy(false)
-    if (result.error) {
-      setError(result.error)
-      return
-    }
-    if (result.needsConfirmation) {
-      setInfo('Compte créé. Confirme ton adresse par e-mail, puis connecte-toi.')
-      setMode('login')
+    try {
+      const result =
+        mode === 'login' ? await signIn(email, password) : await signUp(email, password)
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+      if (result.needsConfirmation) {
+        setInfo('Compte créé. Confirme ton adresse par e-mail, puis connecte-toi.')
+        setMode('login')
+      }
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -80,12 +83,15 @@ export function AuthForm({
     }
     setBusy(true)
     setError(null)
-    const result = await resetPassword(email.trim())
-    setBusy(false)
-    if (result.error) {
-      setError(result.error)
-    } else {
-      setInfo('Un e-mail de réinitialisation a été envoyé (vérifie tes spams).')
+    try {
+      const result = await resetPassword(email.trim())
+      if (result.error) {
+        setError(result.error)
+      } else {
+        setInfo('Un e-mail de réinitialisation a été envoyé (vérifie tes spams).')
+      }
+    } finally {
+      setBusy(false)
     }
   }
 
