@@ -5,23 +5,22 @@ import { EyeOff, Pin, Bookmark, Clock, FolderOpen, ShieldCheck } from 'lucide-re
 
 gsap.registerPlugin(ScrollTrigger)
 
-const SITES = [
-  'Netflix',
-  'Figma',
-  'Google',
-  'Notion',
-  'Framer',
-  'YouTube',
-  'GitHub',
-  'Linear',
-  'Supabase',
-  'Wikipedia',
-  'Le Monde',
-  'Leboncoin',
+// Types de pages que l’on garde — aucun nom de marque : ce ne sont pas des partenariats.
+const PAGE_TYPES = [
+  'Documentation',
+  'Offre d’emploi',
+  'Comparatif',
+  'Annonce immobilière',
+  'Traduction',
+  'Tutoriel',
+  'Achat de voiture',
+  'Article de fond',
+  'Recette',
+  'Série à regarder',
 ]
 
-/** Bandeau défilant des sites que l’on garde (décoratif). */
-export function SiteMarquee() {
+/** Bandeau défilant des types de pages conservées. */
+export function PageTypeMarquee() {
   const trackRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -35,18 +34,22 @@ export function SiteMarquee() {
   }, [])
 
   return (
-    <div aria-hidden="true" className="overflow-hidden border-y border-border bg-card py-5">
+    <section
+      aria-label="Types de pages que TabNest conserve"
+      className="overflow-hidden border-y border-border bg-card py-5"
+    >
       <div ref={trackRef} className="flex w-max items-center gap-10 px-6">
-        {[...SITES, ...SITES].map((site, index) => (
+        {[...PAGE_TYPES, ...PAGE_TYPES].map((label, index) => (
           <span
-            key={`${site}-${index}`}
-            className="font-heading text-lg whitespace-nowrap text-muted-foreground/70"
+            key={`${label}-${index}`}
+            aria-hidden={index >= PAGE_TYPES.length}
+            className="font-heading text-lg whitespace-nowrap text-muted-foreground/80"
           >
-            {site}
+            {label}
           </span>
         ))}
       </div>
-    </div>
+    </section>
   )
 }
 
