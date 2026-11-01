@@ -6,7 +6,7 @@
 ## État actuel (novembre 2025)
 
 **En place**
-- **Landing** : identité « le nid » (papier chaud `#f6f1e4`, pin `#26312a`, miel `#e8a13c`), cinématique GSAP (scène « sticky » chaos → rangement), hero aligné à gauche, **bandeau de sites défilant**, **« comment ça marche » épinglé et scrubbé au scroll**, **bento grid produit**, sections « Le principe », « L'automatisation », « Les projets », **FAQ**, CTA final, confidentialité, footer 4 colonnes. Sources d'inspiration : patterns saasframe.io et défilé meetsponsors.
+- **Landing** : identité « le nid » (papier chaud `#f6f1e4`, pin `#26312a`, miel `#e8a13c`), **cinématique du hero** : texte → fenêtres qui convergent autour d'une **carte TabNest persistante** → carte absorbée → **aperçu du dashboard** qui se déploie. **Bandeau de types de pages** défilant (aucune marque — pas de faux partenariats), **« comment ça marche » épinglé et scrubbé**, **bento grid**, sections « Le principe », « L'automatisation », « Les projets », **FAQ**, CTA final, confidentialité, footer 4 colonnes.
 - **Authentification** : e-mail/mot de passe + « mot de passe oublié » (Supabase). Pas encore de Google OAuth.
 - **Dashboard centré sites** : stories « Les plus visités » (top 10), grille de cartes de site empilées, modal de détail par site, notifications (cloche), header flottant, squelettes de chargement.
 - **Modèle « raison de garder »** (colonne `reason`) : À décider (3 j), À finir (7 j), Piste (14 j), À retenir (90 j) ; +50 % de durée par visite. Remplace l'ancien « favori ».
