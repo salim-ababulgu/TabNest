@@ -343,9 +343,18 @@ export function Landing({ onStart }: LandingProps) {
             <span className="font-heading text-lg font-semibold">TabNest</span>
           </div>
           <p className="text-ink/50">Un onglet pour garder le fil.</p>
-          <div className="flex gap-5 text-ink/50">
-            <a href="#confidentialite" className="hover:text-ink">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-ink/50">
+            <a href="/confidentialite" className="hover:text-ink">
               Confidentialité
+            </a>
+            <a href="/cgu" className="hover:text-ink">
+              Conditions
+            </a>
+            <a href="/cookies" className="hover:text-ink">
+              Cookies
+            </a>
+            <a href="/remboursement" className="hover:text-ink">
+              Remboursement
             </a>
             <a href="mailto:salimababulgu@gmail.com" className="hover:text-ink">
               Contact

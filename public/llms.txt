@@ -1,0 +1,37 @@
+# TabNest
+
+> TabNest est un service web français qui enregistre automatiquement les pages web que vous
+> visitez (via une extension de navigateur), les classe par sites et par projets, leur attribue
+> une durée de vie et les conserve pour que vous ne perdiez jamais le fil.
+> Principe produit : « TabNest ne vous demande pas de choisir quoi garder, il vous demande
+> **pourquoi** vous gardez. »
+
+## Ce que fait le service
+
+- Capture automatique des pages visitées (extension Chrome MV3).
+- Quatre raisons de garder une page, qui déterminent sa durée de vie :
+  - À décider (3 jours), À finir (7 jours), Piste (14 jours), À retenir (90 jours).
+  - La durée est allongée de 50 % à chaque nouvelle visite.
+- Classement par sites : pages d’un même site regroupées dans une seule fiche.
+- Épinglage d’un site pour le garder en tête de liste.
+- « Ressources » : sites visités une seule fois.
+- « Archives » : pages expirées.
+- Aucune capture d’écran, aucun contenu de page n’est lu ni stocké.
+
+## Données traitées
+
+Adresse e-mail, identifiant de compte, mot de passe chiffré, données d’authentification Google
+(facultatif) ; pour chaque page : URL, titre, icône, image de partage publique, couleur dominante,
+nombre de visites, dernière visite, raison de garder, épinglage, date d’expiration ; noms des
+projets créés. Les données sont cloisonnées par compte (règles de sécurité au niveau des lignes).
+
+## Pages légales
+
+- https://tabnest.example/confidentialite
+- https://tabnest.example/cgu
+- https://tabnest.example/cookies
+- https://tabnest.example/remboursement
+
+## Contact
+
+[À COMPLÉTER : e-mail de contact]

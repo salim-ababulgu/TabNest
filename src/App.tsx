@@ -1,6 +1,7 @@
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { AuthProvider, useAuth } from '@/lib/auth'
+import { CookieNotice } from '@/components/legal/CookieNotice'
 
 const AuthForm = lazy(() =>
   import('@/components/auth/AuthForm').then((module) => ({ default: module.AuthForm })),
@@ -11,6 +12,30 @@ const Dashboard = lazy(() =>
 const Landing = lazy(() =>
   import('@/components/landing/Landing').then((module) => ({ default: module.Landing })),
 )
+const LegalPage = lazy(() =>
+  import('@/components/legal/LegalPage').then((module) => ({ default: module.LegalPage })),
+)
+
+type LegalSlug = 'confidentialite' | 'cgu' | 'cookies' | 'remboursement'
+
+const LEGAL_ROUTES: Record<string, LegalSlug> = {
+  '/confidentialite': 'confidentialite',
+  '/cgu': 'cgu',
+  '/cookies': 'cookies',
+  '/remboursement': 'remboursement',
+}
+
+function usePathname() {
+  const [pathname, setPathname] = useState(() => window.location.pathname)
+
+  useEffect(() => {
+    const handlePop = () => setPathname(window.location.pathname)
+    window.addEventListener('popstate', handlePop)
+    return () => window.removeEventListener('popstate', handlePop)
+  }, [])
+
+  return pathname
+}
 
 function Splash() {
   return (
@@ -26,6 +51,16 @@ function AppContent() {
   const { loading, user } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
   const [authEmail, setAuthEmail] = useState('')
+  const pathname = usePathname()
+  const legalSlug = LEGAL_ROUTES[pathname]
+
+  if (legalSlug) {
+    return (
+      <Suspense fallback={<Splash />}>
+        <LegalPage slug={legalSlug} />
+      </Suspense>
+    )
+  }
 
   if (loading) {
     return <Splash />
@@ -63,6 +98,7 @@ function App() {
   return (
     <AuthProvider>
       <AppContent />
+      <CookieNotice />
     </AuthProvider>
   )
 }
