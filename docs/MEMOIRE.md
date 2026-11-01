@@ -6,9 +6,9 @@
 ## État actuel (novembre 2025)
 
 **En place**
-- **Landing** : cinématique GSAP (scène « sticky » chaos → rangement pilotée par ScrollTrigger), sections « Comment ça marche », « Le principe », « L'automatisation », « Les projets », CTA final, confidentialité. Barre de progression, titres en cascade, `prefers-reduced-motion` respecté.
+- **Landing** : identité « le nid » (papier chaud `#f6f1e4`, pin `#26312a`, miel `#e8a13c`), cinématique GSAP (scène « sticky » chaos → rangement), hero aligné à gauche, sections « Comment ça marche », « Le principe », « L'automatisation », « Les projets », CTA final, confidentialité.
 - **Authentification** : e-mail/mot de passe + « mot de passe oublié » (Supabase). Pas encore de Google OAuth.
-- **Dashboard centré sites** : stories « Les plus visités » (top 10), grille de cartes de site empilées, modal de détail par site, notifications (cloche), header flottant, squelettes de chargement, compteur animé.
+- **Dashboard centré sites** : stories « Les plus visités » (top 10), grille de cartes de site empilées, modal de détail par site, notifications (cloche), header flottant, squelettes de chargement.
 - **Modèle « raison de garder »** (colonne `reason`) : À décider (3 j), À finir (7 j), Piste (14 j), À retenir (90 j) ; +50 % de durée par visite. Remplace l'ancien « favori ».
 - **Ressources** = sites visités **une seule fois**. Plus de section « Favoris » (décision : redondante avec les sites les plus visités).
 - **Épinglage** (colonne `pinned`) : le site remonte en tête, animation GSAP Flip, mise à jour optimiste (pas de rechargement).
@@ -21,7 +21,9 @@
 **Décisions produit à respecter**
 - **Pas de captures d'écran** (données sensibles + coût) — décidé avec l'utilisateur.
 - **Pas de « favori »** : remplacé par les 4 raisons + l'épinglage.
-- Landing : animations GSAP généreuses, mais toujours réversibles au scroll et respectant `prefers-reduced-motion`.
+- **Mouvement discipliné** (leçon du skill « frontend-design » d'Anthropic) : **un seul grand moment** (la cinématique) + du mouvement **qui répond aux actions** (épingler, supprimer, modales). Pas de fondu/glissement sur chaque section, pas de hover sur chaque carte. `prefers-reduced-motion` respecté.
+- **Plus de signaux « page générée »** : pas d'étiquettes MAJUSCULES au-dessus des titres, pas de « · » entre métadonnées (virgules), pas de flèche « → » sur les boutons, numérotation seulement pour les vraies séquences (les 3 étapes).
+- Identité « le nid » : papier/pin/miel — remplace l'ancienne palette crème/lime (jugée « générique »).
 - Bundle > 500 kB : **code-splitting prévu, pas encore fait**.
 
 ## Services & accès
