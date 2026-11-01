@@ -12,6 +12,7 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<AuthResult>
   signUp: (email: string, password: string) => Promise<AuthResult>
   resetPassword: (email: string) => Promise<AuthResult>
+  signInWithGoogle: () => Promise<AuthResult>
   signOut: () => Promise<void>
 }
 
@@ -52,6 +53,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ? error.message : null }
   }
 
+  async function signInWithGoogle(): Promise<AuthResult> {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    })
+    return { error: error ? error.message : null }
+  }
+
   async function signOut(): Promise<void> {
     await supabase.auth.signOut()
   }
@@ -64,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signUp,
       resetPassword,
+      signInWithGoogle,
       signOut,
     }),
     [session, loading],
