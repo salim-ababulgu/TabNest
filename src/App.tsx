@@ -77,7 +77,11 @@ function AppContent() {
   if (showAuth) {
     return (
       <Suspense fallback={<Splash />}>
-        <AuthForm initialEmail={authEmail} onBack={() => setShowAuth(false)} />
+        <AuthForm
+          initialEmail={authEmail}
+          defaultMode="signup"
+          onBack={() => setShowAuth(false)}
+        />
       </Suspense>
     )
   }

@@ -41,12 +41,14 @@ function GoogleIcon() {
 export function AuthForm({
   onBack,
   initialEmail = '',
+  defaultMode = 'login',
 }: {
   onBack?: () => void
   initialEmail?: string
+  defaultMode?: Mode
 }) {
   const { signIn, signUp, resetPassword, signInWithGoogle } = useAuth()
-  const [mode, setMode] = useState<Mode>(initialEmail ? 'signup' : 'login')
+  const [mode, setMode] = useState<Mode>(initialEmail ? 'signup' : defaultMode)
   const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
