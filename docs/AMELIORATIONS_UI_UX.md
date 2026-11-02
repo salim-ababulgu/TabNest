@@ -24,7 +24,7 @@
 | 15 | Cartes de sites empilées selon les visites | ✅ |
 | 16 | Favicons avec chaîne de secours (extension → Google → /favicon.ico → initiale) | ✅ |
 | 17 | Sidebar avec compteurs par section | ✅ |
-| 18 | Notifications de confirmation (toasts) après action | ⏳ |
+| 18 | Notifications de confirmation (toasts) après action | ✅ |
 | 19 | Micro-animations d'action (épinglage Flip, suppression animée) | ✅ |
 | 20 | Aperçu produit du dashboard sur la landing | ⏳ |
 | 21 | Images de partage chargées en lazy | ✅ |
@@ -54,7 +54,7 @@
 | 15 | Filtres (raison, date, projet) en plus des sections | 🚧 |
 | 16 | Export de ses données (portabilité RGPD) | ⏳ |
 | 17 | Suppression de compte depuis l'application | ⏳ |
-| 18 | Notifications (cloche) qui préviennent des pages bientôt expirées | 🚧 |
+| 18 | Notifications (cloche) : badge non-lu, alertes réelles, état lu, alertes navigateur | ✅ |
 | 19 | Parcours d'accueil après inscription (assistant en 3 écrans) | ⏳ |
 | 20 | Paiement Lemon Squeezy (socle codé, liens à configurer) | 🚧 |
 | 21 | Tarifs lisibles, honnêtes, sans fausse promesse | ✅ |
