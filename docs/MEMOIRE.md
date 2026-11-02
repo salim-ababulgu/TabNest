@@ -41,6 +41,7 @@
 - Cache npm : `npm_config_cache=C:\Users\salim\Documents\TabNest\.npm-cache`.
 - Avant d'éditer `src/` : arrêter le serveur dev s'il verrouille le fichier (erreur `EIO`), puis le relancer.
 - **Recharger l'extension** après toute modification de `extension/`.
+- **Piège bloquants de contenu** : ne jamais mettre `cookie`, `consent` ou `gdpr` dans un nom de fichier, un chemin ou un attribut HTML. Dia (Arc) bloque ces requêtes au niveau réseau (`ERR_BLOCKED_BY_CONTENT_BLOCKER`) et casse le chargement de l'app. Le bandeau d'information s'appelle donc `PrivacyNotice` (clé `tabnest-notice-vue`).
 
 ## À faire (priorités)
 1. **Finaliser « Continuer avec Google »** : le code est prêt (bouton + OAuth) ; il manque la config côté utilisateur — Google Cloud (ID client OAuth, URI de redirection `https://kgrkujedgqsmdlltzyzs.supabase.co/auth/v1/callback`), Supabase → Providers → Google, et Redirect URL `http://localhost:5173/**`.
