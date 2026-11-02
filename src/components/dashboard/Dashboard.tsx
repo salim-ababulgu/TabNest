@@ -64,6 +64,10 @@ import {
   visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
+import { buildAlerts, loadReadAlerts, saveReadAlerts } from '@/lib/alerts'
+import type { AppAlert } from '@/lib/alerts'
+import { Toasts } from '@/components/dashboard/Toasts'
+import type { ToastItem, ToastLevel } from '@/components/dashboard/Toasts'
 
 gsap.registerPlugin(Flip)
 
@@ -337,6 +341,13 @@ export function Dashboard() {
   const [pageToDelete, setPageToDelete] = useState<Page | null>(null)
   const pendingFlip = useRef<ReturnType<typeof Flip.getState> | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const shownAlerts = useRef<Set<string>>(new Set())
+
+  const [toasts, setToasts] = useState<ToastItem[]>([])
+  const [readAlerts, setReadAlerts] = useState<string[]>([])
+  const [browserNotifications, setBrowserNotifications] = useState<
+    NotificationPermission | 'unsupported'
+  >(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission)
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
@@ -402,6 +413,58 @@ export function Dashboard() {
     })
   })
 
+  const notify = useCallback((level: ToastLevel, message: string) => {
+    const id = Date.now() + Math.random()
+    setToasts((current) => [...current, { id, level, message }])
+    window.setTimeout(() => {
+      setToasts((current) => current.filter((toast) => toast.id !== id))
+    }, 4500)
+  }, [])
+
+  useEffect(() => {
+    if (user?.id) setReadAlerts(loadReadAlerts(user.id))
+  }, [user?.id])
+
+  const alerts = buildAlerts(pages, extensionConnected)
+  const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
+
+  useEffect(() => {
+    if (browserNotifications !== 'granted') return
+    for (const alert of unreadAlerts) {
+      if (shownAlerts.current.has(alert.id)) continue
+      shownAlerts.current.add(alert.id)
+      try {
+        new Notification(alert.title, { body: alert.description, icon: '/favicon.svg' })
+      } catch {
+        // les notifications du navigateur peuvent être bloquées
+      }
+    }
+  }, [browserNotifications, unreadAlerts])
+
+  function openNotifications() {
+    setShowNotifications(true)
+    const ids = alerts.map((alert) => alert.id)
+    setReadAlerts(ids)
+    if (user?.id) saveReadAlerts(user.id, ids)
+  }
+
+  function openAlert(alert: AppAlert) {
+    setView(alert.view as View)
+    setSelectedGroup(null)
+    setShowNotifications(false)
+  }
+
+  async function enableBrowserNotifications() {
+    if (typeof Notification === 'undefined') return
+    const permission = await Notification.requestPermission()
+    setBrowserNotifications(permission)
+    if (permission === 'granted') {
+      notify('success', 'Notifications du navigateur activées')
+    } else if (permission === 'denied') {
+      notify('info', 'Notifications bloquées : autorisez-les dans les réglages du navigateur')
+    }
+  }
+
   async function handleAddPage(event: FormEvent) {
     event.preventDefault()
     if (!user) return
@@ -421,8 +484,9 @@ export function Dashboard() {
       setGroupId(NO_GROUP)
       setShowAddPage(false)
       await load()
+      notify('success', 'Page ajoutée à votre nid')
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Erreur lors de l'ajout")
+      notify('error', cause instanceof Error ? cause.message : "Erreur lors de l'ajout")
     } finally {
       setBusy(false)
     }
@@ -439,8 +503,9 @@ export function Dashboard() {
       setGroupId(group.id)
       setShowAddProject(false)
       await load()
+      notify('success', 'Projet créé')
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Erreur lors de la création du projet')
+      notify('error', cause instanceof Error ? cause.message : 'Erreur lors de la création du projet')
     } finally {
       setBusy(false)
     }
@@ -452,7 +517,7 @@ export function Dashboard() {
       await visitPage(page)
       await load()
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : 'Erreur')
     }
   }
 
@@ -461,8 +526,12 @@ export function Dashboard() {
     try {
       await setReason(page, reason)
       await load()
+      notify(
+        'success',
+        reason ? `Raison enregistrée : ${REASON_LABELS[reason as Reason] ?? reason}` : 'Raison retirée',
+      )
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : 'Erreur')
     }
   }
 
@@ -486,11 +555,12 @@ export function Dashboard() {
 
     try {
       await setPinned(ids, next)
+      notify('success', next ? 'Site épinglé en haut de la liste' : 'Site désépinglé')
     } catch (cause) {
       setPages((current) =>
         current.map((page) => (idSet.has(page.id) ? { ...page, pinned: !next } : page)),
       )
-      setError(cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : 'Erreur')
     }
   }
 
@@ -517,8 +587,9 @@ export function Dashboard() {
 
     try {
       await archivePage(page.id)
+      notify('success', 'Page retirée')
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : 'Erreur')
       await load(true)
     }
   }
@@ -574,11 +645,6 @@ export function Dashboard() {
     })
     .slice(0, 10)
   const currentTitle = selectedGroup ? groupName(selectedGroup) ?? 'Projet' : VIEW_TITLES[view]
-  const mostVisited = [...pages].sort((a, b) => b.visit_count - a.visit_count).slice(0, 3)
-  const recentPages = [...pages]
-    .filter((page) => page.last_visited_at)
-    .sort((a, b) => ((a.last_visited_at ?? '') < (b.last_visited_at ?? '') ? 1 : -1))
-    .slice(0, 3)
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -714,11 +780,24 @@ export function Dashboard() {
             <Button
               variant="outline"
               size="icon-sm"
-              onClick={() => setShowNotifications(true)}
-              title="Notifications"
-              aria-label="Notifications"
+              onClick={openNotifications}
+              title="Alertes"
+              aria-label={
+                unreadAlerts.length > 0
+                  ? `Alertes (${unreadAlerts.length} non lues)`
+                  : 'Alertes'
+              }
+              className="relative"
             >
               <Bell className="size-3.5" />
+              {unreadAlerts.length > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-lime text-[9px] font-semibold text-lime-foreground"
+                >
+                  {unreadAlerts.length > 9 ? '9+' : unreadAlerts.length}
+                </span>
+              )}
             </Button>
             <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
               <span
@@ -1127,47 +1206,47 @@ export function Dashboard() {
       </AlertDialog>
 
       {showNotifications && (
-        <Modal title="Notifications" onClose={() => setShowNotifications(false)}>
-          <div className="space-y-5 text-sm">
-            <div>
-              <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
-                Sites les plus visités
-              </p>
-              <ul className="mt-2 space-y-1.5">
-                {mostVisited.length === 0 ? (
-                  <li className="text-muted-foreground">Aucune visite pour l'instant.</li>
-                ) : (
-                  mostVisited.map((page) => (
-                    <li key={page.id} className="flex items-center justify-between gap-3">
-                      <span className="truncate">{domainOf(page.url)}</span>
-                      <span className="shrink-0 text-xs text-muted-foreground">
-                        {page.visit_count} visite(s)
+        <Modal title="Alertes" onClose={() => setShowNotifications(false)}>
+          {alerts.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Aucune alerte. Tout est rangé : rien n’expire et rien n’attend de décision.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {alerts.map((alert) => (
+                <li key={alert.id}>
+                  <button
+                    type="button"
+                    onClick={() => openAlert(alert)}
+                    className="flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-accent"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'mt-1 size-2 shrink-0 rounded-full',
+                        alert.level === 'danger'
+                          ? 'bg-destructive'
+                          : alert.level === 'warning'
+                            ? 'bg-lime'
+                            : 'bg-muted-foreground/50',
+                      )}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-medium">{alert.title}</span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        {alert.description}
                       </span>
-                    </li>
-                  ))
-                )}
-              </ul>
-            </div>
-            <div>
-              <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
-                Dernières visites
-              </p>
-              <ul className="mt-2 space-y-1.5">
-                {recentPages.length === 0 ? (
-                  <li className="text-muted-foreground">Aucune activité récente.</li>
-                ) : (
-                  recentPages.map((page) => (
-                    <li key={page.id} className="flex items-center justify-between gap-3">
-                      <span className="truncate">{page.title || domainOf(page.url)}</span>
-                      <span className="shrink-0 text-xs text-muted-foreground">
-                        {timeAgo(page.last_visited_at)}
-                      </span>
-                    </li>
-                  ))
-                )}
-              </ul>
-            </div>
-          </div>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-4 text-[11px] text-muted-foreground">
+            {browserNotifications === 'granted'
+              ? 'Les nouvelles alertes s’affichent aussi dans votre système.'
+              : 'Cliquez une alerte pour ouvrir directement la section concernée.'}
+          </p>
         </Modal>
       )}
 
@@ -1297,9 +1376,40 @@ export function Dashboard() {
                 Voir les instructions d’installation
               </a>
             </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+              <div>
+                <p className="text-sm font-medium">Alertes du navigateur</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Prévient quand une page expire. TabNest doit être ouvert.
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant={browserNotifications === 'granted' ? 'default' : 'outline'}
+                onClick={() => void enableBrowserNotifications()}
+                disabled={
+                  browserNotifications === 'denied' || browserNotifications === 'unsupported'
+                }
+              >
+                {browserNotifications === 'granted'
+                  ? 'Activées'
+                  : browserNotifications === 'denied'
+                    ? 'Bloquées'
+                    : browserNotifications === 'unsupported'
+                      ? 'Non disponible'
+                      : 'Activer'}
+              </Button>
+            </div>
           </div>
         </Modal>
       )}
+      <Toasts
+        toasts={toasts}
+        onDismiss={(id) =>
+          setToasts((current) => current.filter((toast) => toast.id !== id))
+        }
+      />
     </div>
   )
 }
