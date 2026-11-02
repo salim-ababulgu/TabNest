@@ -15,6 +15,11 @@ const Landing = lazy(() =>
 const LegalPage = lazy(() =>
   import('@/components/legal/LegalPage').then((module) => ({ default: module.LegalPage })),
 )
+const ExtensionPage = lazy(() =>
+  import('@/components/extension/ExtensionPage').then((module) => ({
+    default: module.ExtensionPage,
+  })),
+)
 
 type LegalSlug = 'confidentialite' | 'cgu' | 'cookies' | 'remboursement'
 
@@ -53,6 +58,14 @@ function AppContent() {
   const [authEmail, setAuthEmail] = useState('')
   const pathname = usePathname()
   const legalSlug = LEGAL_ROUTES[pathname]
+
+  if (pathname === '/extension') {
+    return (
+      <Suspense fallback={<Splash />}>
+        <ExtensionPage />
+      </Suspense>
+    )
+  }
 
   if (legalSlug) {
     return (

@@ -248,7 +248,7 @@ export function BentoSection() {
   }, [])
 
   return (
-    <section id="produit" ref={ref} className="px-6 py-24 md:px-10 md:py-32">
+    <section id="produit" ref={ref} className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
       <div className="mx-auto w-full max-w-6xl">
         <h2 className="max-w-2xl font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
           Ce que TabNest fait vraiment.
@@ -315,7 +315,7 @@ const FAQ = [
 
 export function FaqSection() {
   return (
-    <section id="faq" className="px-6 py-24 md:px-10 md:py-32">
+    <section id="faq" className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
       <div className="mx-auto w-full max-w-3xl">
         <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
           Questions fréquentes.

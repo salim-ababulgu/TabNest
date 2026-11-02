@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Check, Clock, Sparkles } from 'lucide-react'
 import { Hero } from '@/components/landing/Hero'
 import { BentoSection, FaqSection, PageTypeMarquee, PinnedSteps } from '@/components/landing/Sections'
+import { PricingSection } from '@/components/landing/Pricing'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -84,11 +85,13 @@ export function Landing({ onStart }: LandingProps) {
       <PageTypeMarquee />
 
       {/* Comment ça marche */}
-      <div id="comment">
+      <div id="comment" className="scroll-mt-24">
         <PinnedSteps />
       </div>
 
       <BentoSection />
+
+      <PricingSection />
 
       {/* Le principe */}
       <section id="principe" className="grid md:grid-cols-2">
@@ -337,6 +340,11 @@ export function Landing({ onStart }: LandingProps) {
               <li>
                 <a href="#faq" className="hover:text-ink">
                   Questions fréquentes
+                </a>
+              </li>
+              <li>
+                <a href="/extension" className="hover:text-ink">
+                  Installer l’extension
                 </a>
               </li>
             </ul>

@@ -97,12 +97,17 @@ export function Hero({ onStart }: { onStart: () => void }) {
             Commencer gratuitement
           </button>
           <a
-            href="#comment"
+            href="/extension"
             className="inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-ink/60 px-6 text-sm font-medium text-cream/85 transition-colors hover:border-white/40 hover:text-cream"
           >
-            Comment ça marche
+            Installer l'extension
           </a>
         </div>
+        <p className="mt-4 text-xs text-cream/45">
+          <a href="#comment" className="underline-offset-2 hover:text-cream/80 hover:underline">
+            Comment ça marche
+          </a>
+        </p>
       </div>
 
       <div aria-hidden="true" className="relative h-[190px] w-full overflow-hidden sm:h-[220px]">

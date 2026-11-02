@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import gsap from 'gsap'
 import { Button } from '@/components/ui/button'
 import {
@@ -51,6 +52,7 @@ export function AuthForm({
   const [mode, setMode] = useState<Mode>(initialEmail ? 'signup' : defaultMode)
   const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -202,16 +204,31 @@ export function AuthForm({
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                minLength={6}
-                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="6 caractères minimum"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  minLength={6}
+                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="6 caractères minimum"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((value) => !value)}
+                  aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="size-4" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
             </div>
             {mode === 'login' && (
               <button
@@ -222,8 +239,16 @@ export function AuthForm({
                 Mot de passe oublié ?
               </button>
             )}
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            {info && <p className="text-sm text-muted-foreground">{info}</p>}
+            {error && (
+              <p role="alert" aria-live="polite" className="text-sm text-destructive">
+                {error}
+              </p>
+            )}
+            {info && (
+              <p aria-live="polite" className="text-sm text-muted-foreground">
+                {info}
+              </p>
+            )}
             <Button type="submit" className="w-full" disabled={busy}>
               {busy ? 'Patientez…' : mode === 'login' ? 'Se connecter' : 'Créer un compte'}
             </Button>

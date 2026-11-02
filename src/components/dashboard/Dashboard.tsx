@@ -729,6 +729,14 @@ export function Dashboard() {
               />
               {extensionConnected ? 'Extension connectée' : 'Extension non détectée'}
             </span>
+            {!extensionConnected && (
+              <a
+                href="/extension"
+                className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+              >
+                Installer l’extension
+              </a>
+            )}
             <Button variant="outline" size="sm" onClick={() => signOut()} className="md:hidden">
               Se déconnecter
             </Button>
@@ -737,7 +745,10 @@ export function Dashboard() {
 
         <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
           {error && (
-            <p className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p
+              role="alert"
+              className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
               {error}
             </p>
           )}
@@ -1279,6 +1290,12 @@ export function Dashboard() {
                     : 'Connectée, capture désactivée.'
                   : "Non détectée. Ouvre l'extension TabNest pour te connecter."}
               </p>
+              <a
+                href="/extension"
+                className="mt-2 inline-block text-xs underline-offset-2 hover:text-foreground hover:underline"
+              >
+                Voir les instructions d’installation
+              </a>
             </div>
           </div>
         </Modal>
