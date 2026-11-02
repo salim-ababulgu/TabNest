@@ -16,6 +16,7 @@
 - **Extension Chrome MV3** : capture automatique, favicon/OG/theme-color, respecte `reason`, enrichissement **Microlink** en secours (clé dans `extension/config.js`, fichier gitignoré).
 - **Favicons** : chaîne de secours extension → Google s2 → `/favicon.ico` → lettre.
 - **Modales** : shadcn `Dialog` / `AlertDialog` (plus de `window.confirm`).
+- **Alertes & notifications** : cloche avec **badge non-lu**, alertes calculées depuis les données (extension non détectée, pages expirées, expirations < 48 h, pages à décider), état « lu » persistant par compte (`localStorage`), clic → section concernée, **toasts** de confirmation/erreur sur chaque action, et **notifications navigateur optionnelles** (bouton dans Paramètres, `Notification.permission`).
 - **Docs** : `docs/UX_UI_TECHNIQUE.md` (document technique UX/UI & frontend), `docs/CONFORMITE.md` (audit données/accessibilité/RGPD), `docs/AMELIORATIONS_UI_UX.md` (backlog 25 UI + 25 UX avec états), `docs/LEMON_SQUEEZY.md` (configuration paiements).
 - **Extension** : page dédiée `/extension` (4 étapes, permissions, confidentialité) + CTA de téléchargement dans le hero, le footer, le header du dashboard et les paramètres.
 - **Tarifs** : section sur la landing, plans lus dans `src/lib/billing.ts` via `VITE_LS_CHECKOUT_*` ; tant qu'aucun lien n'est configuré, les offres payantes affichent « Bientôt disponible » (honnête : pas d'immatriculation).
