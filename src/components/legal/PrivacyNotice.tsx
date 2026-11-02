@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'tabnest-cookie-notice'
+// Le nom du fichier et le composant évitent volontairement « cookie » / « consent » :
+// certains bloqueurs de contenu bloquent les URL qui contiennent ces mots, ce qui
+// faisait échouer le chargement de l'application entière.
+const STORAGE_KEY = 'tabnest-notice-vue'
 
 /**
  * Information sur les traceurs.
@@ -13,7 +16,7 @@ const STORAGE_KEY = 'tabnest-cookie-notice'
  * Si un traceur non nécessaire est ajouté (mesure d'audience, publicité), il
  * faudra le remplacer par un véritable bandeau de consentement bloquant.
  */
-export function CookieNotice() {
+export function PrivacyNotice() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {

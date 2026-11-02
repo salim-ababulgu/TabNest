@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { AuthProvider, useAuth } from '@/lib/auth'
-import { CookieNotice } from '@/components/legal/CookieNotice'
+import { PrivacyNotice } from '@/components/legal/PrivacyNotice'
 
 const AuthForm = lazy(() =>
   import('@/components/auth/AuthForm').then((module) => ({ default: module.AuthForm })),
@@ -115,7 +115,7 @@ function App() {
   return (
     <AuthProvider>
       <AppContent />
-      <CookieNotice />
+      <PrivacyNotice />
     </AuthProvider>
   )
 }
