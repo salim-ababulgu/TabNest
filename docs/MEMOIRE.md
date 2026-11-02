@@ -16,7 +16,9 @@
 - **Extension Chrome MV3** : capture automatique, favicon/OG/theme-color, respecte `reason`, enrichissement **Microlink** en secours (clé dans `extension/config.js`, fichier gitignoré).
 - **Favicons** : chaîne de secours extension → Google s2 → `/favicon.ico` → lettre.
 - **Modales** : shadcn `Dialog` / `AlertDialog` (plus de `window.confirm`).
-- **Docs** : `docs/UX_UI_TECHNIQUE.md` (document technique UX/UI & frontend), `docs/CONFORMITE.md` (audit données/accessibilité/RGPD).
+- **Docs** : `docs/UX_UI_TECHNIQUE.md` (document technique UX/UI & frontend), `docs/CONFORMITE.md` (audit données/accessibilité/RGPD), `docs/AMELIORATIONS_UI_UX.md` (backlog 25 UI + 25 UX avec états), `docs/LEMON_SQUEEZY.md` (configuration paiements).
+- **Extension** : page dédiée `/extension` (4 étapes, permissions, confidentialité) + CTA de téléchargement dans le hero, le footer, le header du dashboard et les paramètres.
+- **Tarifs** : section sur la landing, plans lus dans `src/lib/billing.ts` via `VITE_LS_CHECKOUT_*` ; tant qu'aucun lien n'est configuré, les offres payantes affichent « Bientôt disponible » (honnête : pas d'immatriculation).
 - **Conformité (brouillons)** : pages `/confidentialite`, `/cgu`, `/cookies`, `/remboursement` + bandeau d'information cookies (aucun traceur non nécessaire → pas de consentement requis) + `public/llms.txt` + meta SEO. Contrastes WCAG mesurés et corrigés (texte atténué, focus, bordure de champ).
 - **À compléter avant mise en ligne** : identité de l'éditeur (raison sociale, adresse, SIRET, e-mails de contact), médiateur de la consommation, case de renonciation à la rétractation au paiement, purge `pg_cron` des pages expirées, relecture par un juriste.
 - **Éditeur renseigné** : ABA (personne physique), contact `salimababulgu@gmail.com`, **aucun SIRET** (activité non immatriculée). Conséquence : le service reste **gratuit** ; **toute vente exige une immatriculation** (micro-entreprise) et un médiateur de la consommation.
