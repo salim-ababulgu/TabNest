@@ -41,7 +41,7 @@ export function PrivacyNotice() {
   return (
     <div
       role="region"
-      aria-label="Information sur les cookies et traceurs"
+      aria-label="Information sur les traceurs"
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card p-4"
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center">
