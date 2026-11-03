@@ -48,6 +48,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useAuth } from '@/lib/auth'
 import { KIND_LABELS, PAGE_KINDS, describeExpiry } from '@/lib/lifetime'
 import type { PageKind } from '@/lib/lifetime'
@@ -777,28 +778,91 @@ export function Dashboard() {
             >
               <RefreshCw className={cn('size-3.5', refreshing && 'animate-spin')} />
             </Button>
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={openNotifications}
-              title="Alertes"
-              aria-label={
-                unreadAlerts.length > 0
-                  ? `Alertes (${unreadAlerts.length} non lues)`
-                  : 'Alertes'
-              }
-              className="relative"
+            <Popover
+              open={showNotifications}
+              onOpenChange={(open) => {
+                if (open) openNotifications()
+                else setShowNotifications(false)
+              }}
             >
-              <Bell className="size-3.5" />
-              {unreadAlerts.length > 0 && (
-                <span
-                  aria-hidden="true"
-                  className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-lime text-[9px] font-semibold text-lime-foreground"
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  title="Alertes"
+                  aria-label={
+                    unreadAlerts.length > 0
+                      ? `Alertes (${unreadAlerts.length} non lues)`
+                      : 'Alertes'
+                  }
+                  className="relative"
                 >
-                  {unreadAlerts.length > 9 ? '9+' : unreadAlerts.length}
-                </span>
-              )}
-            </Button>
+                  <Bell className="size-3.5" />
+                  {unreadAlerts.length > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-lime text-[9px] font-semibold text-lime-foreground"
+                    >
+                      {unreadAlerts.length > 9 ? '9+' : unreadAlerts.length}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[340px] p-0">
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                  <p className="text-sm font-medium">Alertes</p>
+                  <span className="text-xs text-muted-foreground">
+                    {unreadAlerts.length > 0 ? `${unreadAlerts.length} non lue(s)` : 'À jour'}
+                  </span>
+                </div>
+
+                <div className="max-h-[55vh] overflow-y-auto p-2">
+                  {alerts.length === 0 ? (
+                    <p className="px-2 py-6 text-center text-sm text-muted-foreground">
+                      Aucune alerte. Tout est rangé.
+                    </p>
+                  ) : (
+                    <ul className="space-y-1">
+                      {alerts.map((alert) => (
+                        <li key={alert.id}>
+                          <button
+                            type="button"
+                            onClick={() => openAlert(alert)}
+                            className="flex w-full items-start gap-2.5 rounded-lg p-2.5 text-left transition-colors hover:bg-accent"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className={cn(
+                                'mt-1 size-2 shrink-0 rounded-full',
+                                alert.level === 'danger'
+                                  ? 'bg-destructive'
+                                  : alert.level === 'warning'
+                                    ? 'bg-lime'
+                                    : 'bg-muted-foreground/50',
+                              )}
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-sm font-medium">{alert.title}</span>
+                              <span className="mt-0.5 block text-xs text-muted-foreground">
+                                {alert.description}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="border-t border-border px-4 py-2.5">
+                  <p className="text-[11px] text-muted-foreground">
+                    {browserNotifications === 'granted'
+                      ? 'Aussi envoyées sur votre système.'
+                      : 'Cliquez une alerte pour ouvrir la section.'}
+                  </p>
+                </div>
+              </PopoverContent>
+            </Popover>
             <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
               <span
                 className={
@@ -1204,51 +1268,6 @@ export function Dashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {showNotifications && (
-        <Modal title="Alertes" onClose={() => setShowNotifications(false)}>
-          {alerts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Aucune alerte. Tout est rangé : rien n’expire et rien n’attend de décision.
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {alerts.map((alert) => (
-                <li key={alert.id}>
-                  <button
-                    type="button"
-                    onClick={() => openAlert(alert)}
-                    className="flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-accent"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        'mt-1 size-2 shrink-0 rounded-full',
-                        alert.level === 'danger'
-                          ? 'bg-destructive'
-                          : alert.level === 'warning'
-                            ? 'bg-lime'
-                            : 'bg-muted-foreground/50',
-                      )}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-medium">{alert.title}</span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">
-                        {alert.description}
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="mt-4 text-[11px] text-muted-foreground">
-            {browserNotifications === 'granted'
-              ? 'Les nouvelles alertes s’affichent aussi dans votre système.'
-              : 'Cliquez une alerte pour ouvrir directement la section concernée.'}
-          </p>
-        </Modal>
-      )}
 
       {showAddPage && (
         <Modal title="Ajouter une page" onClose={() => setShowAddPage(false)}>
