@@ -26,7 +26,7 @@ export function Toasts({
     <div
       role="status"
       aria-live="polite"
-      className="pointer-events-none fixed right-4 bottom-4 z-50 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2"
+      className="pointer-events-none fixed right-4 bottom-20 z-50 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2 md:bottom-4"
     >
       {toasts.map((toast) => {
         const style = STYLES[toast.level]

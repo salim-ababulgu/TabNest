@@ -873,7 +873,7 @@ export function Dashboard() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b bg-background/85 px-6 py-4 backdrop-blur">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b bg-background/85 px-4 py-3 backdrop-blur md:gap-4 md:px-6 md:py-4">
           <div className="flex items-center gap-2 md:hidden">
             <Button
               variant="outline"
@@ -889,7 +889,7 @@ export function Dashboard() {
             <span className="font-heading text-lg font-semibold">TabNest</span>
           </div>
           <p className="hidden text-sm text-muted-foreground md:block">{formatToday()}</p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
             <Button
               variant="outline"
               size="icon-sm"
@@ -929,7 +929,7 @@ export function Dashboard() {
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-[340px] p-0">
+              <PopoverContent align="end" className="w-[calc(100vw-2rem)] max-w-[340px] p-0">
                 <div className="flex items-center justify-between border-b border-border px-4 py-3">
                   <p className="text-sm font-medium">Alertes</p>
                   <span className="text-xs text-muted-foreground">
@@ -984,7 +984,7 @@ export function Dashboard() {
                 </div>
               </PopoverContent>
             </Popover>
-            <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
+            <span className="hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground md:inline-flex">
               <span
                 className={
                   'size-1.5 rounded-full ' +
@@ -996,18 +996,15 @@ export function Dashboard() {
             {!extensionConnected && (
               <a
                 href="/extension"
-                className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                className="hidden text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline md:inline"
               >
                 Installer l’extension
               </a>
             )}
-            <Button variant="outline" size="sm" onClick={() => signOut()} className="md:hidden">
-              Se déconnecter
-            </Button>
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8 pb-28 md:pb-8">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-28 md:px-6 md:py-8 md:pb-8">
           {error && (
             <p
               role="alert"
@@ -1017,7 +1014,7 @@ export function Dashboard() {
             </p>
           )}
 
-          <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-8 py-10">
+          <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-5 py-8 md:px-8 md:py-10">
             <div className="absolute -top-24 -right-24 size-64 rounded-full bg-lime/25 blur-3xl" />
             <div className="relative">
               <h1 className="mt-3 max-w-xl font-heading text-4xl leading-[1.05] font-medium tracking-tight md:text-5xl">
@@ -1242,7 +1239,7 @@ export function Dashboard() {
                               {REASON_LABELS[site.reason as Reason] ?? site.reason}
                             </span>
                           )}
-                          <div className="mt-auto flex items-center justify-between pt-3">
+                          <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3">
                             <div className="flex flex-wrap gap-1">
                               {site.pages.slice(0, 3).map((page) => (
                                 <Badge key={page.id} variant="outline">
@@ -1302,8 +1299,8 @@ export function Dashboard() {
               {uniquePages(selectedSite.pages).map((page) => {
                 const expiry = describeExpiry(page.expires_at)
                 return (
-                  <div key={page.id} className="flex items-center gap-2 rounded-lg border p-2">
-                    <div className="min-w-0 flex-1">
+                  <div key={page.id} className="flex flex-wrap items-center gap-2 rounded-lg border p-2">
+                    <div className="min-w-0 flex-1 basis-full sm:basis-0">
                       <a
                         href={page.url}
                         target="_blank"
@@ -1317,6 +1314,7 @@ export function Dashboard() {
                         {page.visit_count} visite(s), {expiry.text}
                       </p>
                     </div>
+                    <div className="ml-auto flex items-center gap-1.5">
                     <Select
                       value={page.reason ?? 'none'}
                       onValueChange={(value) =>
@@ -1354,6 +1352,7 @@ export function Dashboard() {
                       >
                         <Trash2 className="size-3.5" />
                       </Button>
+                    </div>
                     </div>
                   </div>
                 )
