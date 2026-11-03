@@ -108,29 +108,28 @@ export function PinnedSteps() {
         <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
           <div>
             <h2 className="max-w-md font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              Trois étapes, et vous ne perdez plus rien.
+              Trois étapes suffisent.
             </h2>
             <div className="relative mt-10 pl-8">
               <span
                 aria-hidden="true"
-                className="absolute top-1 bottom-1 left-[7px] w-px bg-border"
+                className="absolute top-1 bottom-1 left-[5px] w-1 rounded-full bg-border"
               />
               <span
                 aria-hidden="true"
-                className="pinned-progress absolute top-1 bottom-1 left-[7px] w-px origin-top scale-y-0 bg-lime"
+                className="pinned-progress absolute top-1 bottom-1 left-[5px] w-1 origin-top scale-y-0 rounded-full bg-lime"
               />
               <ol className="space-y-9">
                 {STEPS.map((step, index) => (
                   <li
-                    key={step.n}
+                    key={step.title}
                     className={`pinned-step-${index} relative opacity-35 transition-none`}
                   >
                     <span
                       aria-hidden="true"
-                      className="absolute top-1.5 -left-8 size-3.5 rounded-full border-2 border-lime bg-background"
+                      className="absolute top-1.5 -left-8 size-3.5 rounded-full bg-lime"
                     />
-                    <p className="font-heading text-sm text-muted-foreground">{step.n}</p>
-                    <h3 className="mt-1 font-heading text-xl font-medium">{step.title}</h3>
+                    <h3 className="font-heading text-xl font-medium">{step.title}</h3>
                     <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-foreground/70">
                       {step.text}
                     </p>

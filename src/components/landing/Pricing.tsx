@@ -13,21 +13,26 @@ export function PricingSection() {
           jamais l’essentiel.
         </p>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <div className="mt-12 grid gap-4 md:grid-cols-[1fr_1.35fr_1fr] md:items-start">
           {PLANS.map((plan) => {
             return (
               <div
                 key={plan.id}
-                className={`flex flex-col rounded-2xl border p-6 ${
-                  plan.highlight
-                    ? 'border-lime bg-card'
-                    : 'border-border bg-card/60'
+                className={`flex flex-col rounded-2xl border ${
+                  plan.highlight ? 'border-lime bg-card p-7' : 'border-border bg-background p-6'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-heading text-lg font-medium">{plan.name}</h3>
+                  <h3
+                    className={`font-heading font-medium ${
+                      plan.highlight ? 'text-xl' : 'text-lg'
+                    }`}
+                  >
+                    {plan.name}
+                  </h3>
                   {plan.highlight && (
-                    <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-lime-foreground">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-foreground/70">
+                      <span className="size-1.5 rounded-full bg-lime" aria-hidden="true" />
                       Recommandé
                     </span>
                   )}
@@ -35,7 +40,13 @@ export function PricingSection() {
                 <p className="mt-1 text-sm text-foreground/60">{plan.description}</p>
 
                 <p className="mt-5">
-                  <span className="font-heading text-3xl font-medium">{plan.price}</span>{' '}
+                  <span
+                    className={`font-heading font-medium ${
+                      plan.highlight ? 'text-4xl' : 'text-3xl'
+                    }`}
+                  >
+                    {plan.price}
+                  </span>{' '}
                   <span className="text-xs text-muted-foreground">{plan.period}</span>
                 </p>
 

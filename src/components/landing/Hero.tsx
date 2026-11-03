@@ -80,13 +80,11 @@ export function Hero({ onStart }: { onStart: () => void }) {
         <h1 className="max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
           <span className="block">TabNest garde les pages</span>
           <span className="block">que vous visitez.</span>
-          <span className="block text-[#96a08e] italic">
-            Vous fermez vos onglets. Rien n'est perdu.
-          </span>
         </h1>
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-cream/60">
-          Une extension qui enregistre automatiquement vos pages, les range par projets et leur
-          donne une durée de vie. Fini les 50 onglets ouverts par peur de perdre le fil.
+          Vous fermez vos onglets, rien n'est perdu. Une extension qui enregistre automatiquement
+          vos pages, les range par projets et leur donne une durée de vie. Fini les 50 onglets
+          ouverts par peur de perdre le fil.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <button

@@ -97,9 +97,8 @@ export function Landing({ onStart }: LandingProps) {
       <section id="principe" className="grid md:grid-cols-2">
         <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
-            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              Vous ne gardez pas des onglets.
-              <span className="mt-2 block text-[#5f6b4f] italic">Vous gardez des intentions.</span>
+            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
+              Vous ne gardez pas des onglets. Vous gardez des intentions.
             </h2>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink/60">
               Lire, comparer, postuler, acheter, apprendre. Fermer une page donne l'impression
@@ -129,12 +128,9 @@ export function Landing({ onStart }: LandingProps) {
 
       {/* Dark centered */}
       <section className="flex items-center bg-ink px-6 py-24 text-center text-cream md:py-32">
-        <Reveal className="mx-auto max-w-4xl">
-          <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-6xl">
-            Réunir les pages ne suffit pas.
-            <span className="mt-2 block text-[#8f9484] italic">
-              Sinon TabNest ne serait qu'un favori de plus.
-            </span>
+        <Reveal className="mx-auto max-w-5xl">
+          <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
+            Réunir les pages ne suffit pas. Sinon TabNest ne serait qu'un favori de plus.
           </h2>
         </Reveal>
       </section>
@@ -185,11 +181,8 @@ export function Landing({ onStart }: LandingProps) {
       <section id="projets" className="grid md:grid-cols-2">
         <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
-            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              Les pages ne vivent pas seules.
-              <span className="mt-2 block text-[#5f6b4f] italic">
-                Elles appartiennent à vos projets.
-              </span>
+            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
+              Les pages ne vivent pas seules. Elles appartiennent à vos projets.
             </h2>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink/60">
               Une offre, un comparatif et une documentation n'ont de sens que reliés à ce que vous
@@ -222,9 +215,8 @@ export function Landing({ onStart }: LandingProps) {
       <section className="grid md:grid-cols-2">
         <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal className="w-full">
-            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              Votre navigateur peut enfin redevenir
-              <span className="mt-2 block text-[#8f9484] italic">un espace de travail.</span>
+            <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
+              Votre navigateur peut enfin redevenir un espace de travail.
             </h2>
             <ul className="mt-8 space-y-3 text-sm text-cream/65">
               <li className="flex items-center gap-2">
@@ -265,9 +257,8 @@ export function Landing({ onStart }: LandingProps) {
             <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-ink text-lime">
               <Sparkles className="size-5" />
             </span>
-            <h2 className="mx-auto mt-4 max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-5xl md:text-7xl">
-              Fermez tous les autres.
-              <span className="mt-2 block text-[#5f6b4f] italic">Gardez TabNest.</span>
+            <h2 className="mx-auto mt-4 max-w-4xl font-heading text-3xl leading-[1.02] tracking-tight sm:text-4xl md:text-5xl">
+              Fermez tous les autres. Gardez TabNest.
             </h2>
           </Reveal>
           <Reveal delay={150}>
