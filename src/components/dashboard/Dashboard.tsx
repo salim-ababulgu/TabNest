@@ -12,6 +12,7 @@ import {
   LayoutGrid,
   ListTodo,
   LogOut,
+  Menu,
   PanelLeftClose,
   PanelLeftOpen,
   Pin,
@@ -51,6 +52,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { MobileMenu, MobileTabBar } from '@/components/dashboard/MobileNav'
 import { useAuth } from '@/lib/auth'
 import { KIND_LABELS, PAGE_KINDS, describeExpiry } from '@/lib/lifetime'
 import type { PageKind } from '@/lib/lifetime'
@@ -349,6 +351,7 @@ export function Dashboard() {
   const [toasts, setToasts] = useState<ToastItem[]>([])
   const [readAlerts, setReadAlerts] = useState<string[]>([])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [browserNotifications, setBrowserNotifications] = useState<
     NotificationPermission | 'unsupported'
   >(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission)
@@ -872,6 +875,14 @@ export function Dashboard() {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b bg-background/85 px-6 py-4 backdrop-blur">
           <div className="flex items-center gap-2 md:hidden">
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Ouvrir le menu"
+            >
+              <Menu className="size-4" aria-hidden="true" />
+            </Button>
             <span className="flex size-7 items-center justify-center rounded-lg bg-lime text-lime-foreground">
               <Sparkles className="size-4" />
             </span>
@@ -996,7 +1007,7 @@ export function Dashboard() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8 pb-28 md:pb-8">
           {error && (
             <p
               role="alert"
@@ -1538,6 +1549,43 @@ export function Dashboard() {
         onDismiss={(id) =>
           setToasts((current) => current.filter((toast) => toast.id !== id))
         }
+      />
+
+      <MobileTabBar
+        view={view}
+        onSelect={(next) => {
+          setView(next)
+          setSelectedGroup(null)
+        }}
+        onOpenMenu={() => setMobileMenuOpen(true)}
+      />
+
+      <MobileMenu
+        open={mobileMenuOpen}
+        onOpenChange={setMobileMenuOpen}
+        view={view}
+        views={VIEWS}
+        groups={groups}
+        selectedGroup={selectedGroup}
+        onSelectView={(next) => {
+          setView(next)
+          setSelectedGroup(null)
+          setMobileMenuOpen(false)
+        }}
+        onSelectGroup={(id) => {
+          setSelectedGroup(id)
+          setMobileMenuOpen(false)
+        }}
+        onAddProject={() => {
+          setMobileMenuOpen(false)
+          setShowAddProject(true)
+        }}
+        onOpenSettings={() => {
+          setMobileMenuOpen(false)
+          setShowSettings(true)
+        }}
+        email={user?.email}
+        onSignOut={() => void signOut()}
       />
     </div>
   )
