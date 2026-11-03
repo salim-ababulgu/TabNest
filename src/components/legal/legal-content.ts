@@ -1,4 +1,4 @@
-// Textes légaux de TabNest.
+﻿// Textes légaux de TabNest.
 // Brouillons rédigés selon le droit français (RGPD, loi Informatique et Libertés,
 // Code de la consommation). Ils doivent être relus par un juriste avant publication.
 // Éditeur : ABA (personne physique, activité non immatriculée à ce jour).
@@ -92,12 +92,12 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
           "Vos données ne sont jamais vendues. Elles sont traitées par les prestataires suivants, uniquement pour les besoins décrits :",
         ],
         list: [
-          'Supabase — hébergement de la base de données et de l’authentification. Supabase peut traiter des données en dehors de l’Union européenne ; ces transferts sont encadrés par les clauses contractuelles types (voir ci-après).',
-          'Google — si vous choisissez « Continuer avec Google », Google nous transmet votre adresse e-mail et votre nom, dans le cadre de son service d’authentification.',
-          'Microlink — plateforme d’extraction de métadonnées. Elle reçoit l’adresse des pages enregistrées lorsque l’extension n’a pas pu récupérer le titre ou l’image directement, afin de compléter votre fiche.',
-          'Lemon Squeezy — à venir : paiement et facturation. Lemon Squeezy agit comme vendeur enregistré (merchant of record) et applique ses propres conditions.',
-          'Amazon SES — à venir : envoi des e-mails de service (confirmation, réinitialisation du mot de passe).',
-          'L’hébergeur du site — à venir : hébergement de l’application et journaux techniques.',
+          'Supabase : hébergement de la base de données et de l’authentification. Supabase peut traiter des données en dehors de l’Union européenne ; ces transferts sont encadrés par les clauses contractuelles types (voir ci-après).',
+          'Google : si vous choisissez « Continuer avec Google », Google nous transmet votre adresse e-mail et votre nom, dans le cadre de son service d’authentification.',
+          'Microlink : plateforme d’extraction de métadonnées. Elle reçoit l’adresse des pages enregistrées lorsque l’extension n’a pas pu récupérer le titre ou l’image directement, afin de compléter votre fiche.',
+          'Lemon Squeezy : à venir : paiement et facturation. Lemon Squeezy agit comme vendeur enregistré (merchant of record) et applique ses propres conditions.',
+          'Amazon SES : à venir : envoi des e-mails de service (confirmation, réinitialisation du mot de passe).',
+          'L’hébergeur du site : à venir : hébergement de l’application et journaux techniques.',
         ],
         paragraphsAfter: [
           "Certains prestataires peuvent traiter des données en dehors de l’Union européenne (notamment aux États-Unis). Ces transferts sont encadrés par les clauses contractuelles types de la Commission européenne ou par un mécanisme équivalent prévu par le RGPD.",

@@ -121,7 +121,7 @@ export function LegalPage({ slug }: { slug: LegalSlug }) {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-3xl px-6 py-6 text-xs text-muted-foreground">
-          TabNest — édité par ABA (personne physique, activité non immatriculée à ce jour). Contact :
+          TabNest, édité par ABA (personne physique, activité non immatriculée à ce jour). Contact :
           salimababulgu@gmail.com. Ces documents doivent être relus par un professionnel du droit.
         </div>
       </footer>

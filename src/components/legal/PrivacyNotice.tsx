@@ -31,7 +31,7 @@ export function PrivacyNotice() {
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center">
         <p className="text-xs leading-relaxed text-foreground/85">
-          Pour comprendre où le produit bloque, nous mesurons l’usage du site avec PostHog — sans
+          Pour comprendre où le produit bloque, nous mesurons l’usage du site avec PostHog, sans
           publicité, sans enregistrement de session, sans cookie de tiers. Votre choix est mémorisé
           sur cet appareil et peut être retiré en effaçant les données du site.
         </p>

@@ -22,6 +22,11 @@ dist-ssr
 # Extension config (Supabase URL + public anon key, kept local)
 extension/config.js
 
+# Règles de design pour agents (Taste Skill) : installées localement, non versionnées
+.claude/
+.agents/
+skills-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

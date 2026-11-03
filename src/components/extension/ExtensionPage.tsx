@@ -74,7 +74,7 @@ export function ExtensionPage() {
         <div className="mt-10 rounded-2xl border border-border bg-card p-5">
           <h2 className="flex items-center gap-2 font-heading text-base font-medium">
             <ShieldCheck className="size-4 text-lime" aria-hidden="true" />
-            Ce que l’extension voit — et ne voit jamais
+            Ce que l’extension voit, et ce qu’elle ne voit jamais
           </h2>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/70">
             <li className="flex gap-2">

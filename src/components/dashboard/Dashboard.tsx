@@ -224,7 +224,7 @@ function formatToday(): string {
 }
 
 function timeAgo(iso: string | null): string {
-  if (!iso) return '—'
+  if (!iso) return 'jamais'
   const diff = Date.now() - new Date(iso).getTime()
   const minutes = Math.round(diff / 60000)
   if (minutes < 1) return "à l'instant"
