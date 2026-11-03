@@ -12,6 +12,8 @@ import {
   LayoutGrid,
   ListTodo,
   LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
   Pin,
   Plus,
   RefreshCw,
@@ -346,6 +348,7 @@ export function Dashboard() {
 
   const [toasts, setToasts] = useState<ToastItem[]>([])
   const [readAlerts, setReadAlerts] = useState<string[]>([])
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [browserNotifications, setBrowserNotifications] = useState<
     NotificationPermission | 'unsupported'
   >(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission)
@@ -425,6 +428,26 @@ export function Dashboard() {
   useEffect(() => {
     if (user?.id) setReadAlerts(loadReadAlerts(user.id))
   }, [user?.id])
+
+  useEffect(() => {
+    try {
+      setSidebarCollapsed(window.localStorage.getItem('tabnest-sidebar-collapsed') === '1')
+    } catch {
+      // stockage indisponible : la sidebar reste dépliée
+    }
+  }, [])
+
+  function toggleSidebar() {
+    setSidebarCollapsed((current) => {
+      const next = !current
+      try {
+        window.localStorage.setItem('tabnest-sidebar-collapsed', next ? '1' : '0')
+      } catch {
+        // stockage indisponible
+      }
+      return next
+    })
+  }
 
   const alerts = buildAlerts(pages, extensionConnected)
   const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
@@ -649,113 +672,200 @@ export function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground md:flex">
-        <div className="flex items-center gap-2 px-5 py-5">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-lime text-lime-foreground">
-            <Sparkles className="size-4" />
+      <aside
+        className={cn(
+          'sticky top-0 hidden h-screen shrink-0 flex-col overflow-hidden bg-sidebar text-sidebar-foreground transition-[width] duration-200 md:flex',
+          sidebarCollapsed ? 'w-16' : 'w-64',
+        )}
+      >
+        <div
+          className={cn(
+            'flex shrink-0 items-center gap-2',
+            sidebarCollapsed ? 'flex-col px-2 py-3' : 'px-5 py-5',
+          )}
+        >
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-lime text-lime-foreground">
+            <Sparkles className="size-4" aria-hidden="true" />
           </span>
-          <span className="font-heading text-xl font-semibold">TabNest</span>
-        </div>
-
-        <nav className="flex flex-col gap-0.5 px-3">
-          {VIEWS.map((item) => {
-            const Icon = item.icon
-            const active = !selectedGroup && view === item.id
-            const count = countFor(item.id)
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  setView(item.id)
-                  setSelectedGroup(null)
-                }}
-                className={cn(
-                  'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
-                  active
-                    ? 'bg-sidebar-accent text-sidebar-foreground'
-                    : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
-                )}
-              >
-                <Icon className="size-4" />
-                <span className="flex-1 text-left">{item.label}</span>
-                {count > 0 && <span className="text-xs tabular-nums opacity-70">{count}</span>}
-              </button>
-            )
-          })}
-        </nav>
-
-        <div className="mt-6 flex items-center justify-between px-5">
-          <span className="text-xs font-medium text-sidebar-foreground/60">
-            Projets
-          </span>
+          {!sidebarCollapsed && (
+            <span className="font-heading text-xl font-semibold">TabNest</span>
+          )}
           <button
             type="button"
-            onClick={() => setShowAddProject(true)}
-            className="text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            aria-label="Nouveau projet"
+            onClick={toggleSidebar}
+            title={sidebarCollapsed ? 'Déplier le menu' : 'Replier le menu'}
+            aria-label={sidebarCollapsed ? 'Déplier le menu' : 'Replier le menu'}
+            aria-expanded={!sidebarCollapsed}
+            className={cn(
+              'rounded-md p-1 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground',
+              !sidebarCollapsed && 'ml-auto',
+            )}
           >
-            <Plus className="size-3.5" />
+            {sidebarCollapsed ? (
+              <PanelLeftOpen className="size-4" aria-hidden="true" />
+            ) : (
+              <PanelLeftClose className="size-4" aria-hidden="true" />
+            )}
           </button>
         </div>
 
-        <div className="mt-2 flex flex-col gap-0.5 px-3">
-          {groups.length === 0 ? (
-            <p className="px-3 py-2 text-xs text-sidebar-foreground/45">Aucun projet.</p>
-          ) : (
-            groups.map((group) => {
-              const active = selectedGroup === group.id
-              const count = pages.filter((page) => page.group_id === group.id).length
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+          <nav className="flex flex-col gap-0.5">
+            {VIEWS.map((item) => {
+              const Icon = item.icon
+              const active = !selectedGroup && view === item.id
+              const count = countFor(item.id)
               return (
                 <button
-                  key={group.id}
+                  key={item.id}
                   type="button"
-                  onClick={() => setSelectedGroup(group.id)}
+                  onClick={() => {
+                    setView(item.id)
+                    setSelectedGroup(null)
+                  }}
+                  title={sidebarCollapsed ? item.label : undefined}
+                  aria-label={sidebarCollapsed ? item.label : undefined}
                   className={cn(
-                    'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
+                    'flex items-center gap-2.5 rounded-lg text-sm transition-colors',
+                    sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
                     active
                       ? 'bg-sidebar-accent text-sidebar-foreground'
                       : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
                   )}
                 >
-                  <span className="size-2 rounded-full bg-lime" />
-                  <span className="flex-1 truncate text-left">{group.name}</span>
-                  {count > 0 && <span className="text-xs tabular-nums opacity-70">{count}</span>}
+                  <Icon className="size-4 shrink-0" aria-hidden="true" />
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="flex-1 text-left">{item.label}</span>
+                      {count > 0 && (
+                        <span className="text-xs tabular-nums opacity-70">{count}</span>
+                      )}
+                    </>
+                  )}
                 </button>
               )
-            })
-          )}
+            })}
+          </nav>
+
+          <div
+            className={cn(
+              'mt-5 mb-1 flex items-center justify-between',
+              sidebarCollapsed ? 'justify-center px-1' : 'px-3',
+            )}
+          >
+            {!sidebarCollapsed && (
+              <span className="text-xs font-medium text-sidebar-foreground/60">Projets</span>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowAddProject(true)}
+              className="rounded-md p-1 text-sidebar-foreground/50 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              aria-label="Nouveau projet"
+              title="Nouveau projet"
+            >
+              <Plus className="size-3.5" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-0.5">
+            {groups.length === 0
+              ? !sidebarCollapsed && (
+                  <p className="px-3 py-2 text-xs text-sidebar-foreground/45">Aucun projet.</p>
+                )
+              : groups.map((group) => {
+                  const active = selectedGroup === group.id
+                  const count = pages.filter((page) => page.group_id === group.id).length
+                  return (
+                    <button
+                      key={group.id}
+                      type="button"
+                      onClick={() => setSelectedGroup(group.id)}
+                      title={group.name}
+                      aria-label={group.name}
+                      className={cn(
+                        'flex items-center gap-2.5 rounded-lg text-sm transition-colors',
+                        sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
+                        active
+                          ? 'bg-sidebar-accent text-sidebar-foreground'
+                          : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+                      )}
+                    >
+                      {sidebarCollapsed ? (
+                        <span
+                          aria-hidden="true"
+                          className="grid size-6 place-items-center rounded-full bg-sidebar-accent text-[10px] font-semibold uppercase"
+                        >
+                          {group.name.charAt(0)}
+                        </span>
+                      ) : (
+                        <>
+                          <span className="size-2 shrink-0 rounded-full bg-lime" />
+                          <span className="flex-1 truncate text-left">{group.name}</span>
+                          {count > 0 && (
+                            <span className="text-xs tabular-nums opacity-70">{count}</span>
+                          )}
+                        </>
+                      )}
+                    </button>
+                  )
+                })}
+          </div>
         </div>
 
-        <div className="mt-auto px-3 pb-2">
+        <div className="shrink-0 border-t border-sidebar-border px-2 py-2">
           <button
             type="button"
             onClick={() => {
               setShowSettings(true)
               setSelectedGroup(null)
             }}
+            title="Paramètres"
+            aria-label="Paramètres"
             className={cn(
-              'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
+              'flex w-full items-center gap-2.5 rounded-lg text-sm transition-colors',
+              sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
               showSettings
                 ? 'bg-sidebar-accent text-sidebar-foreground'
                 : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
             )}
           >
-            <Settings className="size-4" />
-            Paramètres
+            <Settings className="size-4 shrink-0" aria-hidden="true" />
+            {!sidebarCollapsed && <span>Paramètres</span>}
           </button>
         </div>
 
-        <div className="border-t border-sidebar-border px-5 py-4">
-          <p className="truncate text-xs text-sidebar-foreground/60">{user?.email}</p>
-          <button
-            type="button"
-            onClick={() => signOut()}
-            className="mt-2 inline-flex items-center gap-1.5 text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground"
-          >
-            <LogOut className="size-3.5" />
-            Se déconnecter
-          </button>
+        <div className="shrink-0 border-t border-sidebar-border px-2 py-3">
+          {sidebarCollapsed ? (
+            <div className="flex flex-col items-center gap-2">
+              <span
+                title={user?.email ?? ''}
+                className="grid size-7 place-items-center rounded-full bg-sidebar-accent text-[10px] font-semibold uppercase"
+              >
+                {(user?.email ?? '?').charAt(0)}
+              </span>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                title="Se déconnecter"
+                aria-label="Se déconnecter"
+                className="rounded-md p-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              >
+                <LogOut className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="truncate px-2 text-xs text-sidebar-foreground/60">{user?.email}</p>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="mt-2 inline-flex items-center gap-1.5 px-2 text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground"
+              >
+                <LogOut className="size-3.5" aria-hidden="true" />
+                Se déconnecter
+              </button>
+            </>
+          )}
         </div>
       </aside>
 
