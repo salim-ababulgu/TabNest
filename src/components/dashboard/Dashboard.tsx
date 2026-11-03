@@ -1276,7 +1276,7 @@ export function Dashboard() {
       {selectedSite && (
         <Modal title={selectedSite.domain} onClose={() => setSelectedSite(null)}>
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <SiteAvatar site={selectedSite} className="size-10 rounded-lg border" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{selectedSite.visits} visite(s) au total</p>
