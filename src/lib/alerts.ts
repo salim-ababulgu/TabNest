@@ -17,8 +17,17 @@ function expiryTime(page: Page): number | null {
   return page.expires_at ? new Date(page.expires_at).getTime() : null
 }
 
+/**
+ * État de l'extension vu depuis le tableau de bord :
+ * - absent : extension non détectée sur ce navigateur ;
+ * - no-account : extension présente, mais pas connectée à un compte ;
+ * - other-account : connectée, mais à un autre compte que celui-ci ;
+ * - linked : connectée à ce compte (les pages sont bien enregistrées ici).
+ */
+export type ExtensionStatus = 'absent' | 'no-account' | 'other-account' | 'linked'
+
 /** Calcule les alertes affichées dans la cloche, à partir des données réelles. */
-export function buildAlerts(pages: Page[], extensionConnected: boolean): AppAlert[] {
+export function buildAlerts(pages: Page[], extensionStatus: ExtensionStatus): AppAlert[] {
   const now = Date.now()
   const alerts: AppAlert[] = []
 
@@ -34,12 +43,30 @@ export function buildAlerts(pages: Page[], extensionConnected: boolean): AppAler
 
   const undecided = pages.filter((page) => !page.reason || page.reason === 'decide')
 
-  if (!extensionConnected) {
+  if (extensionStatus === 'absent') {
     alerts.push({
       id: 'extension',
       level: 'info',
       title: 'Extension non détectée',
       description: 'Sans elle, vos pages ne sont pas enregistrées automatiquement.',
+      view: 'all',
+    })
+  } else if (extensionStatus === 'no-account') {
+    alerts.push({
+      id: 'extension-no-account',
+      level: 'info',
+      title: 'Extension non connectée',
+      description:
+        'Elle est installée, mais pas reliée à votre compte : vos pages ne sont pas enregistrées. Connectez-la depuis son icône.',
+      view: 'all',
+    })
+  } else if (extensionStatus === 'other-account') {
+    alerts.push({
+      id: 'extension-other-account',
+      level: 'warning',
+      title: 'Extension reliée à un autre compte',
+      description:
+        'Vos pages partent dans un autre compte. Reconnectez l’extension avec ce compte.',
       view: 'all',
     })
   }

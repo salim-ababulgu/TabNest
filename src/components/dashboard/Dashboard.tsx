@@ -69,7 +69,12 @@ import {
   visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
-import { buildAlerts, loadReadAlerts, saveReadAlerts } from '@/lib/alerts'
+import {
+  buildAlerts,
+  loadReadAlerts,
+  saveReadAlerts,
+  type ExtensionStatus,
+} from '@/lib/alerts'
 import type { AppAlert } from '@/lib/alerts'
 import { trackEvent } from '@/lib/analytics'
 import { Toasts } from '@/components/dashboard/Toasts'
@@ -316,7 +321,10 @@ export function Dashboard() {
 
   const [view, setView] = useState<View>('all')
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
-  const [extensionConnected, setExtensionConnected] = useState(false)
+  // Deux informations distinctes : l'extension est-elle présente (détection),
+  // et à quel compte est-elle reliée (connexion).
+  const [extensionDetected, setExtensionDetected] = useState(false)
+  const [extensionAccountId, setExtensionAccountId] = useState<string | null>(null)
   const [captureEnabled, setCaptureEnabled] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -374,19 +382,25 @@ export function Dashboard() {
 
     function handleMessage(event: MessageEvent) {
       if (event.data?.source !== 'tabnest-extension') return
-      setExtensionConnected(true)
+      setExtensionDetected(true)
       markConnected()
       if (typeof event.data.captureEnabled === 'boolean') {
         setCaptureEnabled(event.data.captureEnabled)
       }
+      setExtensionAccountId(
+        typeof event.data.accountId === 'string' ? event.data.accountId : null,
+      )
     }
 
     function checkAttribute() {
       const value = document.documentElement.getAttribute('data-tabnest-extension')
       if (value) {
-        setExtensionConnected(true)
+        setExtensionDetected(true)
         markConnected()
         setCaptureEnabled(value !== '0')
+        setExtensionAccountId(
+          document.documentElement.getAttribute('data-tabnest-account') || null,
+        )
       }
     }
 
@@ -444,7 +458,21 @@ export function Dashboard() {
     })
   }
 
-  const alerts = buildAlerts(pages, extensionConnected)
+  const extensionStatus: ExtensionStatus = !extensionDetected
+    ? 'absent'
+    : !extensionAccountId
+      ? 'no-account'
+      : extensionAccountId === user?.id
+        ? 'linked'
+        : 'other-account'
+  const extensionLabel: Record<ExtensionStatus, string> = {
+    absent: 'Extension non détectée',
+    'no-account': 'Extension installée, non connectée',
+    'other-account': 'Extension reliée à un autre compte',
+    linked: 'Extension reliée à votre compte',
+  }
+
+  const alerts = buildAlerts(pages, extensionStatus)
   const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
 
   useEffect(() => {
@@ -984,17 +1012,17 @@ export function Dashboard() {
               <span
                 className={
                   'size-1.5 rounded-full ' +
-                  (extensionConnected ? 'bg-lime' : 'bg-muted-foreground/40')
+                  (extensionStatus === 'linked' ? 'bg-lime' : 'bg-muted-foreground/40')
                 }
               />
-              {extensionConnected ? 'Extension connectée' : 'Extension non détectée'}
+              {extensionLabel[extensionStatus]}
             </span>
-            {!extensionConnected && (
+            {extensionStatus !== 'linked' && (
               <a
                 href="/extension"
                 className="hidden text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline md:inline"
               >
-                Installer l’extension
+                {extensionStatus === 'absent' ? 'Installer l’extension' : 'Connecter l’extension'}
               </a>
             )}
           </div>
@@ -1026,7 +1054,7 @@ export function Dashboard() {
             </div>
           </section>
 
-          {!extensionConnected && (
+          {extensionStatus === 'absent' && (
             <section data-dash-anim className="mt-6 rounded-2xl border border-lime/40 bg-lime/10 p-6">
               <div className="flex items-start gap-3">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-lime text-lime-foreground">
@@ -1489,11 +1517,15 @@ export function Dashboard() {
             <div className="rounded-xl border p-4 text-sm">
               <p className="font-medium">Extension</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {extensionConnected
+                {extensionStatus === 'linked'
                   ? captureEnabled
-                    ? 'Connectée et active.'
-                    : 'Connectée, capture désactivée.'
-                  : "Non détectée. Ouvre l'extension TabNest pour te connecter."}
+                    ? 'Reliée à votre compte, capture active.'
+                    : 'Reliée à votre compte, capture désactivée.'
+                  : extensionStatus === 'no-account'
+                    ? "Installée, mais pas connectée. Clique sur son icône et connecte-toi."
+                    : extensionStatus === 'other-account'
+                      ? 'Reliée à un autre compte. Déconnecte-la puis reconnecte-toi avec ce compte.'
+                      : "Non détectée. Installe l'extension TabNest."}
               </p>
               <a
                 href="/extension"
