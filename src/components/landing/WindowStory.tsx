@@ -47,7 +47,7 @@ const TONES: Record<
 function WindowCard({ title, tone }: { title: string; tone: Tone }) {
   const t = TONES[tone]
   return (
-    <div className={`overflow-hidden rounded-xl border shadow-2xl ${t.card} ${t.border}`}>
+    <div className={`overflow-hidden rounded-xl border ${t.card} ${t.border}`}>
       <div className={`flex items-center gap-1.5 border-b px-3 py-2 ${t.bar}`}>
         <span className="size-2 rounded-full bg-[#ff5f57]" />
         <span className="size-2 rounded-full bg-[#febc2e]" />
@@ -215,7 +215,7 @@ export function OrganizeStage() {
 
   return (
     <div ref={ref} className="relative mx-auto mt-6 h-[420px] w-full max-w-4xl sm:h-[480px]">
-      <div className="story-logo absolute top-1/2 left-1/2 z-10 flex size-16 items-center justify-center rounded-2xl bg-lime text-lime-foreground shadow-[0_0_60px_rgba(200,240,90,0.35)]">
+      <div className="story-logo absolute top-1/2 left-1/2 z-10 flex size-16 items-center justify-center rounded-2xl bg-lime text-lime-foreground">
         <Sparkles className="size-7" />
       </div>
 
@@ -228,7 +228,7 @@ export function OrganizeStage() {
         </div>
       ))}
 
-      <div className="story-page absolute top-1/2 left-1/2 z-20 w-[280px] rounded-2xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl">
+      <div className="story-page absolute top-1/2 left-1/2 z-20 w-[280px] rounded-2xl border border-white/10 bg-[#1b1b1b] p-4">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
             <Sparkles className="size-4" />

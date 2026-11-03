@@ -112,17 +112,6 @@ const VIEW_TITLES: Record<View, string> = {
 const NO_GROUP = 'none'
 const MAX_STACK = 4
 
-const GRADIENTS = [
-  'from-[#dfe7c8] to-[#b9d48a]',
-  'from-[#f3e2c7] to-[#e0b98a]',
-  'from-[#e6e1f5] to-[#c3b8e8]',
-  'from-[#d9ebf2] to-[#a9cfe0]',
-  'from-[#f5dcd6] to-[#e8b0a4]',
-  'from-[#e8e6dd] to-[#c9c5b4]',
-  'from-[#e3f0d8] to-[#b7d99c]',
-  'from-[#f0e6c8] to-[#d6c28a]',
-]
-
 type Site = {
   domain: string
   pages: Page[]
@@ -146,14 +135,6 @@ function domainOf(url: string): string {
   } catch {
     return url
   }
-}
-
-function gradientFor(domain: string): string {
-  let hash = 0
-  for (let i = 0; i < domain.length; i += 1) {
-    hash = (hash * 31 + domain.charCodeAt(i)) >>> 0
-  }
-  return GRADIENTS[hash % GRADIENTS.length]
 }
 
 function googleFavicon(domain: string): string {
@@ -888,7 +869,7 @@ export function Dashboard() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b bg-background/85 px-4 py-3 backdrop-blur md:gap-4 md:px-6 md:py-4">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b bg-background px-4 py-3 md:gap-4 md:px-6 md:py-4">
           <div className="flex items-center gap-2 md:hidden">
             <Button
               variant="outline"
@@ -1030,10 +1011,9 @@ export function Dashboard() {
           )}
 
           <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-5 py-8 md:px-8 md:py-10">
-            <div className="absolute -top-24 -right-24 size-64 rounded-full bg-lime/25 blur-3xl" />
             <div className="relative">
               <h1 className="mt-3 max-w-xl font-heading text-4xl leading-[1.05] font-medium tracking-tight md:text-5xl">
-                Ce qui compte <em className="text-lime-foreground italic">revient</em> au bon moment.
+                Ce qui compte revient au bon moment.
               </h1>
               <p className="mt-4 max-w-lg text-sm text-muted-foreground">
                 Fermez vos onglets l'esprit léger. TabNest trie le bruit, préserve l'important et
@@ -1108,12 +1088,7 @@ export function Dashboard() {
                     onClick={() => setSelectedSite(site)}
                     className="flex w-20 shrink-0 flex-col items-center gap-1.5"
                   >
-                    <span
-                      className={cn(
-                        'grid size-16 place-items-center rounded-full bg-gradient-to-br p-[2px]',
-                        gradientFor(site.domain),
-                      )}
-                    >
+                    <span className="grid size-16 place-items-center rounded-full bg-border p-[2px]">
                       <SiteAvatar site={site} className="size-full rounded-full" />
                     </span>
                     <span className="w-full truncate text-center text-[11px] text-muted-foreground">
@@ -1186,19 +1161,16 @@ export function Dashboard() {
                           }}
                         />
                       ))}
-                      <article className="relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm">
+                      <article className="relative flex flex-col overflow-hidden rounded-2xl border bg-card">
                         <button
                           type="button"
                           onClick={() => setSelectedSite(site)}
                           className="relative block aspect-[16/10] w-full overflow-hidden bg-secondary text-left"
                         >
-                          <div
-                            className={cn('absolute inset-0 bg-gradient-to-br', gradientFor(site.domain))}
-                          >
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(255,255,255,0.55),transparent_60%)]" />
+                          <div className="absolute inset-0 bg-secondary">
                             {site.themeColor && (
                               <div
-                                className="absolute inset-0 opacity-30"
+                                className="absolute inset-0 opacity-25"
                                 style={{ backgroundColor: site.themeColor }}
                               />
                             )}
@@ -1219,7 +1191,7 @@ export function Dashboard() {
                               }}
                             />
                           )}
-                          <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-3 text-xs text-white">
+                          <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-black/50 p-3 text-xs text-white">
                             <img
                               src={faviconFor(site)}
                               alt=""

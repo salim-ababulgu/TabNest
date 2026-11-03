@@ -100,7 +100,7 @@ export function WindowFan() {
               transform: `rotate(${item.rotate}deg)`,
             }}
           >
-            <div className={`fan-card overflow-hidden rounded-xl border shadow-2xl ${tone.card} ${tone.border}`}>
+            <div className={`fan-card overflow-hidden rounded-xl border ${tone.card} ${tone.border}`}>
               <div className={`flex items-center gap-1.5 border-b px-3 py-2 ${tone.bar}`}>
                 <span className="size-2 rounded-full bg-[#ff5f57]" />
                 <span className="size-2 rounded-full bg-[#febc2e]" />

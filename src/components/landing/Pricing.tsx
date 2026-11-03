@@ -20,7 +20,7 @@ export function PricingSection() {
                 key={plan.id}
                 className={`flex flex-col rounded-2xl border p-6 ${
                   plan.highlight
-                    ? 'border-lime bg-card shadow-sm'
+                    ? 'border-lime bg-card'
                     : 'border-border bg-card/60'
                 }`}
               >

@@ -34,7 +34,7 @@ export function MobileTabBar({
   return (
     <nav
       aria-label="Navigation mobile"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
         {TABS.map((tab) => {

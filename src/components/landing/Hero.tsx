@@ -55,7 +55,7 @@ const FAN = [
 function WindowCard({ title, tone }: { title: string; tone: Tone }) {
   const t = TONES[tone]
   return (
-    <div className={`overflow-hidden rounded-xl border shadow-2xl ${t.card} ${t.border}`}>
+    <div className={`overflow-hidden rounded-xl border ${t.card} ${t.border}`}>
       <div className={`flex items-center gap-1.5 border-b px-3 py-2 ${t.bar}`}>
         <span className="size-2 rounded-full bg-[#ff5f57]" />
         <span className="size-2 rounded-full bg-[#febc2e]" />
