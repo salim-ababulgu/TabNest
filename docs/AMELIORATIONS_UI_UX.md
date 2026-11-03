@@ -46,7 +46,7 @@
 | 7 | E-mail pré-rempli depuis le CTA de la landing | ✅ |
 | 8 | Onboarding extension guidé (carte du dashboard + page dédiée) | ✅ |
 | 9 | Lien permanent vers l'installation dans le dashboard | ✅ |
-| 10 | **Navigation mobile** du dashboard (aujourd'hui : sidebar masquée, aucune nav) | ❌ bloquant |
+| 10 | **Navigation mobile** : barre d'onglets en bas + tiroir complet | ✅ |
 | 11 | **Publication Chrome Web Store** (aujourd'hui : installation manuelle impossible pour un visiteur) | ❌ bloquant |
 | 12 | Purge automatique des pages expirées (SQL `pg_cron` fourni dans `CONFORMITE.md`) | ❌ conformité |
 | 13 | Message compréhensible si la base ne répond pas | 🚧 |
