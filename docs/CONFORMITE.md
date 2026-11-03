@@ -85,21 +85,24 @@ select cron.schedule(
 
 ## 4. Cookies et traceurs
 
-**État réel :** aucun cookie publicitaire, aucun outil de mesure d’audience, aucun pixel social.
-Seuls des **stockages strictement nécessaires** sont utilisés (session d’authentification dans
-`localStorage`, réglages de l’extension dans `chrome.storage`).
+**État réel :** aucun cookie publicitaire, aucun pixel social. Un **outil de mesure d’audience
+(PostHog)** est branché **uniquement avec consentement** : enregistrement de session **désactivé**,
+collecte automatique de clics **désactivée**, persistance en `localStorage`, hébergement UE.
+Sans accord, **aucun appel réseau** n'est fait.
 
-**Conséquence juridique :** la CNIL dispense de consentement les traceurs strictement nécessaires.
-Un bandeau d’acceptation/refus serait donc **trompeur** et constituerait une non-conformité. Une
-simple information est affichée (`CookieNotice`), mémorisée localement, avec un lien vers
-`/cookies`.
+**Conséquence juridique :** les traceurs strictement nécessaires (session d’authentification dans
+`localStorage`, réglages de l’extension dans `chrome.storage`) sont dispensés de consentement.
+PostHog, lui, **ne l'est pas** : un **bandeau de consentement bloquant** est affiché
+(`PrivacyNotice` — Accepter / Refuser / En savoir plus). Rien ne se charge avant le choix ; le refus
+est aussi simple que l'accord ; le choix est mémorisé localement et peut être retiré en effaçant
+les données du site.
 
-**Condition à respecter :** si un traceur non nécessaire est ajouté (analytics, pub), il faudra
-remplacer cette information par un **véritable bandeau de consentement bloquant** (refus aussi
-simple que l’accord, choix conservé, possibilité de retirer son consentement).
+**Condition à respecter :** si un nouveau traceur non nécessaire est ajouté (publicité, pixel
+social), il devra suivre le même mécanisme (bandeau bloquant, refus simple, choix conservé).
 
 **À vérifier :** la configuration du projet Supabase (le tableau de bord peut lui-même déposer des
-cookies, sans impact sur nos visiteurs du site).
+cookies, sans impact sur nos visiteurs du site), et le registre des traitements mis à jour avec
+PostHog (sous-traitant, DPA signé).
 
 ---
 

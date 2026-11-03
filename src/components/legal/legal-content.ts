@@ -293,12 +293,10 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
         },
       },
       {
-        title: '3. Ce que nous n’utilisons pas',
-        list: [
-          'Aucun cookie publicitaire, aucun pixel de suivi (Facebook, TikTok, etc.).',
-          'Aucun outil de mesure d’audience (Google Analytics, Matomo, etc.) à ce jour.',
-          'Aucun cookie de réseaux sociaux.',
-          'Aucun profilage publicitaire.',
+        title: '3. Mesure d’audience (uniquement avec votre accord)',
+        paragraphs: [
+          'Si vous l’acceptez, nous utilisons PostHog pour mesurer l’usage du service (pages consultées, création de compte, installation de l’extension) afin de comprendre où les utilisateurs rencontrent des difficultés. PostHog est hébergé dans l’Union européenne.',
+          'Nous avons désactivé l’enregistrement de session (aucune capture de votre navigation) et la collecte automatique de clics. Aucun cookie publicitaire, aucun pixel de réseaux sociaux, aucun profilage publicitaire.',
         ],
       },
       {
@@ -310,9 +308,10 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
         ],
       },
       {
-        title: '5. Si nous ajoutons un traceur non nécessaire',
+        title: '5. Votre choix, et comment le modifier',
         paragraphs: [
-          "Si nous ajoutons un jour un outil de mesure d’audience ou tout autre traceur non strictement nécessaire, nous afficherons un bandeau de consentement conforme aux recommandations de la CNIL, avec un refus aussi simple qu’un accord, et ce bandeau bloquera le traceur tant qu’aucun choix n’aura été fait.",
+          'Le bandeau s’affiche au premier passage : rien n’est chargé avant votre choix, et refuser est aussi simple qu’accepter.',
+          'Vous pouvez retirer votre consentement à tout moment en effaçant les données du site dans votre navigateur (Paramètres → Confidentialité → Effacer les données de navigation pour tabnest) : le bandeau réapparaîtra et vous pourrez choisir à nouveau.',
         ],
       },
     ],

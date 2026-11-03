@@ -1,53 +1,39 @@
 import { useEffect, useState } from 'react'
-
-// Le nom du fichier et le composant évitent volontairement « cookie » / « consent » :
-// certains bloqueurs de contenu bloquent les URL qui contiennent ces mots, ce qui
-// faisait échouer le chargement de l'application entière.
-const STORAGE_KEY = 'tabnest-notice-vue'
+import {
+  analyticsConfigured,
+  initAnalyticsIfConsented,
+  readConsent,
+  saveConsent,
+} from '@/lib/analytics'
 
 /**
- * Information sur les traceurs.
+ * Bandeau de consentement à la mesure d'audience.
  *
- * L'application n'utilise que des traceurs strictement nécessaires (session
- * d'authentification dans le stockage local). La CNIL dispense ces traceurs de
- * consentement : un bandeau d'acceptation/refus serait donc trompeur. Ce
- * bandeau est une simple information, mémorisée localement.
- *
- * Si un traceur non nécessaire est ajouté (mesure d'audience, publicité), il
- * faudra le remplacer par un véritable bandeau de consentement bloquant.
+ * Il n'apparaît que si PostHog est configuré et que l'utilisateur n'a pas encore
+ * choisi. « Refuser » est aussi simple que « Accepter », et rien ne se charge
+ * tant qu'aucun choix n'est fait (blocage réel, conforme CNIL).
  */
 export function PrivacyNotice() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    try {
-      setVisible(!window.localStorage.getItem(STORAGE_KEY))
-    } catch {
-      setVisible(true)
-    }
+    initAnalyticsIfConsented()
+    if (analyticsConfigured() && readConsent() === null) setVisible(true)
   }, [])
-
-  function dismiss() {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, 'seen')
-    } catch {
-      // stockage indisponible : le bandeau reviendra à la prochaine visite
-    }
-    setVisible(false)
-  }
 
   if (!visible) return null
 
   return (
     <div
       role="region"
-      aria-label="Information sur les traceurs"
+      aria-label="Consentement à la mesure d’audience"
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card p-4"
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center">
         <p className="text-xs leading-relaxed text-foreground/85">
-          TabNest n’utilise aucun traceur publicitaire ni outil de mesure d’audience. Seul le
-          stockage nécessaire pour rester connecté est utilisé.
+          Pour comprendre où le produit bloque, nous mesurons l’usage du site avec PostHog — sans
+          publicité, sans enregistrement de session, sans cookie de tiers. Votre choix est mémorisé
+          sur cet appareil et peut être retiré en effaçant les données du site.
         </p>
         <div className="flex shrink-0 items-center gap-2 sm:ml-auto">
           <a
@@ -58,10 +44,23 @@ export function PrivacyNotice() {
           </a>
           <button
             type="button"
-            onClick={dismiss}
+            onClick={() => {
+              saveConsent('no')
+              setVisible(false)
+            }}
+            className="inline-flex h-8 items-center rounded-md border border-input px-3 text-xs font-medium hover:bg-accent"
+          >
+            Refuser
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              saveConsent('yes')
+              setVisible(false)
+            }}
             className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground"
           >
-            J’ai compris
+            Accepter
           </button>
         </div>
       </div>
