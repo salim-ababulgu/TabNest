@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import gsap from 'gsap'
+import { trackEvent } from '@/lib/analytics'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -88,6 +89,7 @@ export function AuthForm({
         setError(result.error)
         return
       }
+      trackEvent(mode === 'login' ? 'signin' : 'signup')
       if (result.needsConfirmation) {
         setInfo('Compte créé. Confirme ton adresse par e-mail, puis connecte-toi.')
         setMode('login')
@@ -111,6 +113,8 @@ export function AuthForm({
       const result = await signInWithGoogle()
       if (result.error) {
         setError(result.error)
+      } else {
+        trackEvent('signin_google')
       }
     } finally {
       setBusy(false)

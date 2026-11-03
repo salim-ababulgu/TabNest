@@ -71,6 +71,7 @@ import {
 import type { Group, Page } from '@/lib/pages'
 import { buildAlerts, loadReadAlerts, saveReadAlerts } from '@/lib/alerts'
 import type { AppAlert } from '@/lib/alerts'
+import { trackEvent } from '@/lib/analytics'
 import { Toasts } from '@/components/dashboard/Toasts'
 import type { ToastItem, ToastLevel } from '@/components/dashboard/Toasts'
 
@@ -382,9 +383,18 @@ export function Dashboard() {
   }, [load])
 
   useEffect(() => {
+    let tracked = false
+    const markConnected = () => {
+      if (!tracked) {
+        tracked = true
+        trackEvent('extension-connected')
+      }
+    }
+
     function handleMessage(event: MessageEvent) {
       if (event.data?.source !== 'tabnest-extension') return
       setExtensionConnected(true)
+      markConnected()
       if (typeof event.data.captureEnabled === 'boolean') {
         setCaptureEnabled(event.data.captureEnabled)
       }
@@ -394,6 +404,7 @@ export function Dashboard() {
       const value = document.documentElement.getAttribute('data-tabnest-extension')
       if (value) {
         setExtensionConnected(true)
+        markConnected()
         setCaptureEnabled(value !== '0')
       }
     }
@@ -454,6 +465,10 @@ export function Dashboard() {
 
   const alerts = buildAlerts(pages, extensionConnected)
   const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
+
+  useEffect(() => {
+    if (pages.length > 0) trackEvent('has-pages')
+  }, [pages.length > 0])
 
   useEffect(() => {
     if (browserNotifications !== 'granted') return
