@@ -1,5 +1,9 @@
 # TabNest — Déploiement
 
+> **État : site en ligne sur https://tabnest-alb.pages.dev** (Cloudflare Pages, projet `tabnest`,
+> déployé depuis le poste local avec `wrangler pages deploy dist`). À chaque nouveau build :
+> `npm run build` puis `npx wrangler pages deploy dist --project-name=tabnest --branch=main`.
+
 > Objectif : mettre TabNest en ligne sur une vraie URL, pour que de vrais utilisateurs puissent le tester.
 > Ce document compare deux options et donne les étapes exactes.
 

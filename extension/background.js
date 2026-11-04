@@ -2,7 +2,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, MICROLINK_API_KEY } from './config.js'
 
 const IGNORED =
   /^(chrome|edge|about|chrome-extension|devtools|view-source|file|data|blob):/i
-const APP_HOSTS = ['localhost:5173', '127.0.0.1:5173']
+const APP_HOSTS = ['localhost:5173', '127.0.0.1:5173', 'tabnest-alb.pages.dev']
 const CAPTURE_COOLDOWN_MS = 15000
 const lastCaptured = new Map()
 
