@@ -79,6 +79,7 @@ import {
 } from '@/lib/alerts'
 import type { AppAlert } from '@/lib/alerts'
 import { trackEvent } from '@/lib/analytics'
+import { buildExport, buildMarkdownList, downloadExport } from '@/lib/export'
 import { Toasts } from '@/components/dashboard/Toasts'
 import type { ToastItem, ToastLevel } from '@/components/dashboard/Toasts'
 
@@ -666,6 +667,24 @@ export function Dashboard() {
       await load(true)
     } finally {
       setRefreshing(false)
+    }
+  }
+
+  function handleExportJson() {
+    try {
+      downloadExport(buildExport(groups, pages))
+      notify('success', 'Export JSON téléchargé')
+    } catch {
+      notify('error', "L'export a échoué")
+    }
+  }
+
+  async function handleCopyLinks() {
+    try {
+      await navigator.clipboard.writeText(buildMarkdownList(groups, pages))
+      notify('success', 'Liste des liens copiée')
+    } catch {
+      notify('error', 'Impossible de copier dans le presse-papiers')
     }
   }
 
@@ -1596,6 +1615,35 @@ export function Dashboard() {
               >
                 Voir les instructions d’installation
               </a>
+            </div>
+
+            <div className="rounded-xl border p-4">
+              <p className="text-sm font-medium">Exporter mes données</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Vos pages et vos projets dans un fichier JSON (sauvegarde), ou la liste des liens en
+                Markdown pour la coller ailleurs.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleExportJson}
+                  disabled={pages.length === 0}
+                >
+                  Télécharger le JSON
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void handleCopyLinks()}
+                  disabled={pages.length === 0}
+                >
+                  Copier les liens
+                </Button>
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                {pages.length} page(s) dans cet export
+              </p>
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
