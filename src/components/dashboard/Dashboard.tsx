@@ -7,6 +7,7 @@ import {
   Bell,
   Bookmark,
   BookOpen,
+  Check,
   Clock,
   Compass,
   LayoutGrid,
@@ -345,6 +346,7 @@ export function Dashboard() {
   const [readAlerts, setReadAlerts] = useState<string[]>([])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [onboardingHidden, setOnboardingHidden] = useState(false)
   const [query, setQuery] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
   const [browserNotifications, setBrowserNotifications] = useState<
@@ -451,6 +453,23 @@ export function Dashboard() {
     }
   }, [])
 
+  useEffect(() => {
+    try {
+      setOnboardingHidden(window.localStorage.getItem('tabnest-onboarding-hidden') === '1')
+    } catch {
+      // stockage indisponible : le guide reste visible
+    }
+  }, [])
+
+  function hideOnboarding() {
+    setOnboardingHidden(true)
+    try {
+      window.localStorage.setItem('tabnest-onboarding-hidden', '1')
+    } catch {
+      // stockage indisponible
+    }
+  }
+
   function toggleSidebar() {
     setSidebarCollapsed((current) => {
       const next = !current
@@ -479,6 +498,41 @@ export function Dashboard() {
 
   const alerts = buildAlerts(pages, extensionStatus)
   const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
+
+  const hasReason = pages.some((page) => page.reason && page.reason !== 'decide')
+  const onboardingSteps = [
+    {
+      label: "Installer l'extension",
+      detail:
+        extensionStatus === 'absent'
+          ? 'Elle enregistre automatiquement les pages que vous visitez.'
+          : extensionStatus === 'linked'
+            ? 'Connectée à votre compte.'
+            : 'Elle est installée : connectez votre compte depuis son icône.',
+      done: extensionStatus === 'linked',
+    },
+    {
+      label: 'Enregistrer une première page',
+      detail: 'Visitez une page avec l’extension active, ou ajoutez-en une à la main.',
+      done: pages.length > 0,
+    },
+    {
+      label: 'Choisir une raison',
+      detail: 'Une raison fixe la durée de vie : à décider, à finir, piste, à retenir.',
+      done: hasReason,
+    },
+  ]
+  const onboardingDone = onboardingSteps.every((step) => step.done)
+  const onboardingNext = onboardingSteps.find((step) => !step.done)
+
+  const onboardingDoneRef = useRef(false)
+  useEffect(() => {
+    if (onboardingDone && !onboardingDoneRef.current) {
+      onboardingDoneRef.current = true
+      notify('success', 'Tout est en place, votre nid est prêt')
+      trackEvent('onboarding-complete')
+    }
+  }, [onboardingDone, notify])
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -1093,50 +1147,75 @@ export function Dashboard() {
             </div>
           </section>
 
-          {extensionStatus === 'absent' && (
-            <section data-dash-anim className="mt-6 rounded-2xl border border-lime/40 bg-lime/10 p-6">
-              <div className="flex items-start gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-lime text-lime-foreground">
-                  <Sparkles className="size-5" />
-                </span>
-                <div className="flex-1">
+          {!onboardingHidden && !onboardingDone && !loading && (
+            <section data-dash-anim className="mt-6 rounded-2xl border bg-card p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div>
                   <h2 className="font-heading text-xl font-semibold">
-                    Activez la capture automatique
+                    Trois gestes pour commencer
                   </h2>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    TabNest enregistre automatiquement les pages que vous visitez grâce à son
-                    extension. Sans elle, votre liste reste vide.
+                    {onboardingSteps.filter((step) => step.done).length} sur{' '}
+                    {onboardingSteps.length} faits.
                   </p>
-                  <ol className="mt-4 space-y-2 text-sm">
-                    <li>
-                      <span className="font-medium">1.</span> Ouvre{' '}
-                      <code className="rounded bg-secondary px-1 py-0.5">chrome://extensions</code> et
-                      active le mode développeur.
-                    </li>
-                    <li>
-                      <span className="font-medium">2.</span> « Charger l'extension non empaquetée » →
-                      le dossier{' '}
-                      <code className="rounded bg-secondary px-1 py-0.5">extension</code> du projet.
-                    </li>
-                    <li>
-                      <span className="font-medium">3.</span> Clique sur l'icône TabNest et
-                      connecte-toi.
-                    </li>
-                  </ol>
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        window.postMessage({ source: 'tabnest-page', type: 'ping' }, '*')
-                      }
-                    >
-                      J'ai installé l'extension
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setShowAddPage(true)}>
-                      Ajouter une page manuellement
-                    </Button>
-                  </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={hideOnboarding}
+                  aria-label="Masquer ce guide"
+                  className="shrink-0 rounded p-1 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-4" aria-hidden="true" />
+                </button>
+              </div>
+
+              <ol className="mt-5 space-y-3">
+                {onboardingSteps.map((step) => (
+                  <li key={step.label} className="flex items-start gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full',
+                        step.done
+                          ? 'bg-lime text-lime-foreground'
+                          : 'border border-border text-transparent',
+                      )}
+                    >
+                      <Check className="size-3" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className={cn('text-sm font-medium', step.done && 'text-foreground/55')}>
+                        {step.label}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{step.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                {onboardingNext?.label === "Installer l'extension" ? (
+                  <a
+                    href="/extension"
+                    className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground"
+                  >
+                    Installer l'extension
+                  </a>
+                ) : onboardingNext?.label === 'Enregistrer une première page' ? (
+                  <Button size="sm" onClick={() => setShowAddPage(true)}>
+                    Ajouter une page manuellement
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setView('today')
+                      setSelectedGroup(null)
+                    }}
+                  >
+                    Aller à « Aujourd'hui »
+                  </Button>
+                )}
               </div>
             </section>
           )}
