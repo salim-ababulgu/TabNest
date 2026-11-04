@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { EyeOff, Pin, Bookmark, Clock, FolderOpen, ShieldCheck } from 'lucide-react'
+import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -140,47 +141,29 @@ export function PinnedSteps() {
           </div>
 
           <div className="relative hidden h-[380px] md:block">
-            <div className="pinned-visual-0 absolute inset-0 flex items-center justify-center rounded-3xl border border-border bg-card p-8">
-              <div className="w-full max-w-xs">
-                <p className="text-xs text-muted-foreground">Extension TabNest</p>
-                <p className="mt-2 font-heading text-2xl">Capture activée</p>
-                <div className="mt-6 flex items-center gap-2 rounded-xl bg-secondary px-3 py-2 text-xs">
-                  <span className="size-2 rounded-full bg-lime" />
-                  1 page enregistrée
-                </div>
-              </div>
+            <div className="pinned-visual-0 absolute inset-0 flex items-center justify-center">
+              <ScreenshotFrame
+                src="/screenshots/dashboard-overview.png"
+                alt="Le tableau de bord TabNest à la première connexion"
+                className="w-full max-w-sm"
+              />
             </div>
 
-            <div className="pinned-visual-1 absolute inset-0 flex items-center justify-center rounded-3xl border border-border bg-secondary/60 p-8 opacity-0">
-              <div className="w-full max-w-xs space-y-2">
-                {['developer.mozilla.org', 'figma.com', 'netflix.com'].map((site) => (
-                  <div
-                    key={site}
-                    className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs"
-                  >
-                    <span className="size-2 rounded-full bg-lime" />
-                    {site}
-                  </div>
-                ))}
-              </div>
+            <div className="pinned-visual-1 absolute inset-0 flex items-center justify-center opacity-0">
+              <ScreenshotFrame
+                src="/screenshots/dashboard-grid.png"
+                alt="Les sites enregistrés, empilés par visites"
+                className="w-full max-w-sm"
+              />
             </div>
 
-            <div className="pinned-visual-2 absolute inset-0 flex items-center justify-center rounded-3xl border border-border bg-card p-8 opacity-0">
-              <div className="w-full max-w-xs space-y-2">
-                {[
-                  { name: 'Netflix', meta: 'À retenir · 90 j' },
-                  { name: 'Figma', meta: 'À finir · 7 j' },
-                  { name: 'Google', meta: 'Piste · 14 j' },
-                ].map((item) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-xs"
-                  >
-                    <span className="font-medium">{item.name}</span>
-                    <span className="text-muted-foreground">{item.meta}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="pinned-visual-2 absolute inset-0 flex items-center justify-center opacity-0">
+              <ScreenshotFrame
+                src="/screenshots/dashboard-detail.png"
+                alt="Le détail d'une page : sa raison et sa durée de vie"
+                crop="center"
+                className="w-full max-w-sm"
+              />
             </div>
           </div>
         </div>

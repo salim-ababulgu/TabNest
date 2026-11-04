@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Check, Clock, Sparkles } from 'lucide-react'
+import { Check, Sparkles } from 'lucide-react'
 import { Hero } from '@/components/landing/Hero'
 import { BentoSection, FaqSection, PageTypeMarquee, PinnedSteps } from '@/components/landing/Sections'
 import { ComparisonSection } from '@/components/landing/Comparison'
+import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
 import { PricingSection } from '@/components/landing/Pricing'
 
 type LandingProps = { onStart: (email?: string) => void }
@@ -41,12 +42,6 @@ function PillButton({
     </button>
   )
 }
-
-const PROJECTS = [
-  { n: '01', name: "Recherche d'emploi", count: '12 pages', color: 'bg-[#dbe3ff]' },
-  { n: '02', name: 'Achat de voiture', count: '8 pages', color: 'bg-[#ffe0cf]' },
-  { n: '03', name: 'Apprendre React', count: '21 pages', color: 'bg-[#d9f2c4]' },
-]
 
 export function Landing({ onStart }: LandingProps) {
   const [email, setEmail] = useState('')
@@ -111,20 +106,13 @@ export function Landing({ onStart }: LandingProps) {
         </div>
         <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal delay={150} className="w-full">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
-              <div className="grid grid-cols-3 gap-3 text-center text-[11px] text-cream/50">
-                <div className="rounded-lg border border-white/10 px-2 py-4">Onglets</div>
-                <div className="rounded-lg border border-white/10 px-2 py-4">Favoris</div>
-                <div className="rounded-lg border border-white/10 px-2 py-4">Historique</div>
-              </div>
-              <div className="mt-6 rounded-xl bg-lime px-4 py-10 text-center text-lime-foreground">
-                <Sparkles className="mx-auto size-7" />
-                <p className="mt-3 font-heading text-2xl">Tout est là.</p>
-                <p className="mt-1 text-xs opacity-70">
-                  Rien ne demande votre attention maintenant.
-                </p>
-              </div>
-            </div>
+            <ScreenshotFrame
+              src="/screenshots/dashboard-mobile.png"
+              alt="TabNest sur mobile : les pages gardées, triées par site"
+              tone="dark"
+              portrait
+              className="mx-auto max-w-[240px]"
+            />
           </Reveal>
         </div>
       </section>
@@ -153,29 +141,12 @@ export function Landing({ onStart }: LandingProps) {
         </div>
         <div className="flex items-center bg-ink px-8 py-24 md:px-14 md:py-28">
           <Reveal delay={150} className="w-full">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
-              <div className="flex flex-wrap gap-2 text-[11px] text-cream/60">
-                <span className="rounded-full border border-white/10 px-3 py-1">
-                  Visites régulières
-                </span>
-                <span className="rounded-full border border-white/10 px-3 py-1">Documentation</span>
-                <span className="rounded-full border border-lime/40 bg-lime/10 px-3 py-1 text-lime">
-                  Projet · code
-                </span>
-              </div>
-              <div className="mt-6 rounded-xl bg-cream p-5 text-ink">
-                <p className="text-[10px] text-ink/50">developer.mozilla.org</p>
-                <p className="mt-1 font-heading text-lg">Using the Web Storage API</p>
-                <div className="mt-3 flex gap-4 text-[11px] text-ink/50">
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="size-3" /> 4 visites
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="size-3" /> vue hier
-                  </span>
-                </div>
-              </div>
-            </div>
+            <ScreenshotFrame
+              src="/screenshots/dashboard-detail.png"
+              alt="Le détail d'une page dans TabNest : raison, durée de vie et visites"
+              tone="dark"
+              crop="center"
+            />
           </Reveal>
         </div>
       </section>
@@ -196,20 +167,11 @@ export function Landing({ onStart }: LandingProps) {
         </div>
         <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal delay={150} className="w-full">
-            <div className="space-y-4">
-              {PROJECTS.map((project) => (
-                <div
-                  key={project.n}
-                  className={'flex items-center gap-4 rounded-2xl px-5 py-5 ' + project.color}
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-ink/40">Projet actif</p>
-                    <p className="font-heading text-lg">{project.name}</p>
-                  </div>
-                  <span className="shrink-0 text-xs text-ink/50">{project.count}</span>
-                </div>
-              ))}
-            </div>
+            <ScreenshotFrame
+              src="/screenshots/dashboard-grid.png"
+              alt="Les sites empilés dans TabNest, avec les projets dans le menu"
+              tone="light"
+            />
           </Reveal>
         </div>
       </section>
