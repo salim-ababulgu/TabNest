@@ -3,26 +3,15 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { EyeOff, Pin, Bookmark, Clock, FolderOpen, ShieldCheck } from 'lucide-react'
 import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
+import { useLang } from '@/components/landing/i18n'
 
 gsap.registerPlugin(ScrollTrigger)
-
-// Types de pages que l’on garde — aucun nom de marque : ce ne sont pas des partenariats.
-const PAGE_TYPES = [
-  'Documentation',
-  'Offre d’emploi',
-  'Comparatif',
-  'Annonce immobilière',
-  'Traduction',
-  'Tutoriel',
-  'Achat de voiture',
-  'Article de fond',
-  'Recette',
-  'Série à regarder',
-]
 
 /** Bandeau défilant des types de pages conservées. */
 export function PageTypeMarquee() {
   const trackRef = useRef<HTMLDivElement>(null)
+  const { t, list } = useLang()
+  const items = list('marquee.items')
 
   useEffect(() => {
     const track = trackRef.current
@@ -36,14 +25,14 @@ export function PageTypeMarquee() {
 
   return (
     <section
-      aria-label="Types de pages que TabNest conserve"
+      aria-label={t('marquee.label')}
       className="overflow-hidden border-y border-border bg-card py-5"
     >
       <div ref={trackRef} className="flex w-max items-center gap-10 px-6">
-        {[...PAGE_TYPES, ...PAGE_TYPES].map((label, index) => (
+        {[...items, ...items].map((label, index) => (
           <span
             key={`${label}-${index}`}
-            aria-hidden={index >= PAGE_TYPES.length}
+            aria-hidden={index >= items.length}
             className="font-heading text-lg whitespace-nowrap text-muted-foreground/80"
           >
             {label}
@@ -55,26 +44,15 @@ export function PageTypeMarquee() {
 }
 
 const STEPS = [
-  {
-    n: '01',
-    title: "Installez l'extension",
-    text: "Chrome ou Edge. Un dossier, deux clics, et la capture est active.",
-  },
-  {
-    n: '02',
-    title: 'Naviguez normalement',
-    text: 'Chaque page visitée est enregistrée, sans rien faire. Le bruit reste dehors.',
-  },
-  {
-    n: '03',
-    title: 'Retrouvez tout',
-    text: 'Vos pages sont rangées par sites et projets, avec une durée de vie.',
-  },
-]
+  { titleKey: 'steps.s1.title', textKey: 'steps.s1.text' },
+  { titleKey: 'steps.s2.title', textKey: 'steps.s2.text' },
+  { titleKey: 'steps.s3.title', textKey: 'steps.s3.text' },
+] as const
 
 /** « Comment ça marche » épinglé : la séquence avance avec le scroll. */
 export function PinnedSteps() {
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const { t } = useLang()
 
   useEffect(() => {
     const wrapper = wrapperRef.current
@@ -109,7 +87,7 @@ export function PinnedSteps() {
         <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
           <div>
             <h2 className="max-w-md font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              Trois étapes suffisent.
+              {t('steps.title')}
             </h2>
             <div className="relative mt-10 pl-8">
               <span
@@ -123,16 +101,16 @@ export function PinnedSteps() {
               <ol className="space-y-9">
                 {STEPS.map((step, index) => (
                   <li
-                    key={step.title}
+                    key={step.titleKey}
                     className={`pinned-step-${index} relative opacity-35 transition-none`}
                   >
                     <span
                       aria-hidden="true"
                       className="absolute top-1.5 -left-8 size-3.5 rounded-full bg-lime"
                     />
-                    <h3 className="font-heading text-xl font-medium">{step.title}</h3>
+                    <h3 className="font-heading text-xl font-medium">{t(step.titleKey)}</h3>
                     <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-foreground/70">
-                      {step.text}
+                      {t(step.textKey)}
                     </p>
                   </li>
                 ))}
@@ -144,7 +122,7 @@ export function PinnedSteps() {
             <div className="pinned-visual-0 absolute inset-0 flex items-center justify-center">
               <ScreenshotFrame
                 src="/screenshots/dashboard-overview.png"
-                alt="Le tableau de bord TabNest à la première connexion"
+                alt={t('steps.alt1')}
                 className="w-full max-w-sm"
               />
             </div>
@@ -152,7 +130,7 @@ export function PinnedSteps() {
             <div className="pinned-visual-1 absolute inset-0 flex items-center justify-center opacity-0">
               <ScreenshotFrame
                 src="/screenshots/dashboard-grid.png"
-                alt="Les sites enregistrés, empilés par visites"
+                alt={t('steps.alt2')}
                 className="w-full max-w-sm"
               />
             </div>
@@ -160,7 +138,7 @@ export function PinnedSteps() {
             <div className="pinned-visual-2 absolute inset-0 flex items-center justify-center opacity-0">
               <ScreenshotFrame
                 src="/screenshots/dashboard-detail.png"
-                alt="Le détail d'une page : sa raison et sa durée de vie"
+                alt={t('steps.alt3')}
                 crop="center"
                 className="w-full max-w-sm"
               />
@@ -175,40 +153,21 @@ export function PinnedSteps() {
 const BENTO = [
   {
     icon: Clock,
-    title: 'Quatre raisons de garder',
-    text: 'À décider, à finir, piste, à retenir. Chaque raison fixe la durée de vie de la page.',
+    titleKey: 'bento.b1.title',
+    textKey: 'bento.b1.text',
     span: 'sm:col-span-2',
   },
-  {
-    icon: Pin,
-    title: 'Épingler',
-    text: 'Un site comme Netflix reste en tête de liste.',
-  },
-  {
-    icon: Bookmark,
-    title: 'Ressources',
-    text: 'Les sites visités une seule fois, rangés à part.',
-  },
-  {
-    icon: EyeOff,
-    title: 'Aucune capture d’écran',
-    text: 'URL, titre et image publique uniquement. Jamais le contenu de la page.',
-  },
-  {
-    icon: FolderOpen,
-    title: 'Par projets',
-    text: 'Emploi, achat de voiture, apprentissage : chaque page retrouve son contexte.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Cloisonné par compte',
-    text: 'Vos pages ne sont visibles que par vous, jamais par un autre utilisateur.',
-  },
-]
+  { icon: Pin, titleKey: 'bento.b2.title', textKey: 'bento.b2.text' },
+  { icon: Bookmark, titleKey: 'bento.b3.title', textKey: 'bento.b3.text' },
+  { icon: EyeOff, titleKey: 'bento.b4.title', textKey: 'bento.b4.text' },
+  { icon: FolderOpen, titleKey: 'bento.b5.title', textKey: 'bento.b5.text' },
+  { icon: ShieldCheck, titleKey: 'bento.b6.title', textKey: 'bento.b6.text' },
+] as const
 
 /** Bento grid : ce que le produit fait vraiment, avec une entrée orchestrée. */
 export function BentoSection() {
   const ref = useRef<HTMLDivElement>(null)
+  const { t } = useLang()
 
   useEffect(() => {
     const element = ref.current
@@ -233,26 +192,25 @@ export function BentoSection() {
     <section id="produit" ref={ref} className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
       <div className="mx-auto w-full max-w-6xl">
         <h2 className="max-w-2xl font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-          Ce que TabNest fait vraiment.
+          {t('bento.title')}
         </h2>
-        <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground/70">
-          Pas un énième gestionnaire de favoris. Un système qui décide avec vous, et oublie pour
-          vous.
-        </p>
+        <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground/70">{t('bento.sub')}</p>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {BENTO.map((item) => {
             const Icon = item.icon
             return (
               <div
-                key={item.title}
-                className={`bento-card rounded-2xl border border-border bg-card p-6 ${item.span ?? ''}`}
+                key={item.titleKey}
+                className={`bento-card rounded-2xl border border-border bg-card p-6 ${'span' in item ? item.span : ''}`}
               >
                 <span className="flex size-9 items-center justify-center rounded-lg bg-secondary">
                   <Icon className="size-4" />
                 </span>
-                <h3 className="mt-4 font-heading text-lg font-medium">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-foreground/70">{item.text}</p>
+                <h3 className="mt-4 font-heading text-lg font-medium">{t(item.titleKey)}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/70">
+                  {t(item.textKey)}
+                </p>
               </div>
             )
           })}
@@ -263,71 +221,32 @@ export function BentoSection() {
 }
 
 const FAQ = [
-  {
-    question: 'TabNest lit-il le contenu de mes pages ?',
-    answer:
-      'Non. Seules les métadonnées publiques sont enregistrées : adresse, titre, icône du site, image de partage et couleur dominante. Aucune capture d’écran, aucun texte de page.',
-  },
-  {
-    question: 'Où sont stockées mes données ?',
-    answer:
-      'Dans votre compte, sur notre base de données (Supabase). Chaque utilisateur ne peut accéder qu’à ses propres pages : le cloisonnement est appliqué au niveau de la base elle-même.',
-  },
-  {
-    question: 'Puis-je désactiver la capture automatique ?',
-    answer:
-      'Oui, à tout moment depuis le tableau de bord. L’extension arrête immédiatement d’enregistrer vos visites, sans désinstallation.',
-  },
-  {
-    question: 'Que deviennent les pages expirées ?',
-    answer:
-      'Elles basculent dans les archives et ne sont plus affichées. Vous pouvez les supprimer définitivement à tout moment, et la suppression de votre compte efface toutes vos données.',
-  },
-  {
-    question: 'Pourquoi pas une extension de gestion d’onglets ou de favoris ?',
-    answer:
-      'Les extensions classiques gardent des sessions ou des favoris sur un seul navigateur. TabNest garde la page avec la raison de la garder et une durée de vie, puis la retrouve sur tous vos appareils grâce à votre compte.',
-  },
-  {
-    question: 'Je change d’ordinateur : je retrouve mes pages ?',
-    answer:
-      'Oui. Vos pages sont dans votre compte, pas dans le navigateur : connectez-vous depuis un autre appareil et elles sont là.',
-  },
-  {
-    question: 'Quelles permissions l’extension demande-t-elle ?',
-    answer:
-      'Lire l’adresse et le titre de la page active, et stocker votre session. Elle n’a accès ni au contenu des pages, ni à vos mots de passe, ni à vos autres onglets.',
-  },
-  {
-    question: 'Que se passe-t-il si je ferme un onglet ou si le navigateur redémarre ?',
-    answer:
-      'Rien n’est perdu : la page a déjà été enregistrée au moment de la visite. C’est l’inverse de la session qui dépend du navigateur.',
-  },
-  {
-    question: 'TabNest fonctionne-t-il sur mobile ?',
-    answer:
-      'L’extension est disponible sur les navigateurs de bureau (Chrome, Edge). Les navigateurs mobiles limitent les extensions ; nous travaillons sur une solution pour téléphone.',
-  },
-  {
-    question: 'Est-ce gratuit ?',
-    answer:
-      'Oui, gratuit aujourd’hui. Une formule payante viendra plus tard pour les besoins avancés, sans supprimer la version gratuite.',
-  },
-]
+  { questionKey: 'faq.q1', answerKey: 'faq.a1' },
+  { questionKey: 'faq.q2', answerKey: 'faq.a2' },
+  { questionKey: 'faq.q3', answerKey: 'faq.a3' },
+  { questionKey: 'faq.q4', answerKey: 'faq.a4' },
+  { questionKey: 'faq.q5', answerKey: 'faq.a5' },
+  { questionKey: 'faq.q6', answerKey: 'faq.a6' },
+  { questionKey: 'faq.q7', answerKey: 'faq.a7' },
+  { questionKey: 'faq.q8', answerKey: 'faq.a8' },
+  { questionKey: 'faq.q9', answerKey: 'faq.a9' },
+  { questionKey: 'faq.q10', answerKey: 'faq.a10' },
+] as const
 
 export function FaqSection() {
+  const { t } = useLang()
   return (
     <section id="faq" className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
       <div className="mx-auto w-full max-w-3xl">
         <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-          Questions fréquentes.
+          {t('nav.faq')}
         </h2>
 
         <div className="mt-10 divide-y divide-border border-y border-border">
           {FAQ.map((item) => (
-            <details key={item.question} className="group py-4">
+            <details key={item.questionKey} className="group py-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium">
-                {item.question}
+                {t(item.questionKey)}
                 <span
                   aria-hidden="true"
                   className="text-muted-foreground transition-transform group-open:rotate-45"
@@ -335,7 +254,7 @@ export function FaqSection() {
                   +
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-foreground/70">{item.answer}</p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/70">{t(item.answerKey)}</p>
             </details>
           ))}
         </div>

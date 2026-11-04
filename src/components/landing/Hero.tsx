@@ -1,3 +1,5 @@
+import { useLang } from '@/components/landing/i18n'
+
 type Tone = 'dark' | 'light' | 'paper'
 
 type WindowItem = { title: string; tone: Tone }
@@ -74,36 +76,33 @@ function WindowCard({ title, tone }: { title: string; tone: Tone }) {
 
 /** Hero statique : le texte et les boutons au-dessus, les fenêtres en éventail en bas. */
 export function Hero({ onStart }: { onStart: () => void }) {
+  const { t } = useLang()
   return (
     <section className="relative flex min-h-screen flex-col bg-ink text-cream">
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pt-28 pb-10">
         <h1 className="max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
-          <span className="block">TabNest garde les pages</span>
-          <span className="block">que vous visitez.</span>
+          <span className="block">{t('hero.h1a')}</span>
+          <span className="block">{t('hero.h1b')}</span>
         </h1>
-        <p className="mt-6 max-w-xl text-sm leading-relaxed text-cream/60">
-          Vous fermez vos onglets, rien n'est perdu. Une extension qui enregistre automatiquement
-          vos pages, les range par projets et leur donne une durée de vie. Fini les 50 onglets
-          ouverts par peur de perdre le fil.
-        </p>
+        <p className="mt-6 max-w-xl text-sm leading-relaxed text-cream/60">{t('hero.sub')}</p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={onStart}
             className="inline-flex h-11 items-center gap-2 rounded-full bg-lime px-6 text-sm font-semibold text-lime-foreground transition-colors hover:bg-lime/90"
           >
-            Commencer gratuitement
+            {t('hero.cta')}
           </button>
           <a
             href="/extension"
             className="inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-ink/60 px-6 text-sm font-medium text-cream/85 transition-colors hover:border-white/40 hover:text-cream"
           >
-            Installer l'extension
+            {t('hero.install')}
           </a>
         </div>
         <p className="mt-4 text-xs text-cream/45">
           <a href="#comment" className="underline-offset-2 hover:text-cream/80 hover:underline">
-            Comment ça marche
+            {t('hero.how')}
           </a>
         </p>
       </div>

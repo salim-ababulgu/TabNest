@@ -1,20 +1,22 @@
 import { Check } from 'lucide-react'
 import { BILLING_READY, PLANS } from '@/lib/billing'
+import { useLang } from '@/components/landing/i18n'
 
 export function PricingSection() {
+  const { t, list } = useLang()
   return (
     <section id="tarifs" className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
       <div className="mx-auto w-full max-w-6xl">
         <h2 className="max-w-2xl font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-          Gratuit pour commencer.
+          {t('pricing.title')}
         </h2>
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground/70">
-          TabNest reste gratuit pour garder vos pages. Les formules payantes ajouteront du confort,
-          jamais l’essentiel.
+          {t('pricing.sub')}
         </p>
 
         <div className="mt-12 grid gap-4 md:grid-cols-[1fr_1.35fr_1fr] md:items-start">
           {PLANS.map((plan) => {
+            const features = list(`plans.${plan.id}.features`)
             return (
               <div
                 key={plan.id}
@@ -28,16 +30,16 @@ export function PricingSection() {
                       plan.highlight ? 'text-xl' : 'text-lg'
                     }`}
                   >
-                    {plan.name}
+                    {t(`plans.${plan.id}.name`)}
                   </h3>
                   {plan.highlight && (
                     <span className="flex items-center gap-1.5 text-xs font-medium text-foreground/70">
                       <span className="size-1.5 rounded-full bg-lime" aria-hidden="true" />
-                      Recommandé
+                      {t('pricing.rec')}
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-sm text-foreground/60">{plan.description}</p>
+                <p className="mt-1 text-sm text-foreground/60">{t(`plans.${plan.id}.desc`)}</p>
 
                 <p className="mt-5">
                   <span
@@ -47,11 +49,13 @@ export function PricingSection() {
                   >
                     {plan.price}
                   </span>{' '}
-                  <span className="text-xs text-muted-foreground">{plan.period}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {t(`plans.${plan.id}.period`)}
+                  </span>
                 </p>
 
                 <ul className="mt-5 space-y-2 text-sm text-foreground/75">
-                  {plan.features.map((feature) => (
+                  {features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
                       <Check className="mt-0.5 size-4 shrink-0 text-lime" aria-hidden="true" />
                       <span>{feature}</span>
@@ -65,7 +69,7 @@ export function PricingSection() {
                       href="/"
                       className="inline-flex h-10 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground"
                     >
-                      Commencer gratuitement
+                      {t('pricing.cta.free')}
                     </a>
                   ) : plan.checkoutUrl ? (
                     <a
@@ -74,11 +78,11 @@ export function PricingSection() {
                       rel="noreferrer"
                       className="inline-flex h-10 w-full items-center justify-center rounded-full bg-lime text-sm font-semibold text-lime-foreground transition-colors hover:bg-lime/90"
                     >
-                      Choisir cette offre
+                      {t('pricing.cta.choose')}
                     </a>
                   ) : (
                     <span className="flex h-10 w-full items-center justify-center rounded-full border border-dashed border-border text-xs text-muted-foreground">
-                      Bientôt disponible
+                      {t('pricing.coming')}
                     </span>
                   )}
                 </div>
@@ -88,9 +92,7 @@ export function PricingSection() {
         </div>
 
         <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
-          {BILLING_READY
-            ? 'Paiement sécurisé par Lemon Squeezy, vendeur enregistré. Aucune donnée bancaire n’est stockée par TabNest. Vous pouvez annuler à tout moment.'
-            : 'Les paiements ne sont pas encore ouverts : l’activité est en cours d’immatriculation. Les tarifs affichés sont indicatifs et ne constituent pas une offre de vente.'}
+          {BILLING_READY ? t('pricing.noteReady') : t('pricing.note')}
         </p>
       </div>
     </section>

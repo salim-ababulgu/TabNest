@@ -6,6 +6,7 @@ import { BentoSection, FaqSection, PageTypeMarquee, PinnedSteps } from '@/compon
 import { ComparisonSection } from '@/components/landing/Comparison'
 import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
 import { PricingSection } from '@/components/landing/Pricing'
+import { LangProvider, useLang } from '@/components/landing/i18n'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -43,8 +44,9 @@ function PillButton({
   )
 }
 
-export function Landing({ onStart }: LandingProps) {
+function LandingContent({ onStart }: LandingProps) {
   const [email, setEmail] = useState('')
+  const { lang, setLang, t } = useLang()
 
   return (
     <div id="top" className="relative bg-cream text-ink">
@@ -58,21 +60,32 @@ export function Landing({ onStart }: LandingProps) {
           </a>
           <nav className="hidden items-center gap-7 text-sm text-cream/60 md:flex">
             <a href="#principe" className="transition-colors hover:text-cream">
-              Le principe
+              {t('nav.principle')}
             </a>
             <a href="#produit" className="transition-colors hover:text-cream">
-              Le produit
+              {t('nav.product')}
             </a>
             <a href="#automatisation" className="transition-colors hover:text-cream">
-              L'automatisation
+              {t('nav.automation')}
             </a>
             <a href="#projets" className="transition-colors hover:text-cream">
-              Les projets
+              {t('nav.projects')}
             </a>
           </nav>
-          <PillButton onClick={() => onStart()} className="bg-lime text-lime-foreground hover:bg-lime/90">
-            Essayer
-          </PillButton>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}
+              title={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
+              aria-label={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
+              className="inline-flex h-9 items-center rounded-full border border-white/15 px-3 text-xs font-medium text-cream/70 transition-colors hover:text-cream"
+            >
+              {lang === 'fr' ? 'EN' : 'FR'}
+            </button>
+            <PillButton onClick={() => onStart()} className="bg-lime text-lime-foreground hover:bg-lime/90">
+              {t('nav.try')}
+            </PillButton>
+          </div>
         </div>
       </header>
 
@@ -96,11 +109,10 @@ export function Landing({ onStart }: LandingProps) {
         <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
             <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
-              Vous ne gardez pas des onglets. Vous gardez des intentions.
+              {t('split.principle.title')}
             </h2>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink/60">
-              Lire, comparer, postuler, acheter, apprendre. Fermer une page donne l'impression
-              d'abandonner ce que vous vouliez en faire.
+              {t('split.principle.text')}
             </p>
           </Reveal>
         </div>
@@ -108,7 +120,7 @@ export function Landing({ onStart }: LandingProps) {
           <Reveal delay={150} className="w-full">
             <ScreenshotFrame
               src="/screenshots/dashboard-mobile.png"
-              alt="TabNest sur mobile : les pages gardées, triées par site"
+              alt={t('split.mobile.alt')}
               tone="dark"
               portrait
               className="mx-auto max-w-[240px]"
@@ -121,7 +133,7 @@ export function Landing({ onStart }: LandingProps) {
       <section className="flex items-center bg-ink px-6 py-24 text-center text-cream md:py-32">
         <Reveal className="mx-auto max-w-5xl">
           <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
-            Réunir les pages ne suffit pas. Sinon TabNest ne serait qu'un favori de plus.
+            {t('split.dark')}
           </h2>
         </Reveal>
       </section>
@@ -131,11 +143,10 @@ export function Landing({ onStart }: LandingProps) {
         <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal className="w-full">
             <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              TabNest comprend la page.
+              {t('split.auto.title')}
             </h2>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/55">
-              Une documentation visitée quatre fois n'a pas la même valeur qu'une offre expirée
-              ouverte une seule fois.
+              {t('split.auto.text')}
             </p>
           </Reveal>
         </div>
@@ -143,7 +154,7 @@ export function Landing({ onStart }: LandingProps) {
           <Reveal delay={150} className="w-full">
             <ScreenshotFrame
               src="/screenshots/dashboard-detail.png"
-              alt="Le détail d'une page dans TabNest : raison, durée de vie et visites"
+              alt={t('split.detail.alt')}
               tone="dark"
               crop="center"
             />
@@ -156,12 +167,10 @@ export function Landing({ onStart }: LandingProps) {
         <div className="flex items-center bg-cream px-8 py-24 md:px-14 md:py-28">
           <Reveal className="w-full">
             <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
-              Les pages ne vivent pas seules. Elles appartiennent à vos projets.
+              {t('split.projects.title')}
             </h2>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink/60">
-              Une offre, un comparatif et une documentation n'ont de sens que reliés à ce que vous
-              essayez de faire. TabNest crée ce lien, puis archive le tout quand le projet est
-              terminé.
+              {t('split.projects.text')}
             </p>
           </Reveal>
         </div>
@@ -169,7 +178,7 @@ export function Landing({ onStart }: LandingProps) {
           <Reveal delay={150} className="w-full">
             <ScreenshotFrame
               src="/screenshots/dashboard-grid.png"
-              alt="Les sites empilés dans TabNest, avec les projets dans le menu"
+              alt={t('split.grid.alt')}
               tone="light"
             />
           </Reveal>
@@ -181,18 +190,17 @@ export function Landing({ onStart }: LandingProps) {
         <div className="flex items-center bg-ink px-8 py-24 text-cream md:px-14 md:py-28">
           <Reveal className="w-full">
             <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
-              Votre navigateur peut enfin redevenir un espace de travail.
+              {t('split.focus.title')}
             </h2>
             <ul className="mt-8 space-y-3 text-sm text-cream/65">
               <li className="flex items-center gap-2">
-                <Check className="size-4 text-lime" /> Les pages importantes restent accessibles.
+                <Check className="size-4 text-lime" /> {t('split.focus.l1')}
               </li>
               <li className="flex items-center gap-2">
-                <Check className="size-4 text-lime" /> Les pages temporaires disparaissent
-                naturellement.
+                <Check className="size-4 text-lime" /> {t('split.focus.l2')}
               </li>
               <li className="flex items-center gap-2">
-                <Check className="size-4 text-lime" /> Vous ne triez que les décisions qui comptent.
+                <Check className="size-4 text-lime" /> {t('split.focus.l3')}
               </li>
             </ul>
           </Reveal>
@@ -203,8 +211,8 @@ export function Landing({ onStart }: LandingProps) {
               <div className="grid size-44 place-items-center rounded-full border border-white/10 sm:size-52">
                 <div className="grid size-28 place-items-center rounded-full bg-lime text-center text-lime-foreground sm:size-32">
                   <span>
-                    <span className="block font-heading text-3xl">1</span>
-                    <span className="block text-xs">onglet ouvert</span>
+                    <span className="block font-heading text-3xl">{t('split.focus.number')}</span>
+                    <span className="block text-xs">{t('split.focus.badge')}</span>
                   </span>
                 </div>
               </div>
@@ -223,7 +231,7 @@ export function Landing({ onStart }: LandingProps) {
               <Sparkles className="size-5" />
             </span>
             <h2 className="mx-auto mt-4 max-w-4xl font-heading text-3xl leading-[1.02] tracking-tight sm:text-4xl md:text-5xl">
-              Fermez tous les autres. Gardez TabNest.
+              {t('cta.title')}
             </h2>
           </Reveal>
           <Reveal delay={150}>
@@ -236,20 +244,20 @@ export function Landing({ onStart }: LandingProps) {
             >
               <input
                 type="email"
-                aria-label="Votre adresse e-mail"
+                aria-label={t('cta.email')}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="vous@exemple.fr"
+                placeholder={t('cta.emailPlaceholder')}
                 className="h-10 min-w-0 flex-1 bg-transparent px-4 text-left text-sm text-ink outline-none placeholder:text-ink/40"
               />
               <button
                 type="submit"
                 className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-medium text-cream transition-colors hover:bg-ink/90"
               >
-                Commencer
+                {t('cta.button')}
               </button>
             </form>
-            <p className="mt-4 text-xs text-ink/50">Gratuit pour commencer. Aucun spam.</p>
+            <p className="mt-4 text-xs text-ink/50">{t('cta.note')}</p>
           </Reveal>
         </div>
       </section>
@@ -258,13 +266,9 @@ export function Landing({ onStart }: LandingProps) {
       <section id="confidentialite" className="flex items-center bg-cream px-6 py-24 md:py-32">
         <Reveal className="mx-auto max-w-3xl text-center">
           <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-            Vos pages restent les vôtres.
+            {t('privacy.title')}
           </h2>
-          <p className="mt-6 text-sm leading-relaxed text-ink/60">
-            TabNest stocke l'adresse, le titre et l'image publique de vos pages. Pas de capture
-            d'écran, pas de contenu privé, pas de revente. Vous supprimez ce que vous voulez, quand
-            vous voulez.
-          </p>
+          <p className="mt-6 text-sm leading-relaxed text-ink/60">{t('privacy.text')}</p>
         </Reveal>
       </section>
 
@@ -277,76 +281,82 @@ export function Landing({ onStart }: LandingProps) {
               </span>
               <span className="font-heading text-lg font-semibold">TabNest</span>
             </div>
-            <p className="mt-3 max-w-[22ch] text-ink/50">Un onglet pour garder le fil.</p>
+            <p className="mt-3 max-w-[22ch] text-ink/50">{t('footer.tagline')}</p>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-ink/45">Produit</p>
+            <p className="text-xs font-medium text-ink/45">{t('footer.product')}</p>
             <ul className="mt-3 space-y-2 text-ink/70">
               <li>
                 <a href="#comment" className="hover:text-ink">
-                  Comment ça marche
+                  {t('hero.how')}
                 </a>
               </li>
               <li>
                 <a href="#produit" className="hover:text-ink">
-                  Le produit
+                  {t('nav.product')}
                 </a>
               </li>
               <li>
                 <a href="#faq" className="hover:text-ink">
-                  Questions fréquentes
+                  {t('nav.faq')}
                 </a>
               </li>
               <li>
                 <a href="/extension" className="hover:text-ink">
-                  Installer l’extension
+                  {t('nav.install')}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-ink/45">Légal</p>
+            <p className="text-xs font-medium text-ink/45">{t('footer.legal')}</p>
             <ul className="mt-3 space-y-2 text-ink/70">
               <li>
                 <a href="/confidentialite" className="hover:text-ink">
-                  Confidentialité
+                  {t('footer.privacy')}
                 </a>
               </li>
               <li>
                 <a href="/cgu" className="hover:text-ink">
-                  Conditions d’utilisation
+                  {t('footer.terms')}
                 </a>
               </li>
               <li>
                 <a href="/cookies" className="hover:text-ink">
-                  Cookies
+                  {t('footer.cookies')}
                 </a>
               </li>
               <li>
                 <a href="/remboursement" className="hover:text-ink">
-                  Remboursement
+                  {t('footer.refund')}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-ink/45">Contact</p>
+            <p className="text-xs font-medium text-ink/45">{t('footer.contact')}</p>
             <ul className="mt-3 space-y-2 text-ink/70">
               <li>
                 <a href="mailto:salimababulgu@gmail.com" className="hover:text-ink">
-                  Écrire un e-mail
+                  {t('footer.email')}
                 </a>
               </li>
             </ul>
-            <p className="mt-4 text-[11px] leading-relaxed text-ink/40">
-              Édité par ABA, personne physique. Activité non immatriculée à ce jour.
-            </p>
+            <p className="mt-4 text-[11px] leading-relaxed text-ink/40">{t('footer.editor')}</p>
           </div>
         </div>
       </footer>
     </div>
+  )
+}
+
+export function Landing({ onStart }: LandingProps) {
+  return (
+    <LangProvider>
+      <LandingContent onStart={onStart} />
+    </LangProvider>
   )
 }
