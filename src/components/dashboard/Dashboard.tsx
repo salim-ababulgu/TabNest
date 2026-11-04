@@ -18,9 +18,11 @@ import {
   Pin,
   Plus,
   RefreshCw,
+  Search,
   Settings,
   Sparkles,
   Trash2,
+  X,
   Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -342,6 +344,8 @@ export function Dashboard() {
   const [readAlerts, setReadAlerts] = useState<string[]>([])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const searchRef = useRef<HTMLInputElement>(null)
   const [browserNotifications, setBrowserNotifications] = useState<
     NotificationPermission | 'unsupported'
   >(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission)
@@ -474,6 +478,17 @@ export function Dashboard() {
 
   const alerts = buildAlerts(pages, extensionStatus)
   const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
+
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        searchRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', handleShortcut)
+    return () => window.removeEventListener('keydown', handleShortcut)
+  }, [])
 
   useEffect(() => {
     if (pages.length > 0) trackEvent('has-pages')
@@ -676,7 +691,12 @@ export function Dashboard() {
     return pages.filter((page) => !page.reason || page.reason === 'decide').length
   }
 
+  const normalizedQuery = query.trim().toLowerCase()
   const visiblePages = pages.filter((page) => {
+    if (normalizedQuery) {
+      const haystack = `${page.title ?? ''} ${page.url} ${domainOf(page.url)}`.toLowerCase()
+      if (!haystack.includes(normalizedQuery)) return false
+    }
     if (selectedGroup) return page.group_id === selectedGroup
     if (view === 'all') return true
     if (view === 'finish') return page.reason === 'finish'
@@ -1137,7 +1157,35 @@ export function Dashboard() {
                   {view === 'today' && !selectedGroup ? ' à traiter sous 48 h' : ''}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative">
+                  <Search
+                    className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <Input
+                    ref={searchRef}
+                    type="search"
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Escape') setQuery('')
+                    }}
+                    placeholder="Rechercher un titre, un site…"
+                    aria-label="Rechercher dans mes pages"
+                    className="h-8 w-44 pr-8 pl-8 text-xs md:w-60"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery('')}
+                      aria-label="Effacer la recherche"
+                      className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3.5" aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
                 {selectedGroup && (
                   <Button variant="outline" size="sm" onClick={() => setSelectedGroup(null)}>
                     Tout voir
@@ -1169,9 +1217,24 @@ export function Dashboard() {
                 ))}
               </div>
             ) : sites.length === 0 ? (
-              <div className="mt-6 rounded-xl border border-dashed bg-card/50 px-4 py-12 text-center text-sm text-muted-foreground">
-                Vos pages apparaîtront ici dès que l'extension sera active (ou ajoute-en une
-                manuellement).
+              <div className="mt-6 rounded-xl border border-dashed bg-card px-4 py-12 text-center text-sm text-muted-foreground">
+                {query ? (
+                  <>
+                    Aucune page ne correspond à « {query} ».{' '}
+                    <button
+                      type="button"
+                      onClick={() => setQuery('')}
+                      className="underline underline-offset-2 hover:text-foreground"
+                    >
+                      Effacer la recherche
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Vos pages apparaîtront ici dès que l&apos;extension sera active (ou ajoute-en
+                    une manuellement).
+                  </>
+                )}
               </div>
             ) : (
               <div ref={gridRef} data-dash-anim className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
