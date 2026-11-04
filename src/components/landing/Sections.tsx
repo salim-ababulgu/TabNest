@@ -301,6 +301,26 @@ const FAQ = [
       'Elles basculent dans les archives et ne sont plus affichées. Vous pouvez les supprimer définitivement à tout moment, et la suppression de votre compte efface toutes vos données.',
   },
   {
+    question: 'Pourquoi pas une extension de gestion d’onglets ou de favoris ?',
+    answer:
+      'Les extensions classiques gardent des sessions ou des favoris sur un seul navigateur. TabNest garde la page avec la raison de la garder et une durée de vie, puis la retrouve sur tous vos appareils grâce à votre compte.',
+  },
+  {
+    question: 'Je change d’ordinateur : je retrouve mes pages ?',
+    answer:
+      'Oui. Vos pages sont dans votre compte, pas dans le navigateur : connectez-vous depuis un autre appareil et elles sont là.',
+  },
+  {
+    question: 'Quelles permissions l’extension demande-t-elle ?',
+    answer:
+      'Lire l’adresse et le titre de la page active, et stocker votre session. Elle n’a accès ni au contenu des pages, ni à vos mots de passe, ni à vos autres onglets.',
+  },
+  {
+    question: 'Que se passe-t-il si je ferme un onglet ou si le navigateur redémarre ?',
+    answer:
+      'Rien n’est perdu : la page a déjà été enregistrée au moment de la visite. C’est l’inverse de la session qui dépend du navigateur.',
+  },
+  {
     question: 'TabNest fonctionne-t-il sur mobile ?',
     answer:
       'L’extension est disponible sur les navigateurs de bureau (Chrome, Edge). Les navigateurs mobiles limitent les extensions ; nous travaillons sur une solution pour téléphone.',

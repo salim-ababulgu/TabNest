@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Check, Clock, Sparkles } from 'lucide-react'
 import { Hero } from '@/components/landing/Hero'
 import { BentoSection, FaqSection, PageTypeMarquee, PinnedSteps } from '@/components/landing/Sections'
+import { ComparisonSection } from '@/components/landing/Comparison'
 import { PricingSection } from '@/components/landing/Pricing'
 
 type LandingProps = { onStart: (email?: string) => void }
@@ -90,6 +91,8 @@ export function Landing({ onStart }: LandingProps) {
       </div>
 
       <BentoSection />
+
+      <ComparisonSection />
 
       <PricingSection />
 
