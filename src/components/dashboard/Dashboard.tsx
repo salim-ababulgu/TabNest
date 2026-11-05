@@ -57,10 +57,9 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { MobileMenu, MobileTabBar } from '@/components/dashboard/MobileNav'
 import { useAuth } from '@/lib/auth'
-import { KIND_LABELS, PAGE_KINDS, describeExpiry } from '@/lib/lifetime'
+import { PAGE_KINDS } from '@/lib/lifetime'
 import type { PageKind } from '@/lib/lifetime'
-import { REASON_LABELS, REASON_ORDER } from '@/lib/reason'
-import type { Reason } from '@/lib/reason'
+import { REASON_ORDER, isReason } from '@/lib/reason'
 import {
   archivePage,
   createGroup,
@@ -79,6 +78,8 @@ import {
   type ExtensionStatus,
 } from '@/lib/alerts'
 import type { AppAlert } from '@/lib/alerts'
+import { useLangValue } from '@/components/landing/i18n'
+import { fmt } from '@/lib/i18n-dash'
 import { trackEvent } from '@/lib/analytics'
 import { buildExport, buildMarkdownList, downloadExport } from '@/lib/export'
 import { Toasts } from '@/components/dashboard/Toasts'
@@ -96,26 +97,26 @@ type View =
   | 'ephemeral'
   | 'archives'
 
-const VIEWS: { id: View; label: string; icon: ComponentType<{ className?: string }> }[] = [
-  { id: 'today', label: "Aujourd'hui", icon: Clock },
-  { id: 'finish', label: 'À finir', icon: ListTodo },
-  { id: 'explore', label: 'Pistes', icon: Compass },
-  { id: 'remember', label: 'À retenir', icon: Bookmark },
-  { id: 'all', label: 'Tous les retours', icon: LayoutGrid },
-  { id: 'resources', label: 'Ressources', icon: BookOpen },
-  { id: 'ephemeral', label: 'Outils récurrents', icon: Zap },
-  { id: 'archives', label: 'Archives', icon: Archive },
+const VIEWS: { id: View; labelKey: string; icon: ComponentType<{ className?: string }> }[] = [
+  { id: 'today', labelKey: 'view.today', icon: Clock },
+  { id: 'finish', labelKey: 'view.finish', icon: ListTodo },
+  { id: 'explore', labelKey: 'view.explore', icon: Compass },
+  { id: 'remember', labelKey: 'view.remember', icon: Bookmark },
+  { id: 'all', labelKey: 'view.all', icon: LayoutGrid },
+  { id: 'resources', labelKey: 'view.resources', icon: BookOpen },
+  { id: 'ephemeral', labelKey: 'view.ephemeral', icon: Zap },
+  { id: 'archives', labelKey: 'view.archives', icon: Archive },
 ]
 
 const VIEW_TITLES: Record<View, string> = {
-  today: "À décider aujourd'hui",
-  finish: 'À finir',
-  explore: 'Pistes',
-  remember: 'À retenir',
-  all: 'Tous les retours',
-  resources: 'Ressources',
-  ephemeral: 'Outils récurrents',
-  archives: 'Archives',
+  today: 'view.todayTitle',
+  finish: 'view.finish',
+  explore: 'view.explore',
+  remember: 'view.remember',
+  all: 'view.all',
+  resources: 'view.resources',
+  ephemeral: 'view.ephemeral',
+  archives: 'view.archives',
 }
 
 const NO_GROUP = 'none'
@@ -213,15 +214,15 @@ function formatToday(): string {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
-function timeAgo(iso: string | null): string {
-  if (!iso) return 'jamais'
+function timeAgo(iso: string | null, t: (key: string) => string): string {
+  if (!iso) return t('dash.never')
   const diff = Date.now() - new Date(iso).getTime()
   const minutes = Math.round(diff / 60000)
-  if (minutes < 1) return "à l'instant"
-  if (minutes < 60) return `il y a ${minutes} min`
+  if (minutes < 1) return t('time.now')
+  if (minutes < 60) return fmt(t('time.min'), { n: minutes })
   const hours = Math.round(minutes / 60)
-  if (hours < 24) return `il y a ${hours} h`
-  return `il y a ${Math.round(hours / 24)} j`
+  if (hours < 24) return fmt(t('time.hours'), { n: hours })
+  return fmt(t('time.days'), { n: Math.round(hours / 24) })
 }
 
 function aggregateSites(pages: Page[]): Site[] {
@@ -311,6 +312,7 @@ function Modal({
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
+  const { t } = useLangValue()
   const [groups, setGroups] = useState<Group[]>([])
   const [pages, setPages] = useState<Page[]>([])
   const [loading, setLoading] = useState(true)
@@ -361,7 +363,7 @@ export function Dashboard() {
       setGroups(nextGroups)
       setPages(nextPages)
     } catch (cause) {
-      if (!silent) setError(cause instanceof Error ? cause.message : 'Erreur de chargement')
+      if (!silent) setError(cause instanceof Error ? cause.message : t('dash.loadError'))
     } finally {
       if (!silent) setLoading(false)
     }
@@ -490,35 +492,35 @@ export function Dashboard() {
         ? 'linked'
         : 'other-account'
   const extensionLabel: Record<ExtensionStatus, string> = {
-    absent: 'Extension non détectée',
-    'no-account': 'Extension installée, non connectée',
-    'other-account': 'Extension reliée à un autre compte',
-    linked: 'Extension reliée à votre compte',
+    absent: 'dash.statusAbsent',
+    'no-account': 'dash.statusNoAccount',
+    'other-account': 'dash.statusOtherAccount',
+    linked: 'dash.statusLinked',
   }
 
-  const alerts = buildAlerts(pages, extensionStatus)
+  const alerts = buildAlerts(pages, extensionStatus, t)
   const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
 
   const hasReason = pages.some((page) => page.reason && page.reason !== 'decide')
   const onboardingSteps = [
     {
-      label: "Installer l'extension",
-      detail:
+      labelKey: 'dash.onboarding.s1.label',
+      detailKey:
         extensionStatus === 'absent'
-          ? 'Elle enregistre automatiquement les pages que vous visitez.'
+          ? 'dash.onboarding.s1.absent'
           : extensionStatus === 'linked'
-            ? 'Connectée à votre compte.'
-            : 'Elle est installée : connectez votre compte depuis son icône.',
+            ? 'dash.onboarding.s1.linked'
+            : 'dash.onboarding.s1.pending',
       done: extensionStatus === 'linked',
     },
     {
-      label: 'Enregistrer une première page',
-      detail: 'Visitez une page avec l’extension active, ou ajoutez-en une à la main.',
+      labelKey: 'dash.onboarding.s2.label',
+      detailKey: 'dash.onboarding.s2.detail',
       done: pages.length > 0,
     },
     {
-      label: 'Choisir une raison',
-      detail: 'Une raison fixe la durée de vie : à décider, à finir, piste, à retenir.',
+      labelKey: 'dash.onboarding.s3.label',
+      detailKey: 'dash.onboarding.s3.detail',
       done: hasReason,
     },
   ]
@@ -529,7 +531,7 @@ export function Dashboard() {
   useEffect(() => {
     if (onboardingDone && !onboardingDoneRef.current) {
       onboardingDoneRef.current = true
-      notify('success', 'Tout est en place, votre nid est prêt')
+      notify('success', t('dash.onboarding.done'))
       trackEvent('onboarding-complete')
     }
   }, [onboardingDone, notify])
@@ -580,9 +582,9 @@ export function Dashboard() {
     const permission = await Notification.requestPermission()
     setBrowserNotifications(permission)
     if (permission === 'granted') {
-      notify('success', 'Notifications du navigateur activées')
+      notify('success', t('dash.toast.browserOn'))
     } else if (permission === 'denied') {
-      notify('info', 'Notifications bloquées : autorisez-les dans les réglages du navigateur')
+      notify('info', t('dash.toast.browserOff'))
     }
   }
 
@@ -605,9 +607,9 @@ export function Dashboard() {
       setGroupId(NO_GROUP)
       setShowAddPage(false)
       await load()
-      notify('success', 'Page ajoutée à votre nid')
+      notify('success', t('dash.toast.pageAdded'))
     } catch (cause) {
-      notify('error', cause instanceof Error ? cause.message : "Erreur lors de l'ajout")
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.addError'))
     } finally {
       setBusy(false)
     }
@@ -624,9 +626,9 @@ export function Dashboard() {
       setGroupId(group.id)
       setShowAddProject(false)
       await load()
-      notify('success', 'Projet créé')
+      notify('success', t('dash.toast.projectCreated'))
     } catch (cause) {
-      notify('error', cause instanceof Error ? cause.message : 'Erreur lors de la création du projet')
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.projectError'))
     } finally {
       setBusy(false)
     }
@@ -638,7 +640,7 @@ export function Dashboard() {
       await visitPage(page)
       await load()
     } catch (cause) {
-      notify('error', cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
     }
   }
 
@@ -649,10 +651,12 @@ export function Dashboard() {
       await load()
       notify(
         'success',
-        reason ? `Raison enregistrée : ${REASON_LABELS[reason as Reason] ?? reason}` : 'Raison retirée',
+        reason
+          ? fmt(t('dash.toast.reasonSaved'), { r: isReason(reason) ? t(`reason.${reason}`) : reason })
+          : t('dash.toast.reasonRemoved'),
       )
     } catch (cause) {
-      notify('error', cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
     }
   }
 
@@ -676,12 +680,12 @@ export function Dashboard() {
 
     try {
       await setPinned(ids, next)
-      notify('success', next ? 'Site épinglé en haut de la liste' : 'Site désépinglé')
+      notify('success', next ? t('dash.toast.pinned') : t('dash.toast.unpinned'))
     } catch (cause) {
       setPages((current) =>
         current.map((page) => (idSet.has(page.id) ? { ...page, pinned: !next } : page)),
       )
-      notify('error', cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
     }
   }
 
@@ -708,9 +712,9 @@ export function Dashboard() {
 
     try {
       await archivePage(page.id)
-      notify('success', 'Page retirée')
+      notify('success', t('dash.toast.pageRemoved'))
     } catch (cause) {
-      notify('error', cause instanceof Error ? cause.message : 'Erreur')
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
       await load(true)
     }
   }
@@ -727,18 +731,18 @@ export function Dashboard() {
   function handleExportJson() {
     try {
       downloadExport(buildExport(groups, pages))
-      notify('success', 'Export JSON téléchargé')
+      notify('success', t('dash.toast.exportDone'))
     } catch {
-      notify('error', "L'export a échoué")
+      notify('error', t('dash.toast.exportError'))
     }
   }
 
   async function handleCopyLinks() {
     try {
       await navigator.clipboard.writeText(buildMarkdownList(groups, pages))
-      notify('success', 'Liste des liens copiée')
+      notify('success', t('dash.toast.linksCopied'))
     } catch {
-      notify('error', 'Impossible de copier dans le presse-papiers')
+      notify('error', t('dash.toast.copyError'))
     }
   }
 
@@ -788,7 +792,21 @@ export function Dashboard() {
       return b.visits - a.visits
     })
     .slice(0, 10)
-  const currentTitle = selectedGroup ? groupName(selectedGroup) ?? 'Projet' : VIEW_TITLES[view]
+  const currentTitle = selectedGroup
+    ? groupName(selectedGroup) ?? t('dash.project')
+    : t(VIEW_TITLES[view])
+
+  function expiryText(page: Page): string {
+    if (!page.expires_at) return t('exp.none')
+    const diff = new Date(page.expires_at).getTime() - Date.now()
+    if (diff <= 0) {
+      const days = Math.ceil(Math.abs(diff) / (24 * 60 * 60 * 1000))
+      return days <= 1 ? t('exp.expired') : fmt(t('exp.expiredDays'), { n: days })
+    }
+    const hours = Math.ceil(diff / (60 * 60 * 1000))
+    if (hours < 24) return fmt(t('exp.hours'), { n: hours })
+    return fmt(t('exp.days'), { n: Math.ceil(hours / 24) })
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -813,8 +831,8 @@ export function Dashboard() {
           <button
             type="button"
             onClick={toggleSidebar}
-            title={sidebarCollapsed ? 'Déplier le menu' : 'Replier le menu'}
-            aria-label={sidebarCollapsed ? 'Déplier le menu' : 'Replier le menu'}
+            title={sidebarCollapsed ? t('dash.expandMenu') : t('dash.collapseMenu')}
+            aria-label={sidebarCollapsed ? t('dash.expandMenu') : t('dash.collapseMenu')}
             aria-expanded={!sidebarCollapsed}
             className={cn(
               'rounded-md p-1 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground',
@@ -843,8 +861,8 @@ export function Dashboard() {
                     setView(item.id)
                     setSelectedGroup(null)
                   }}
-                  title={sidebarCollapsed ? item.label : undefined}
-                  aria-label={sidebarCollapsed ? item.label : undefined}
+                  title={sidebarCollapsed ? t(item.labelKey) : undefined}
+                  aria-label={sidebarCollapsed ? t(item.labelKey) : undefined}
                   className={cn(
                     'flex items-center gap-2.5 rounded-lg text-sm transition-colors',
                     sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
@@ -856,7 +874,7 @@ export function Dashboard() {
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
                   {!sidebarCollapsed && (
                     <>
-                      <span className="flex-1 text-left">{item.label}</span>
+                      <span className="flex-1 text-left">{t(item.labelKey)}</span>
                       {count > 0 && (
                         <span className="text-xs tabular-nums opacity-70">{count}</span>
                       )}
@@ -874,14 +892,16 @@ export function Dashboard() {
             )}
           >
             {!sidebarCollapsed && (
-              <span className="text-xs font-medium text-sidebar-foreground/60">Projets</span>
+              <span className="text-xs font-medium text-sidebar-foreground/60">
+                {t('dash.projects')}
+              </span>
             )}
             <button
               type="button"
               onClick={() => setShowAddProject(true)}
               className="rounded-md p-1 text-sidebar-foreground/50 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-              aria-label="Nouveau projet"
-              title="Nouveau projet"
+              aria-label={t('dash.newProject')}
+              title={t('dash.newProject')}
             >
               <Plus className="size-3.5" aria-hidden="true" />
             </button>
@@ -890,7 +910,9 @@ export function Dashboard() {
           <div className="flex flex-col gap-0.5">
             {groups.length === 0
               ? !sidebarCollapsed && (
-                  <p className="px-3 py-2 text-xs text-sidebar-foreground/45">Aucun projet.</p>
+                  <p className="px-3 py-2 text-xs text-sidebar-foreground/45">
+                    {t('dash.noProjects')}
+                  </p>
                 )
               : groups.map((group) => {
                   const active = selectedGroup === group.id
@@ -939,8 +961,8 @@ export function Dashboard() {
               setShowSettings(true)
               setSelectedGroup(null)
             }}
-            title="Paramètres"
-            aria-label="Paramètres"
+            title={t('dash.settings')}
+            aria-label={t('dash.settings')}
             className={cn(
               'flex w-full items-center gap-2.5 rounded-lg text-sm transition-colors',
               sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
@@ -950,7 +972,7 @@ export function Dashboard() {
             )}
           >
             <Settings className="size-4 shrink-0" aria-hidden="true" />
-            {!sidebarCollapsed && <span>Paramètres</span>}
+            {!sidebarCollapsed && <span>{t('dash.settings')}</span>}
           </button>
         </div>
 
@@ -966,8 +988,8 @@ export function Dashboard() {
               <button
                 type="button"
                 onClick={() => signOut()}
-                title="Se déconnecter"
-                aria-label="Se déconnecter"
+                title={t('dash.logout')}
+                aria-label={t('dash.logout')}
                 className="rounded-md p-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
               >
                 <LogOut className="size-4" aria-hidden="true" />
@@ -982,7 +1004,7 @@ export function Dashboard() {
                 className="mt-2 inline-flex items-center gap-1.5 px-2 text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground"
               >
                 <LogOut className="size-3.5" aria-hidden="true" />
-                Se déconnecter
+                {t('dash.logout')}
               </button>
             </>
           )}
@@ -996,7 +1018,7 @@ export function Dashboard() {
               variant="outline"
               size="icon-sm"
               onClick={() => setMobileMenuOpen(true)}
-              aria-label="Ouvrir le menu"
+              aria-label={t('dash.openMenu')}
             >
               <Menu className="size-4" aria-hidden="true" />
             </Button>
@@ -1011,8 +1033,8 @@ export function Dashboard() {
               variant="outline"
               size="icon-sm"
               onClick={() => void handleRefresh()}
-              title="Rafraîchir"
-              aria-label="Rafraîchir"
+              title={t('dash.refresh')}
+              aria-label={t('dash.refresh')}
             >
               <RefreshCw className={cn('size-3.5', refreshing && 'animate-spin')} />
             </Button>
@@ -1027,11 +1049,11 @@ export function Dashboard() {
                 <Button
                   variant="outline"
                   size="icon-sm"
-                  title="Alertes"
+                  title={t('dash.alerts')}
                   aria-label={
                     unreadAlerts.length > 0
-                      ? `Alertes (${unreadAlerts.length} non lues)`
-                      : 'Alertes'
+                      ? fmt(t('dash.alertsUnread'), { n: unreadAlerts.length })
+                      : t('dash.alerts')
                   }
                   className="relative"
                 >
@@ -1048,16 +1070,18 @@ export function Dashboard() {
               </PopoverTrigger>
               <PopoverContent align="end" className="w-[calc(100vw-2rem)] max-w-[340px] p-0">
                 <div className="flex items-center justify-between border-b border-border px-4 py-3">
-                  <p className="text-sm font-medium">Alertes</p>
+                  <p className="text-sm font-medium">{t('dash.alerts')}</p>
                   <span className="text-xs text-muted-foreground">
-                    {unreadAlerts.length > 0 ? `${unreadAlerts.length} non lue(s)` : 'À jour'}
+                    {unreadAlerts.length > 0
+                      ? fmt(t('dash.unreadCount'), { n: unreadAlerts.length })
+                      : t('dash.upToDate')}
                   </span>
                 </div>
 
                 <div className="max-h-[55vh] overflow-y-auto p-2">
                   {alerts.length === 0 ? (
                     <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-                      Aucune alerte. Tout est rangé.
+                      {t('dash.noAlerts')}
                     </p>
                   ) : (
                     <ul className="space-y-1">
@@ -1095,8 +1119,8 @@ export function Dashboard() {
                 <div className="border-t border-border px-4 py-2.5">
                   <p className="text-[11px] text-muted-foreground">
                     {browserNotifications === 'granted'
-                      ? 'Aussi envoyées sur votre système.'
-                      : 'Cliquez une alerte pour ouvrir la section.'}
+                      ? t('dash.alertFooterBrowser')
+                      : t('dash.alertFooterHint')}
                   </p>
                 </div>
               </PopoverContent>
@@ -1108,14 +1132,14 @@ export function Dashboard() {
                   (extensionStatus === 'linked' ? 'bg-lime' : 'bg-muted-foreground/40')
                 }
               />
-              {extensionLabel[extensionStatus]}
+              {t(extensionLabel[extensionStatus])}
             </span>
             {extensionStatus !== 'linked' && (
               <a
                 href="/extension"
                 className="hidden text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline md:inline"
               >
-                {extensionStatus === 'absent' ? 'Installer l’extension' : 'Connecter l’extension'}
+                {t(extensionStatus === 'absent' ? 'dash.installLink' : 'dash.connectLink')}
               </a>
             )}
           </div>
@@ -1134,15 +1158,12 @@ export function Dashboard() {
           <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-5 py-8 md:px-8 md:py-10">
             <div className="relative">
               <h1 className="mt-3 max-w-xl font-heading text-4xl leading-[1.05] font-medium tracking-tight md:text-5xl">
-                Ce qui compte revient au bon moment.
+                {t('dash.hero.title')}
               </h1>
-              <p className="mt-4 max-w-lg text-sm text-muted-foreground">
-                Fermez vos onglets l'esprit léger. TabNest trie le bruit, préserve l'important et
-                vous le rappelle quand il faut.
-              </p>
+              <p className="mt-4 max-w-lg text-sm text-muted-foreground">{t('dash.hero.sub')}</p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-xs">
                 <span className="size-1.5 rounded-full bg-lime" />
-                {pages.length} pages gardées
+                {fmt(t('dash.pagesKept'), { n: pages.length })}
               </div>
             </div>
           </section>
@@ -1152,17 +1173,19 @@ export function Dashboard() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h2 className="font-heading text-xl font-semibold">
-                    Trois gestes pour commencer
+                    {t('dash.onboarding.title')}
                   </h2>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {onboardingSteps.filter((step) => step.done).length} sur{' '}
-                    {onboardingSteps.length} faits.
+                    {fmt(t('dash.onboarding.progress'), {
+                      done: onboardingSteps.filter((step) => step.done).length,
+                      total: onboardingSteps.length,
+                    })}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={hideOnboarding}
-                  aria-label="Masquer ce guide"
+                  aria-label={t('dash.onboarding.hide')}
                   className="shrink-0 rounded p-1 text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" aria-hidden="true" />
@@ -1171,7 +1194,7 @@ export function Dashboard() {
 
               <ol className="mt-5 space-y-3">
                 {onboardingSteps.map((step) => (
-                  <li key={step.label} className="flex items-start gap-3">
+                  <li key={step.labelKey} className="flex items-start gap-3">
                     <span
                       aria-hidden="true"
                       className={cn(
@@ -1185,25 +1208,25 @@ export function Dashboard() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className={cn('text-sm font-medium', step.done && 'text-foreground/55')}>
-                        {step.label}
+                        {t(step.labelKey)}
                       </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{step.detail}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{t(step.detailKey)}</p>
                     </div>
                   </li>
                 ))}
               </ol>
 
               <div className="mt-5 flex flex-wrap items-center gap-2">
-                {onboardingNext?.label === "Installer l'extension" ? (
+                {onboardingNext?.labelKey === 'dash.onboarding.s1.label' ? (
                   <a
                     href="/extension"
                     className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground"
                   >
-                    Installer l'extension
+                    {t('dash.onboarding.cta.install')}
                   </a>
-                ) : onboardingNext?.label === 'Enregistrer une première page' ? (
+                ) : onboardingNext?.labelKey === 'dash.onboarding.s2.label' ? (
                   <Button size="sm" onClick={() => setShowAddPage(true)}>
-                    Ajouter une page manuellement
+                    {t('dash.onboarding.cta.add')}
                   </Button>
                 ) : (
                   <Button
@@ -1213,7 +1236,7 @@ export function Dashboard() {
                       setSelectedGroup(null)
                     }}
                   >
-                    Aller à « Aujourd'hui »
+                    {t('dash.onboarding.cta.today')}
                   </Button>
                 )}
               </div>
@@ -1223,8 +1246,10 @@ export function Dashboard() {
           {topSites.length > 0 && (
             <section data-dash-anim className="mt-8">
               <div className="flex items-center justify-between">
-                <h2 className="font-heading text-lg font-medium tracking-tight">Les plus visités</h2>
-                <span className="text-xs text-muted-foreground">Accès rapide</span>
+                <h2 className="font-heading text-lg font-medium tracking-tight">
+                  {t('dash.mostVisited')}
+                </h2>
+                <span className="text-xs text-muted-foreground">{t('dash.quickAccess')}</span>
               </div>
               <div className="mt-3 flex gap-4 overflow-x-auto pb-2">
                 {topSites.map((site) => (
@@ -1251,8 +1276,8 @@ export function Dashboard() {
               <div>
                 <h2 className="font-heading text-2xl font-medium tracking-tight">{currentTitle}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {sites.length} site(s) · {visiblePages.length} page(s)
-                  {view === 'today' && !selectedGroup ? ' à traiter sous 48 h' : ''}
+                  {fmt(t('dash.counts'), { s: sites.length, p: visiblePages.length })}
+                  {view === 'today' && !selectedGroup ? ` ${t('dash.todayHint')}` : ''}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -1269,15 +1294,15 @@ export function Dashboard() {
                     onKeyDown={(event) => {
                       if (event.key === 'Escape') setQuery('')
                     }}
-                    placeholder="Rechercher un titre, un site…"
-                    aria-label="Rechercher dans mes pages"
+                    placeholder={t('dash.searchPlaceholder')}
+                    aria-label={t('dash.searchAria')}
                     className="h-8 w-44 pr-8 pl-8 text-xs md:w-60"
                   />
                   {query && (
                     <button
                       type="button"
                       onClick={() => setQuery('')}
-                      aria-label="Effacer la recherche"
+                      aria-label={t('dash.searchClear')}
                       className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
                     >
                       <X className="size-3.5" aria-hidden="true" />
@@ -1286,14 +1311,14 @@ export function Dashboard() {
                 </div>
                 {selectedGroup && (
                   <Button variant="outline" size="sm" onClick={() => setSelectedGroup(null)}>
-                    Tout voir
+                    {t('dash.showAll')}
                   </Button>
                 )}
                 <Button variant="outline" size="sm" onClick={() => setShowAddProject(true)}>
-                  <Plus className="size-3.5" /> Projet
+                  <Plus className="size-3.5" /> {t('dash.project')}
                 </Button>
                 <Button size="sm" onClick={() => setShowAddPage(true)}>
-                  <Plus className="size-3.5" /> Nouvelle page
+                  <Plus className="size-3.5" /> {t('dash.newPage')}
                 </Button>
               </div>
             </div>
@@ -1318,19 +1343,18 @@ export function Dashboard() {
               <div className="mt-6 rounded-xl border border-dashed bg-card px-4 py-12 text-center text-sm text-muted-foreground">
                 {query ? (
                   <>
-                    Aucune page ne correspond à « {query} ».{' '}
+                    {fmt(t('dash.noResults'), { q: query })}{' '}
                     <button
                       type="button"
                       onClick={() => setQuery('')}
                       className="underline underline-offset-2 hover:text-foreground"
                     >
-                      Effacer la recherche
+                      {t('dash.searchClear')}
                     </button>
                   </>
                 ) : (
                   <>
-                    Vos pages apparaîtront ici dès que l&apos;extension sera active (ou ajoute-en
-                    une manuellement).
+                    {t('dash.emptyState')}
                   </>
                 )}
               </div>
@@ -1392,7 +1416,7 @@ export function Dashboard() {
                             <span className="truncate">{site.domain}</span>
                             {site.pinned && (
                               <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-[10px] font-medium text-lime-foreground">
-                                Épinglé
+                                {t('dash.pinned')}
                               </span>
                             )}
                           </div>
@@ -1407,19 +1431,22 @@ export function Dashboard() {
                             {site.domain}
                           </button>
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {site.pages.length} pages, {site.visits} visites,{' '}
-                            {timeAgo(site.lastVisit)}
+                            {fmt(t('dash.cardMeta'), {
+                              p: site.pages.length,
+                              v: site.visits,
+                              when: timeAgo(site.lastVisit, t),
+                            })}
                           </p>
                           {site.reason && (
                             <span className="mt-2 inline-flex w-fit rounded-full border px-2 py-0.5 text-[10px] text-muted-foreground">
-                              {REASON_LABELS[site.reason as Reason] ?? site.reason}
+                              {isReason(site.reason) ? t(`reason.${site.reason}`) : site.reason}
                             </span>
                           )}
                           <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3">
                             <div className="flex flex-wrap gap-1">
                               {site.pages.slice(0, 3).map((page) => (
                                 <Badge key={page.id} variant="outline">
-                                  {KIND_LABELS[page.kind as PageKind] ?? page.kind}
+                                  {t(`kind.${page.kind}`)}
                                 </Badge>
                               ))}
                             </div>
@@ -1428,13 +1455,13 @@ export function Dashboard() {
                                 size="icon-sm"
                                 variant={site.pinned ? 'default' : 'outline'}
                                 onClick={() => void handleTogglePin(site)}
-                                title={site.pinned ? 'Désépingler' : 'Épingler'}
-                                aria-label={site.pinned ? 'Désépingler' : 'Épingler'}
+                                title={site.pinned ? t('dash.unpinAction') : t('dash.pinAction')}
+                                aria-label={site.pinned ? t('dash.unpinAction') : t('dash.pinAction')}
                               >
                                 <Pin className="size-3.5" />
                               </Button>
                               <Button size="sm" variant="outline" onClick={() => setSelectedSite(site)}>
-                                Détails
+                                {t('dash.details')}
                               </Button>
                             </div>
                           </div>
@@ -1455,10 +1482,14 @@ export function Dashboard() {
             <div className="flex flex-wrap items-center gap-3">
               <SiteAvatar site={selectedSite} className="size-10 rounded-lg border" />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">{selectedSite.visits} visite(s) au total</p>
+                <p className="text-sm font-medium">
+                  {fmt(t('dash.visitsTotal'), { n: selectedSite.visits })}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  {selectedSite.pages.length} pages, dernière visite{' '}
-                  {timeAgo(selectedSite.lastVisit)}
+                  {fmt(t('dash.siteMeta'), {
+                    p: selectedSite.pages.length,
+                    when: timeAgo(selectedSite.lastVisit, t),
+                  })}
                 </p>
               </div>
               <Button
@@ -1467,13 +1498,12 @@ export function Dashboard() {
                 onClick={() => void handleTogglePin(selectedSite)}
               >
                 <Pin className="size-3.5" />
-                {selectedSite.pinned ? 'Épinglé' : 'Épingler'}
+                {selectedSite.pinned ? t('dash.pinned') : t('dash.pinAction')}
               </Button>
             </div>
 
             <div className="space-y-2">
               {uniquePages(selectedSite.pages).map((page) => {
-                const expiry = describeExpiry(page.expires_at)
                 return (
                   <div key={page.id} className="flex flex-wrap items-center gap-2 rounded-lg border p-2">
                     <div className="min-w-0 flex-1 basis-full sm:basis-0">
@@ -1487,7 +1517,7 @@ export function Dashboard() {
                         {page.title || page.url}
                       </a>
                       <p className="truncate text-[11px] text-muted-foreground">
-                        {page.visit_count} visite(s), {expiry.text}
+                        {fmt(t('dash.visits'), { n: page.visit_count })}, {expiryText(page)}
                       </p>
                     </div>
                     <div className="ml-auto flex items-center gap-1.5">
@@ -1498,13 +1528,13 @@ export function Dashboard() {
                       }
                     >
                       <SelectTrigger size="sm" className="w-28">
-                        <SelectValue placeholder="Pourquoi ?" />
+                        <SelectValue placeholder={t('dash.why')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">Non décidé</SelectItem>
+                        <SelectItem value="none">{t('dash.none')}</SelectItem>
                         {REASON_ORDER.map((reason) => (
                           <SelectItem key={reason} value={reason}>
-                            {REASON_LABELS[reason]}
+                            {t(`reason.${reason}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -1514,8 +1544,8 @@ export function Dashboard() {
                         size="icon-sm"
                         variant="outline"
                         onClick={() => handleVisit(page)}
-                        title="J'ai visité"
-                        aria-label="J'ai visité"
+                        title={t('dash.visitAction')}
+                        aria-label={t('dash.visitAction')}
                       >
                         <Clock className="size-3.5" />
                       </Button>
@@ -1546,30 +1576,30 @@ export function Dashboard() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Retirer cette page ?</AlertDialogTitle>
+            <AlertDialogTitle>{t('dash.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              « {pageToDelete?.title || pageToDelete?.url || ''} » sera retirée de votre liste.
+              {fmt(t('dash.deleteDesc'), { t: pageToDelete?.title || pageToDelete?.url || '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t('dash.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={() => {
                 if (pageToDelete) void confirmDelete(pageToDelete)
               }}
             >
-              Retirer
+              {t('dash.remove')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
       {showAddPage && (
-        <Modal title="Ajouter une page" onClose={() => setShowAddPage(false)}>
+        <Modal title={t('dash.addPage')} onClose={() => setShowAddPage(false)}>
           <form onSubmit={handleAddPage} className="space-y-3">
             <div className="space-y-1.5">
-              <Label htmlFor="url">Adresse</Label>
+              <Label htmlFor="url">{t('dash.addr')}</Label>
               <Input
                 id="url"
                 type="url"
@@ -1580,7 +1610,7 @@ export function Dashboard() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="title">Titre (facultatif)</Label>
+              <Label htmlFor="title">{t('dash.titleOptional')}</Label>
               <Input
                 id="title"
                 value={title}
@@ -1589,28 +1619,28 @@ export function Dashboard() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="kind">Type</Label>
+              <Label htmlFor="kind">{t('dash.type')}</Label>
               <Select value={kind} onValueChange={(value) => setKind(value as PageKind)}>
                 <SelectTrigger id="kind" className="w-full">
-                  <SelectValue placeholder="Normale" />
+                  <SelectValue placeholder={t('kind.normal')} />
                 </SelectTrigger>
                 <SelectContent>
                   {PAGE_KINDS.map((pageKind) => (
                     <SelectItem key={pageKind} value={pageKind}>
-                      {KIND_LABELS[pageKind]}
+                      {t(`kind.${pageKind}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="group">Projet</Label>
+              <Label htmlFor="group">{t('dash.project')}</Label>
               <Select value={groupId} onValueChange={setGroupId}>
                 <SelectTrigger id="group" className="w-full">
-                  <SelectValue placeholder="Aucun projet" />
+                  <SelectValue placeholder={t('dash.noProject')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={NO_GROUP}>Aucun projet</SelectItem>
+                  <SelectItem value={NO_GROUP}>{t('dash.noProject')}</SelectItem>
                   {groups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       {group.name}
@@ -1620,46 +1650,44 @@ export function Dashboard() {
               </Select>
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
-              Ajouter la page
+              {t('dash.add')}
             </Button>
           </form>
         </Modal>
       )}
 
       {showAddProject && (
-        <Modal title="Créer un projet" onClose={() => setShowAddProject(false)}>
+        <Modal title={t('dash.newProject')} onClose={() => setShowAddProject(false)}>
           <form onSubmit={handleAddGroup} className="space-y-3">
             <div className="space-y-1.5">
-              <Label htmlFor="new-group">Nom du projet</Label>
+              <Label htmlFor="new-group">{t('dash.projectName')}</Label>
               <Input
                 id="new-group"
                 value={newGroup}
                 onChange={(event) => setNewGroup(event.target.value)}
-                placeholder="Ex. emploi, achat de voiture"
+                placeholder={t('dash.newProjectPlaceholder')}
               />
             </div>
             <Button type="submit" className="w-full" disabled={busy || !newGroup.trim()}>
-              Créer
+              {t('dash.create')}
             </Button>
           </form>
         </Modal>
       )}
 
       {showSettings && (
-        <Modal title="Paramètres" onClose={() => setShowSettings(false)}>
+        <Modal title={t('dash.settings')} onClose={() => setShowSettings(false)}>
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
               <div>
-                <p className="text-sm font-medium">Capture automatique</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  Enregistre automatiquement les pages que vous visitez.
-                </p>
+                <p className="text-sm font-medium">{t('dash.capture')}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.captureDesc')}</p>
               </div>
               <button
                 type="button"
                 role="switch"
                 aria-checked={captureEnabled}
-                aria-label="Capture automatique"
+                aria-label={t('dash.capture')}
                 onClick={toggleCapture}
                 className={cn(
                   'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',
@@ -1676,32 +1704,29 @@ export function Dashboard() {
             </div>
 
             <div className="rounded-xl border p-4 text-sm">
-              <p className="font-medium">Extension</p>
+              <p className="font-medium">{t('dash.extensionBlock')}</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {extensionStatus === 'linked'
                   ? captureEnabled
-                    ? 'Reliée à votre compte, capture active.'
-                    : 'Reliée à votre compte, capture désactivée.'
+                    ? t('dash.extLinkedOn')
+                    : t('dash.extLinkedOff')
                   : extensionStatus === 'no-account'
-                    ? "Installée, mais pas connectée. Clique sur son icône et connecte-toi."
+                    ? t('dash.extNoAccount')
                     : extensionStatus === 'other-account'
-                      ? 'Reliée à un autre compte. Déconnecte-la puis reconnecte-toi avec ce compte.'
-                      : "Non détectée. Installe l'extension TabNest."}
+                      ? t('dash.extOtherAccount')
+                      : t('dash.extAbsent')}
               </p>
               <a
                 href="/extension"
                 className="mt-2 inline-block text-xs underline-offset-2 hover:text-foreground hover:underline"
               >
-                Voir les instructions d’installation
+                {t('dash.seeInstall')}
               </a>
             </div>
 
             <div className="rounded-xl border p-4">
-              <p className="text-sm font-medium">Exporter mes données</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Vos pages et vos projets dans un fichier JSON (sauvegarde), ou la liste des liens en
-                Markdown pour la coller ailleurs.
-              </p>
+              <p className="text-sm font-medium">{t('dash.exportTitle')}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t('dash.exportDesc')}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button
                   size="sm"
@@ -1709,7 +1734,7 @@ export function Dashboard() {
                   onClick={handleExportJson}
                   disabled={pages.length === 0}
                 >
-                  Télécharger le JSON
+                  {t('dash.exportJson')}
                 </Button>
                 <Button
                   size="sm"
@@ -1717,19 +1742,19 @@ export function Dashboard() {
                   onClick={() => void handleCopyLinks()}
                   disabled={pages.length === 0}
                 >
-                  Copier les liens
+                  {t('dash.exportCopy')}
                 </Button>
               </div>
               <p className="mt-2 text-[11px] text-muted-foreground">
-                {pages.length} page(s) dans cet export
+                {fmt(t('dash.exportCount'), { n: pages.length })}
               </p>
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
               <div>
-                <p className="text-sm font-medium">Alertes du navigateur</p>
+                <p className="text-sm font-medium">{t('dash.browserAlerts')}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Prévient quand une page expire. TabNest doit être ouvert.
+                  {t('dash.browserAlertsDesc')}
                 </p>
               </div>
               <Button
@@ -1741,12 +1766,12 @@ export function Dashboard() {
                 }
               >
                 {browserNotifications === 'granted'
-                  ? 'Activées'
+                  ? t('dash.browserAlertsOn')
                   : browserNotifications === 'denied'
-                    ? 'Bloquées'
+                    ? t('dash.browserAlertsBlocked')
                     : browserNotifications === 'unsupported'
-                      ? 'Non disponible'
-                      : 'Activer'}
+                      ? t('dash.browserAlertsNone')
+                      : t('dash.browserAlertsEnable')}
               </Button>
             </div>
           </div>

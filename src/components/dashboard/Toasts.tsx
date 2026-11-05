@@ -1,5 +1,6 @@
 import { CheckCircle2, Info, AlertTriangle, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLangValue } from '@/components/landing/i18n'
 
 export type ToastLevel = 'success' | 'error' | 'info'
 
@@ -22,6 +23,7 @@ export function Toasts({
   toasts: ToastItem[]
   onDismiss: (id: number) => void
 }) {
+  const { t } = useLangValue()
   return (
     <div
       role="status"
@@ -44,7 +46,7 @@ export function Toasts({
             <button
               type="button"
               onClick={() => onDismiss(toast.id)}
-              aria-label="Fermer la notification"
+              aria-label={t('dash.toast.close')}
               className="rounded p-0.5 opacity-60 hover:opacity-100"
             >
               <X className="size-3.5" aria-hidden="true" />

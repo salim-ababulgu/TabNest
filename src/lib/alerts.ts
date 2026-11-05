@@ -1,6 +1,9 @@
 import type { Page } from '@/lib/pages'
+import { fmt } from '@/lib/i18n-dash'
 
 export type AlertLevel = 'danger' | 'warning' | 'info'
+
+export type ExtensionStatus = 'absent' | 'no-account' | 'other-account' | 'linked'
 
 export type AppAlert = {
   id: string
@@ -17,17 +20,12 @@ function expiryTime(page: Page): number | null {
   return page.expires_at ? new Date(page.expires_at).getTime() : null
 }
 
-/**
- * État de l'extension vu depuis le tableau de bord :
- * - absent : extension non détectée sur ce navigateur ;
- * - no-account : extension présente, mais pas connectée à un compte ;
- * - other-account : connectée, mais à un autre compte que celui-ci ;
- * - linked : connectée à ce compte (les pages sont bien enregistrées ici).
- */
-export type ExtensionStatus = 'absent' | 'no-account' | 'other-account' | 'linked'
-
 /** Calcule les alertes affichées dans la cloche, à partir des données réelles. */
-export function buildAlerts(pages: Page[], extensionStatus: ExtensionStatus): AppAlert[] {
+export function buildAlerts(
+  pages: Page[],
+  extensionStatus: 'absent' | 'no-account' | 'other-account' | 'linked',
+  t: (key: string) => string,
+): AppAlert[] {
   const now = Date.now()
   const alerts: AppAlert[] = []
 
@@ -47,26 +45,24 @@ export function buildAlerts(pages: Page[], extensionStatus: ExtensionStatus): Ap
     alerts.push({
       id: 'extension',
       level: 'info',
-      title: 'Extension non détectée',
-      description: 'Sans elle, vos pages ne sont pas enregistrées automatiquement.',
+      title: t('alert.extension.title'),
+      description: t('alert.extension.desc'),
       view: 'all',
     })
   } else if (extensionStatus === 'no-account') {
     alerts.push({
       id: 'extension-no-account',
       level: 'info',
-      title: 'Extension non connectée',
-      description:
-        'Elle est installée, mais pas reliée à votre compte : vos pages ne sont pas enregistrées. Connectez-la depuis son icône.',
+      title: t('alert.extensionNoAccount.title'),
+      description: t('alert.extensionNoAccount.desc'),
       view: 'all',
     })
   } else if (extensionStatus === 'other-account') {
     alerts.push({
       id: 'extension-other-account',
       level: 'warning',
-      title: 'Extension reliée à un autre compte',
-      description:
-        'Vos pages partent dans un autre compte. Reconnectez l’extension avec ce compte.',
+      title: t('alert.extensionOtherAccount.title'),
+      description: t('alert.extensionOtherAccount.desc'),
       view: 'all',
     })
   }
@@ -75,8 +71,8 @@ export function buildAlerts(pages: Page[], extensionStatus: ExtensionStatus): Ap
     alerts.push({
       id: 'empty',
       level: 'info',
-      title: 'Votre nid est vide',
-      description: 'Installez l’extension ou ajoutez une page à la main pour commencer.',
+      title: t('alert.empty.title'),
+      description: t('alert.empty.desc'),
       view: 'all',
     })
   }
@@ -85,8 +81,10 @@ export function buildAlerts(pages: Page[], extensionStatus: ExtensionStatus): Ap
     alerts.push({
       id: `expired:${expired.length}`,
       level: 'danger',
-      title: expired.length === 1 ? 'Une page a expiré' : `${expired.length} pages ont expiré`,
-      description: 'Retrouvez-les dans les archives pour décider de les garder.',
+      title: fmt(t(expired.length === 1 ? 'alert.expired.one' : 'alert.expired.many'), {
+        n: expired.length,
+      }),
+      description: t('alert.expired.desc'),
       view: 'archives',
     })
   }
@@ -95,12 +93,11 @@ export function buildAlerts(pages: Page[], extensionStatus: ExtensionStatus): Ap
     alerts.push({
       id: `soon:${soon.length}`,
       level: 'warning',
-      title:
-        soon.length === 1 ? 'Une page expire bientôt' : `${soon.length} pages expirent bientôt`,
+      title: fmt(t(soon.length === 1 ? 'alert.soon.one' : 'alert.soon.many'), { n: soon.length }),
       description:
         soon.length === 1
-          ? `${soon[0].title || shortly(soon[0])} arrive à expiration.`
-          : 'Ouvrez-les avant leur expiration pour les garder plus longtemps.',
+          ? fmt(t('alert.soon.descOne'), { title: soon[0].title || t('alert.thisPage') })
+          : t('alert.soon.desc'),
       view: 'today',
     })
   }
@@ -109,19 +106,15 @@ export function buildAlerts(pages: Page[], extensionStatus: ExtensionStatus): Ap
     alerts.push({
       id: `undecided:${undecided.length}`,
       level: 'warning',
-      title: undecided.length === 1 ? 'Une page à décider' : `${undecided.length} pages à décider`,
-      description: 'Choisissez pourquoi vous les gardez : la durée de vie s’adapte.',
+      title: fmt(t(undecided.length === 1 ? 'alert.undecided.one' : 'alert.undecided.many'), {
+        n: undecided.length,
+      }),
+      description: t('alert.undecided.desc'),
       view: 'today',
     })
   }
 
   return alerts
-}
-
-function shortly(page: Page): string {
-  if (!page.expires_at) return 'Cette page'
-  const hours = Math.max(1, Math.round((new Date(page.expires_at).getTime() - Date.now()) / HOUR))
-  return hours < 24 ? `Cette page (${hours} h)` : 'Cette page'
 }
 
 function storageKey(userId: string): string {

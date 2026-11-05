@@ -1,29 +1,15 @@
 import { ArrowRight, EyeOff, Puzzle, ShieldCheck, Sparkles } from 'lucide-react'
+import { useLangValue } from '@/components/landing/i18n'
 
-const STEPS = [
-  {
-    n: '01',
-    title: 'Téléchargez le dossier de l’extension',
-    text: 'Le dossier « extension » du projet contient le manifeste, les scripts et l’interface de l’extension (version de test).',
-  },
-  {
-    n: '02',
-    title: 'Chrome ou Edge : ouvrez « chrome://extensions »',
-    text: 'Activez le mode développeur (interrupteur en haut à droite), puis cliquez sur « Charger l’extension non empaquetée » et sélectionnez le dossier.',
-  },
-  {
-    n: '03',
-    title: 'Connectez l’extension à votre compte',
-    text: 'Cliquez sur l’icône TabNest dans la barre du navigateur, puis connectez-vous avec l’adresse e-mail de votre compte TabNest.',
-  },
-  {
-    n: '04',
-    title: 'Naviguez : c’est tout',
-    text: 'Chaque page visitée est enregistrée automatiquement. Elle apparaît dans votre tableau de bord, rangée par site.',
-  },
-]
+const STEP_KEYS = [
+  { titleKey: 'ext.s1.title', textKey: 'ext.s1.text' },
+  { titleKey: 'ext.s2.title', textKey: 'ext.s2.text' },
+  { titleKey: 'ext.s3.title', textKey: 'ext.s3.text' },
+  { titleKey: 'ext.s4.title', textKey: 'ext.s4.text' },
+] as const
 
 export function ExtensionPage() {
+  const { t } = useLangValue()
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
@@ -38,7 +24,7 @@ export function ExtensionPage() {
             href="/"
             className="text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
           >
-            Retour au site
+            {t('ext.back')}
           </a>
         </div>
       </header>
@@ -46,26 +32,24 @@ export function ExtensionPage() {
       <main className="mx-auto max-w-3xl px-6 py-14">
         <p className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
           <Puzzle className="size-3.5" aria-hidden="true" />
-          Chrome et Edge · version de test
+          {t('ext.pill')}
         </p>
 
         <h1 className="mt-5 font-heading text-3xl leading-tight font-medium tracking-tight sm:text-4xl">
-          Installez l’extension, gardez tout le reste.
+          {t('ext.title')}
         </h1>
-        <p className="mt-4 text-sm leading-relaxed text-foreground/75">
-          L’extension est ce qui rend TabNest magique : elle enregistre les pages que vous visitez,
-          sans que vous ayez à cliquer. Quatre étapes, une seule fois.
-        </p>
+        <p className="mt-4 text-sm leading-relaxed text-foreground/75">{t('ext.sub')}</p>
 
         <ol className="mt-10 space-y-6">
-          {STEPS.map((step) => (
-            <li key={step.n} className="flex gap-4">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary font-heading text-sm">
-                {step.n}
-              </span>
+          {STEP_KEYS.map((step) => (
+            <li key={step.titleKey} className="flex gap-4">
+              <span
+                aria-hidden="true"
+                className="mt-2 size-2.5 shrink-0 rounded-full bg-lime"
+              />
               <div>
-                <h2 className="font-heading text-lg font-medium">{step.title}</h2>
-                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{step.text}</p>
+                <h2 className="font-heading text-lg font-medium">{t(step.titleKey)}</h2>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t(step.textKey)}</p>
               </div>
             </li>
           ))}
@@ -74,45 +58,39 @@ export function ExtensionPage() {
         <div className="mt-10 rounded-2xl border border-border bg-card p-5">
           <h2 className="flex items-center gap-2 font-heading text-base font-medium">
             <ShieldCheck className="size-4 text-lime" aria-hidden="true" />
-            Ce que l’extension voit, et ce qu’elle ne voit jamais
+            {t('ext.sees.title')}
           </h2>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/70">
             <li className="flex gap-2">
               <EyeOff className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-              Elle lit l’adresse, le titre, l’icône du site, l’image de partage publique et la
-              couleur dominante de la page.
+              {t('ext.sees.1')}
             </li>
             <li className="flex gap-2">
               <EyeOff className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-              Elle ne lit jamais le contenu de la page, ne prend aucune capture d’écran et
-              n’enregistre pas vos mots de passe.
+              {t('ext.sees.2')}
             </li>
             <li className="flex gap-2">
               <EyeOff className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-              Vous pouvez la désactiver d’un clic, sans la désinstaller.
+              {t('ext.sees.3')}
             </li>
           </ul>
         </div>
 
-        <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
-          La version publique de l’extension sera publiée sur le Chrome Web Store. En attendant,
-          cette installation manuelle est réservée aux tests : elle demande le mode développeur de
-          Chrome.
-        </p>
+        <p className="mt-8 text-xs leading-relaxed text-muted-foreground">{t('ext.note')}</p>
 
         <div className="mt-8 flex flex-wrap gap-3">
           <a
             href="/"
             className="inline-flex h-11 items-center gap-2 rounded-full bg-lime px-6 text-sm font-semibold text-lime-foreground"
           >
-            Ouvrir l’application
+            {t('ext.openApp')}
             <ArrowRight className="size-4" aria-hidden="true" />
           </a>
           <a
             href="/#comment"
             className="inline-flex h-11 items-center rounded-full border border-border px-6 text-sm font-medium hover:bg-accent"
           >
-            Comment ça marche
+            {t('hero.how')}
           </a>
         </div>
       </main>

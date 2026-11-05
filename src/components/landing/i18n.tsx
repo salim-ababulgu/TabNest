@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { DICT, detectLang, saveLang } from '@/lib/i18n'
+import { detectLang, saveLang } from '@/lib/i18n'
 import type { Lang } from '@/lib/i18n'
+import { lookup } from '@/lib/i18n-dash'
 
 type LangContextValue = {
   lang: Lang
@@ -27,7 +28,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
 
   const t = useCallback(
     (key: string) => {
-      const entry = DICT[lang][key] ?? DICT.fr[key]
+      const entry = lookup(lang, key)
       return typeof entry === 'string' ? entry : (entry ?? []).join(' · ')
     },
     [lang],
@@ -35,7 +36,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
 
   const list = useCallback(
     (key: string) => {
-      const entry = DICT[lang][key] ?? DICT.fr[key]
+      const entry = lookup(lang, key)
       return Array.isArray(entry) ? entry : []
     },
     [lang],
@@ -52,4 +53,36 @@ export function LangProvider({ children }: { children: ReactNode }) {
 
 export function useLang(): LangContextValue {
   return useContext(LangContext)
+}
+
+/** Version autonome (sans fournisseur) pour les écrans hors landing. */
+export function useLangValue(): LangContextValue {
+  const [lang, setLangState] = useState<Lang>(detectLang)
+
+  const setLang = useCallback((next: Lang) => {
+    setLangState(next)
+    saveLang(next)
+  }, [])
+
+  const t = useCallback(
+    (key: string) => {
+      const entry = lookup(lang, key)
+      return typeof entry === 'string' ? entry : (entry ?? []).join(' · ')
+    },
+    [lang],
+  )
+
+  const list = useCallback(
+    (key: string) => {
+      const entry = lookup(lang, key)
+      return Array.isArray(entry) ? entry : []
+    },
+    [lang],
+  )
+
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
+
+  return useMemo(() => ({ lang, setLang, t, list }), [lang, setLang, t, list])
 }

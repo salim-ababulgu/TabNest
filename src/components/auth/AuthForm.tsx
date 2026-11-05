@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/lib/auth'
+import { useLangValue } from '@/components/landing/i18n'
 
 type Mode = 'login' | 'signup'
 
@@ -50,6 +51,7 @@ export function AuthForm({
   defaultMode?: Mode
 }) {
   const { signIn, signUp, resetPassword, signInWithGoogle } = useAuth()
+  const { t } = useLangValue()
   const [mode, setMode] = useState<Mode>(initialEmail ? 'signup' : defaultMode)
   const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
@@ -91,7 +93,7 @@ export function AuthForm({
       }
       trackEvent(mode === 'login' ? 'signin' : 'signup')
       if (result.needsConfirmation) {
-        setInfo('Compte créé. Confirme ton adresse par e-mail, puis connecte-toi.')
+        setInfo(t('auth.confirmInfo'))
         setMode('login')
       }
     } finally {
@@ -123,7 +125,7 @@ export function AuthForm({
 
   async function handleReset() {
     if (!email.trim()) {
-      setError("Saisis ton e-mail d'abord.")
+      setError(t('auth.enterEmail'))
       return
     }
     setBusy(true)
@@ -133,7 +135,7 @@ export function AuthForm({
       if (result.error) {
         setError(result.error)
       } else {
-        setInfo('Un e-mail de réinitialisation a été envoyé (vérifie tes spams).')
+        setInfo(t('auth.resetSent'))
       }
     } finally {
       setBusy(false)
@@ -148,13 +150,13 @@ export function AuthForm({
           onClick={onBack}
           className="text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          ← Retour à l'accueil
+          {t('auth.back')}
         </button>
       )}
       <Card data-auth-card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-xl">TabNest</CardTitle>
-          <CardDescription>Gardez vos pages, ne perdez plus rien.</CardDescription>
+          <CardDescription>{t('auth.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button
@@ -165,12 +167,12 @@ export function AuthForm({
             disabled={busy}
           >
             <GoogleIcon />
-            Continuer avec Google
+            {t('auth.google')}
           </Button>
 
           <div className="flex items-center gap-3">
             <span className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">ou avec un e-mail</span>
+            <span className="text-xs text-muted-foreground">{t('auth.orEmail')}</span>
             <span className="h-px flex-1 bg-border" />
           </div>
 
@@ -181,7 +183,7 @@ export function AuthForm({
               variant={mode === 'login' ? 'default' : 'outline'}
               onClick={() => switchMode('login')}
             >
-              Connexion
+              {t('auth.login')}
             </Button>
             <Button
               type="button"
@@ -189,13 +191,13 @@ export function AuthForm({
               variant={mode === 'signup' ? 'default' : 'outline'}
               onClick={() => switchMode('signup')}
             >
-              Inscription
+              {t('auth.signup')}
             </Button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -203,11 +205,11 @@ export function AuthForm({
                 autoComplete="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="toi@exemple.com"
+                placeholder={t('auth.emailPlaceholder')}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -217,13 +219,13 @@ export function AuthForm({
                   autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="6 caractères minimum"
+                  placeholder={t('auth.passwordPlaceholder')}
                   className="pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
-                  aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  aria-label={showPassword ? t('auth.hidePw') : t('auth.showPw')}
                   className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? (
@@ -240,7 +242,7 @@ export function AuthForm({
                 onClick={handleReset}
                 className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
               >
-                Mot de passe oublié ?
+                {t('auth.forgot')}
               </button>
             )}
             {error && (
@@ -254,7 +256,11 @@ export function AuthForm({
               </p>
             )}
             <Button type="submit" className="w-full" disabled={busy}>
-              {busy ? 'Patientez…' : mode === 'login' ? 'Se connecter' : 'Créer un compte'}
+              {busy
+                ? t('auth.busy')
+                : mode === 'login'
+                  ? t('auth.submitLogin')
+                  : t('auth.submitSignup')}
             </Button>
           </form>
         </CardContent>
