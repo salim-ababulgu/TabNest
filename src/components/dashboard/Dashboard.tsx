@@ -312,7 +312,7 @@ function Modal({
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
-  const { t } = useLangValue()
+  const { t, lang, setLang } = useLangValue()
   const [groups, setGroups] = useState<Group[]>([])
   const [pages, setPages] = useState<Page[]>([])
   const [loading, setLoading] = useState(true)
@@ -1678,6 +1678,37 @@ export function Dashboard() {
       {showSettings && (
         <Modal title={t('dash.settings')} onClose={() => setShowSettings(false)}>
           <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+              <div>
+                <p className="text-sm font-medium">{t('dash.lang')}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.langDesc')}</p>
+              </div>
+              <div className="flex shrink-0 rounded-full border border-border p-0.5" role="group" aria-label={t('dash.lang')}>
+                <button
+                  type="button"
+                  onClick={() => setLang('fr')}
+                  aria-pressed={lang === 'fr'}
+                  className={cn(
+                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                    lang === 'fr' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  FR
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLang('en')}
+                  aria-pressed={lang === 'en'}
+                  className={cn(
+                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                    lang === 'en' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  EN
+                </button>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
               <div>
                 <p className="text-sm font-medium">{t('dash.capture')}</p>
