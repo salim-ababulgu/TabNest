@@ -5,6 +5,7 @@ import { Hero } from '@/components/landing/Hero'
 import { BentoSection, FaqSection, PageTypeMarquee, PinnedSteps } from '@/components/landing/Sections'
 import { ComparisonSection } from '@/components/landing/Comparison'
 import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
+import { UseCasesSection } from '@/components/landing/UseCases'
 import { PricingSection } from '@/components/landing/Pricing'
 import { LangProvider, useLang } from '@/components/landing/i18n'
 import type { Lang } from '@/lib/i18n'
@@ -104,6 +105,8 @@ function LandingContent({ onStart }: LandingProps) {
       <BentoSection />
 
       <ComparisonSection />
+
+      <UseCasesSection />
 
       <PricingSection />
 

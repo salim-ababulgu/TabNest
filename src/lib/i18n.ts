@@ -202,6 +202,31 @@ const FR: Dict = {
   'footer.refund': 'Remboursement',
   'footer.email': 'Écrire un e-mail',
   'footer.editor': 'Édité par ABA, personne physique. Activité non immatriculée à ce jour.',
+
+  'usecase.title': 'Trois façons de s’en servir.',
+  'usecase.sub':
+    'Des pages gardées par peur de les perdre, devenues des projets qui se terminent.',
+  'usecase.c1.title': 'Terminer une candidature',
+  'usecase.c1.steps': [
+    'Vous ouvrez une offre, puis une autre, puis le site de l’entreprise.',
+    'TabNest les range dans le projet « Emploi », à finir sous 7 jours.',
+    'Vous reprenez là où vous vous étiez arrêté, sur n’importe quel appareil.',
+  ],
+  'usecase.c1.alt': 'Les pages du projet Emploi, retrouvées sur mobile',
+  'usecase.c2.title': 'Acheter une voiture',
+  'usecase.c2.steps': [
+    'Douze annonces ouvertes, trois comparatifs, un forum.',
+    'Le projet « Achat de voiture » garde chaque piste 14 jours.',
+    'Une fois la voiture achetée, le projet se ferme et tout s’archive.',
+  ],
+  'usecase.c2.alt': 'Une annonce gardée 14 jours, avec sa raison et sa durée de vie',
+  'usecase.c3.title': 'Apprendre sans perdre ses docs',
+  'usecase.c3.steps': [
+    'Une doc CSS visitée quatre fois vaut de l’or.',
+    'TabNest la garde 30 jours, à portée de main.',
+    'Les tutoriels visités une fois restent à part, dans Ressources.',
+  ],
+  'usecase.c3.alt': 'Les sites empilés par visites, avec la documentation en tête',
 }
 
 const EN: Dict = {
@@ -397,6 +422,30 @@ const EN: Dict = {
   'footer.refund': 'Refunds',
   'footer.email': 'Write an email',
   'footer.editor': 'Edited by ABA, individual. Business not registered yet.',
+
+  'usecase.title': 'Three ways to use it.',
+  'usecase.sub': 'Pages you used to keep out of fear, turned into projects that get finished.',
+  'usecase.c1.title': 'Finish a job application',
+  'usecase.c1.steps': [
+    'You open one offer, then another, then the company site.',
+    'TabNest files them in the "Job" project, to finish within 7 days.',
+    'You pick up where you left off, on any device.',
+  ],
+  'usecase.c1.alt': 'Job project pages, found back on mobile',
+  'usecase.c2.title': 'Buy a car',
+  'usecase.c2.steps': [
+    'Twelve ads open, three comparisons, one forum.',
+    'The "Car shopping" project keeps each lead for 14 days.',
+    'Once the car is bought, the project closes and everything archives.',
+  ],
+  'usecase.c2.alt': 'An ad kept 14 days, with its reason and its lifetime',
+  'usecase.c3.title': 'Learn without losing your docs',
+  'usecase.c3.steps': [
+    'A CSS doc visited four times is worth gold.',
+    'TabNest keeps it for 30 days, within reach.',
+    'Tutorials visited once stay apart, in Resources.',
+  ],
+  'usecase.c3.alt': 'Sites stacked by visits, with the documentation on top',
 }
 
 export const DICT: Partial<Record<Lang, Dict>> = { fr: FR, en: EN }

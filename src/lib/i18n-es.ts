@@ -422,4 +422,28 @@ export const ES_ALL: Record<string, Entry> = {
     'La versión pública de la extensión se publicará en Chrome Web Store. Mientras tanto, esta instalación manual es solo para pruebas: requiere el modo de desarrollador de Chrome.',
   'ext.openApp': 'Abrir la aplicación',
   'ext.back': 'Volver al sitio',
+
+  'usecase.title': 'Tres formas de usarlo.',
+  'usecase.sub': 'Páginas guardadas por miedo a perderlas, convertidas en proyectos que se terminan.',
+  'usecase.c1.title': 'Terminar una candidatura',
+  'usecase.c1.steps': [
+    'Abre una oferta, luego otra y después el sitio de la empresa.',
+    'TabNest las ordena en el proyecto « Empleo », para terminar en 7 días.',
+    'Retoma el hilo donde lo dejó, desde cualquier dispositivo.',
+  ],
+  'usecase.c1.alt': 'Las páginas del proyecto Empleo, recuperadas en el móvil',
+  'usecase.c2.title': 'Comprar un coche',
+  'usecase.c2.steps': [
+    'Doce anuncios abiertos, tres comparativas, un foro.',
+    'El proyecto « Compra de coche » guarda cada pista 14 días.',
+    'Una vez comprado el coche, el proyecto se cierra y todo se archiva.',
+  ],
+  'usecase.c2.alt': 'Un anuncio guardado 14 días, con su motivo y su vida útil',
+  'usecase.c3.title': 'Aprender sin perder su documentación',
+  'usecase.c3.steps': [
+    'Una documentación de CSS visitada cuatro veces vale oro.',
+    'TabNest la guarda 30 días, siempre a mano.',
+    'Los tutoriales visitados una sola vez quedan aparte, en Recursos.',
+  ],
+  'usecase.c3.alt': 'Los sitios apilados por visitas, con la documentación en primer lugar',
 }

@@ -403,4 +403,29 @@ export const ZH_ALL: Record<string, Entry> = {
     '扩展的正式版本将发布到 Chrome 网上应用店。在此之前，手动安装仅供测试：需要开启 Chrome 开发者模式。',
   'ext.openApp': '打开应用',
   'ext.back': '返回网站',
+
+  'usecase.title': '三种用法。',
+  'usecase.sub':
+    '因为怕丢而保存下来的页面，最终变成了圆满完成的项目。',
+  'usecase.c1.title': '完成求职申请',
+  'usecase.c1.steps': [
+    '你打开一个招聘信息，又打开一个，接着打开公司官网。',
+    'TabNest 把它们收进《Emploi》项目，限 7 天内完成。',
+    '在任意设备上，都能从上次中断的地方接着来。',
+  ],
+  'usecase.c1.alt': 'Emploi 项目的页面，在手机上找回',
+  'usecase.c2.title': '买一辆车',
+  'usecase.c2.steps': [
+    '十二个打开的车辆信息、三篇对比评测、一个论坛。',
+    '《Achat de voiture》项目把每条线索保留 14 天。',
+    '车买到手后，项目关闭，所有页面自动归档。',
+  ],
+  'usecase.c2.alt': '一条保留 14 天的车辆信息，连同保存理由与存活期限',
+  'usecase.c3.title': '学习时不弄丢资料',
+  'usecase.c3.steps': [
+    '一篇访问过四次的 CSS 文档，价值连城。',
+    'TabNest 把它保留 30 天，随时触手可及。',
+    '只访问过一次的教程单独放在「资源」里。',
+  ],
+  'usecase.c3.alt': '按访问次数堆叠的网站，文档排在前面',
 }
