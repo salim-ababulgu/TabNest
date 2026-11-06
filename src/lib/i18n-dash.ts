@@ -3,6 +3,8 @@
 
 import { DICT } from '@/lib/i18n'
 import type { Entry, Lang } from '@/lib/i18n'
+import { ES_ALL } from '@/lib/i18n-es'
+import { ZH_ALL } from '@/lib/i18n-zh'
 
 const FR: Record<string, Entry> = {
   'reason.decide': 'À décider',
@@ -461,11 +463,20 @@ const EN: Record<string, Entry> = {
   'ext.back': 'Back to the site',
 }
 
-const DASH: Record<Lang, Record<string, Entry>> = { fr: FR, en: EN }
+const DASH: Partial<Record<Lang, Record<string, Entry>>> = { fr: FR, en: EN }
 
-/** Recherche fusionnée : dictionnaire produit puis landing, avec repli français. */
+const EXTRA: Partial<Record<Lang, Record<string, Entry>>> = { es: ES_ALL, zh: ZH_ALL }
+
+/** Recherche fusionnée : langue demandée (landing + produit + extras), repli français. */
 export function lookup(lang: Lang, key: string): Entry | undefined {
-  return DICT[lang][key] ?? DASH[lang][key] ?? DICT.fr[key] ?? DASH.fr[key]
+  return (
+    DICT[lang]?.[key] ??
+    EXTRA[lang]?.[key] ??
+    DASH[lang]?.[key] ??
+    DICT.fr?.[key] ??
+    EXTRA.fr?.[key] ??
+    DASH.fr?.[key]
+  )
 }
 
 /** Remplace les marqueurs {n}, {s}, {p}, {t}, {r}, {q}, {done}, {total}, {title}. */

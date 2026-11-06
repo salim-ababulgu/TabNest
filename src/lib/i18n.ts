@@ -1,7 +1,7 @@
 // Dictionnaire de la landing (fr / en) et détection de langue.
 // Le dashboard reste en français pour l'instant : seule la page publique est bilingue.
 
-export type Lang = 'fr' | 'en'
+export type Lang = 'fr' | 'en' | 'es' | 'zh'
 
 export type Entry = string | string[]
 
@@ -25,6 +25,7 @@ const FR: Dict = {
   'nav.install': "Installer l'extension",
   'nav.lang': 'FR',
   'nav.langTitle': 'Passer en français',
+  'nav.langAria': 'Changer de langue',
 
   'marquee.label': 'Types de pages que TabNest conserve',
   'marquee.items': [
@@ -221,6 +222,7 @@ const EN: Dict = {
   'nav.install': 'Install the extension',
   'nav.lang': 'EN',
   'nav.langTitle': 'Switch to English',
+  'nav.langAria': 'Switch language',
 
   'marquee.label': 'Kinds of pages TabNest keeps',
   'marquee.items': [
@@ -397,17 +399,21 @@ const EN: Dict = {
   'footer.editor': 'Edited by ABA, individual. Business not registered yet.',
 }
 
-export const DICT: Record<Lang, Dict> = { fr: FR, en: EN }
+export const DICT: Partial<Record<Lang, Dict>> = { fr: FR, en: EN }
 
 export function detectLang(): Lang {
   try {
     const saved = window.localStorage.getItem('tabnest-lang')
-    if (saved === 'fr' || saved === 'en') return saved
+    if (saved === 'fr' || saved === 'en' || saved === 'es' || saved === 'zh') return saved
   } catch {
     // stockage indisponible
   }
-  if (typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('fr')) {
-    return 'fr'
+  if (typeof navigator !== 'undefined') {
+    const code = navigator.language?.toLowerCase() ?? ''
+    if (code.startsWith('fr')) return 'fr'
+    if (code.startsWith('es')) return 'es'
+    if (code.startsWith('zh')) return 'zh'
+    if (code.startsWith('en')) return 'en'
   }
   return 'en'
 }

@@ -7,6 +7,7 @@ import { ComparisonSection } from '@/components/landing/Comparison'
 import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
 import { PricingSection } from '@/components/landing/Pricing'
 import { LangProvider, useLang } from '@/components/landing/i18n'
+import type { Lang } from '@/lib/i18n'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -73,15 +74,17 @@ function LandingContent({ onStart }: LandingProps) {
             </a>
           </nav>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}
-              title={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
-              aria-label={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
-              className="inline-flex h-9 items-center rounded-full border border-white/15 px-3 text-xs font-medium text-cream/70 transition-colors hover:text-cream"
+            <select
+              value={lang}
+              onChange={(event) => setLang(event.target.value as Lang)}
+              aria-label={t('nav.langAria')}
+              className="h-9 cursor-pointer rounded-full border border-white/15 bg-ink px-2 text-xs font-medium text-cream/80 outline-none hover:text-cream"
             >
-              {lang === 'fr' ? 'EN' : 'FR'}
-            </button>
+              <option value="fr">Français</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="zh">中文</option>
+            </select>
             <PillButton onClick={() => onStart()} className="bg-lime text-lime-foreground hover:bg-lime/90">
               {t('nav.try')}
             </PillButton>

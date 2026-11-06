@@ -1683,29 +1683,27 @@ export function Dashboard() {
                 <p className="text-sm font-medium">{t('dash.lang')}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.langDesc')}</p>
               </div>
-              <div className="flex shrink-0 rounded-full border border-border p-0.5" role="group" aria-label={t('dash.lang')}>
-                <button
-                  type="button"
-                  onClick={() => setLang('fr')}
-                  aria-pressed={lang === 'fr'}
-                  className={cn(
-                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                    lang === 'fr' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  FR
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLang('en')}
-                  aria-pressed={lang === 'en'}
-                  className={cn(
-                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                    lang === 'en' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  EN
-                </button>
+              <div
+                className="flex shrink-0 rounded-full border border-border p-0.5"
+                role="group"
+                aria-label={t('dash.lang')}
+              >
+                {(['fr', 'en', 'es', 'zh'] as const).map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setLang(code)}
+                    aria-pressed={lang === code}
+                    className={cn(
+                      'rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
+                      lang === code
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    {code === 'fr' ? 'FR' : code === 'en' ? 'EN' : code === 'es' ? 'ES' : '中文'}
+                  </button>
+                ))}
               </div>
             </div>
 
