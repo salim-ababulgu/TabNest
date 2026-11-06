@@ -9,4 +9,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   )
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Connexion Google (OAuth) : le navigateur revient avec un code dans l'URL ;
+    // on le détecte et on l'échange contre une session automatiquement.
+    detectSessionInUrl: true,
+    flowType: 'pkce',
+  },
+})
