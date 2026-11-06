@@ -1788,6 +1788,21 @@ export function Dashboard() {
               </a>
             </div>
 
+            {user?.email?.toLowerCase() === 'salimababulgu@gmail.com' && (
+              <div className="rounded-xl border p-4">
+                <p className="text-sm font-medium">Administration</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Statistiques agrégées de la plateforme, réservées à l'éditeur.
+                </p>
+                <a
+                  href="/admin"
+                  className="mt-2 inline-block text-xs underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  Ouvrir la console d'administration
+                </a>
+              </div>
+            )}
+
             <div className="rounded-xl border p-4">
               <p className="text-sm font-medium">{t('dash.exportTitle')}</p>
               <p className="mt-1 text-xs text-muted-foreground">{t('dash.exportDesc')}</p>

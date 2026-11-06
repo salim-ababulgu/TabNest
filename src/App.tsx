@@ -20,6 +20,9 @@ const ExtensionPage = lazy(() =>
     default: module.ExtensionPage,
   })),
 )
+const AdminPage = lazy(() =>
+  import('@/components/admin/AdminPage').then((module) => ({ default: module.AdminPage })),
+)
 
 type LegalSlug = 'confidentialite' | 'cgu' | 'cookies' | 'remboursement'
 
@@ -63,6 +66,14 @@ function AppContent() {
     return (
       <Suspense fallback={<Splash />}>
         <ExtensionPage />
+      </Suspense>
+    )
+  }
+
+  if (pathname === '/admin') {
+    return (
+      <Suspense fallback={<Splash />}>
+        <AdminPage />
       </Suspense>
     )
   }
