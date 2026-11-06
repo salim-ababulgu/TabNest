@@ -25,7 +25,7 @@ const FR: Record<string, Entry> = {
   'view.finish': 'À finir',
   'view.explore': 'Pistes',
   'view.remember': 'À retenir',
-  'view.all': 'Tous les retours',
+  'view.all': 'Toutes les pages',
   'view.resources': 'Ressources',
   'view.ephemeral': 'Outils récurrents',
   'view.archives': 'Archives',
