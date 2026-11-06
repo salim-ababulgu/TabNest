@@ -446,4 +446,10 @@ export const ES_ALL: Record<string, Entry> = {
     'Los tutoriales visitados una sola vez quedan aparte, en Recursos.',
   ],
   'usecase.c3.alt': 'Los sitios apilados por visitas, con la documentación en primer lugar',
+
+  'dash.appearance': 'Apariencia',
+  'dash.appearanceDesc': 'Colores de la interfaz.',
+  'dash.themeLight': 'Claro',
+  'dash.themeDark': 'Oscuro',
+  'dash.themeSystem': 'Sistema',
 }

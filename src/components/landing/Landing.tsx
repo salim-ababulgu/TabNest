@@ -51,7 +51,7 @@ function LandingContent({ onStart }: LandingProps) {
   const { lang, setLang, t } = useLang()
 
   return (
-    <div id="top" className="relative bg-cream text-ink">
+    <div id="top" data-landing className="relative bg-cream text-ink">
       <header className="fixed top-0 right-0 left-0 z-40 px-4 pt-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-ink px-4 py-2.5">
           <a href="#top" className="flex items-center gap-2">

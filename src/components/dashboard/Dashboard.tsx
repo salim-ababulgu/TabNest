@@ -80,6 +80,7 @@ import {
 import type { AppAlert } from '@/lib/alerts'
 import { useLangValue } from '@/components/landing/i18n'
 import { fmt } from '@/lib/i18n-dash'
+import { useTheme } from '@/lib/theme'
 import { trackEvent } from '@/lib/analytics'
 import { buildExport, buildMarkdownList, downloadExport } from '@/lib/export'
 import { Toasts } from '@/components/dashboard/Toasts'
@@ -313,6 +314,7 @@ function Modal({
 export function Dashboard() {
   const { user, signOut } = useAuth()
   const { t, lang, setLang } = useLangValue()
+  const { theme, setTheme } = useTheme()
   const [groups, setGroups] = useState<Group[]>([])
   const [pages, setPages] = useState<Page[]>([])
   const [loading, setLoading] = useState(true)
@@ -1678,6 +1680,39 @@ export function Dashboard() {
       {showSettings && (
         <Modal title={t('dash.settings')} onClose={() => setShowSettings(false)}>
           <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+              <div>
+                <p className="text-sm font-medium">{t('dash.appearance')}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.appearanceDesc')}</p>
+              </div>
+              <div
+                className="flex shrink-0 rounded-full border border-border p-0.5"
+                role="group"
+                aria-label={t('dash.appearance')}
+              >
+                {(['light', 'dark', 'system'] as const).map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setTheme(code)}
+                    aria-pressed={theme === code}
+                    className={cn(
+                      'rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
+                      theme === code
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    {code === 'light'
+                      ? t('dash.themeLight')
+                      : code === 'dark'
+                        ? t('dash.themeDark')
+                        : t('dash.themeSystem')}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
               <div>
                 <p className="text-sm font-medium">{t('dash.lang')}</p>

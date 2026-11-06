@@ -428,4 +428,10 @@ export const ZH_ALL: Record<string, Entry> = {
     '只访问过一次的教程单独放在「资源」里。',
   ],
   'usecase.c3.alt': '按访问次数堆叠的网站，文档排在前面',
+
+  'dash.appearance': '外观',
+  'dash.appearanceDesc': '界面颜色。',
+  'dash.themeLight': '浅色',
+  'dash.themeDark': '深色',
+  'dash.themeSystem': '跟随系统',
 }
