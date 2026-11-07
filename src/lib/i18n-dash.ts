@@ -105,7 +105,10 @@ const FR: Record<string, Entry> = {
   'dash.moveTo': 'Déplacer vers…',
   'dash.edit.start': 'Modifier',
   'dash.edit.title': 'Mode déplacement',
-  'dash.edit.hint': 'Appuie sur une carte et glisse-la vers une section ou un projet.',
+  'dash.edit.hint':
+    'Appuie sur une ou plusieurs cartes, puis sur une section. Sur ordinateur, tu peux aussi glisser la carte.',
+  'dash.edit.selected': '{n} carte(s) sélectionnée(s)',
+  'dash.edit.pickFirst': 'Choisis d’abord une carte.',
   'dash.edit.done': 'Terminer',
   'dash.toast.movedTo': 'Déplacé dans « {name} »',
   'dash.pinned': 'Épinglé',
@@ -345,7 +348,10 @@ const EN: Record<string, Entry> = {
   'dash.moveTo': 'Move to…',
   'dash.edit.start': 'Edit',
   'dash.edit.title': 'Move mode',
-  'dash.edit.hint': 'Press a card and drag it onto a section or a project.',
+  'dash.edit.hint':
+    'Tap one or more cards, then a section. On desktop you can also drag the card.',
+  'dash.edit.selected': '{n} card(s) selected',
+  'dash.edit.pickFirst': 'Pick a card first.',
   'dash.edit.done': 'Done',
   'dash.toast.movedTo': 'Moved to “{name}”',
   'dash.pinned': 'Pinned',

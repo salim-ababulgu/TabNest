@@ -294,7 +294,10 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.moveTo': 'Mover a…',
   'dash.edit.start': 'Editar',
   'dash.edit.title': 'Modo mover',
-  'dash.edit.hint': 'Mantén una tarjeta y arrástrala a una sección o a un proyecto.',
+  'dash.edit.hint':
+    'Toca una o varias tarjetas y luego una sección. En ordenador también puedes arrastrar la tarjeta.',
+  'dash.edit.selected': '{n} tarjeta(s) seleccionada(s)',
+  'dash.edit.pickFirst': 'Elige primero una tarjeta.',
   'dash.edit.done': 'Terminar',
   'dash.toast.movedTo': 'Movido a «{name}»',
   'dash.pinned': 'Fijado',

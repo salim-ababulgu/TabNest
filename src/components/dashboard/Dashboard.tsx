@@ -360,6 +360,7 @@ export function Dashboard() {
   const [draggingSite, setDraggingSite] = useState<Site | null>(null)
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null)
   const [editMode, setEditMode] = useState(false)
+  const [selectedSites, setSelectedSites] = useState<string[]>([])
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null)
   const searchRef = useRef<HTMLInputElement>(null)
   const [browserNotifications, setBrowserNotifications] = useState<
@@ -712,12 +713,13 @@ export function Dashboard() {
     }
   }
 
-  /** Mode déplacement : on glisse une carte (souris ou doigt) vers une cible visible. */
+  /** Mode déplacement : appui court = sélection ; glissement = dépôt sur une cible. */
   function startEditDrag(site: Site) {
     return (event: ReactPointerEvent<HTMLDivElement>) => {
       event.preventDefault()
-      setDraggingSite(site)
-      setDragPos({ x: event.clientX, y: event.clientY })
+      const startX = event.clientX
+      const startY = event.clientY
+      let moved = false
 
       const findTarget = (x: number, y: number) => {
         const element = document.elementFromPoint(x, y)
@@ -726,6 +728,10 @@ export function Dashboard() {
       }
 
       const onMove = (moveEvent: PointerEvent) => {
+        const distance = Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY)
+        if (!moved && distance < 6) return
+        moved = true
+        setDraggingSite(site)
         setDragPos({ x: moveEvent.clientX, y: moveEvent.clientY })
         setDragOverTarget(findTarget(moveEvent.clientX, moveEvent.clientY))
       }
@@ -733,15 +739,59 @@ export function Dashboard() {
       const onUp = (upEvent: PointerEvent) => {
         window.removeEventListener('pointermove', onMove)
         window.removeEventListener('pointerup', onUp)
-        const value = findTarget(upEvent.clientX, upEvent.clientY)
+        const value = moved ? findTarget(upEvent.clientX, upEvent.clientY) : null
         setDraggingSite(null)
         setDragOverTarget(null)
         setDragPos(null)
-        if (value) applyDrop(site, value)
+
+        if (!moved) {
+          setSelectedSites((current) =>
+            current.includes(site.domain)
+              ? current.filter((domain) => domain !== site.domain)
+              : [...current, site.domain],
+          )
+          return
+        }
+        if (value) {
+          const targets = selectedSites.includes(site.domain)
+            ? selectedSites
+            : [site.domain]
+          const involved = sites.filter((item) => targets.includes(item.domain))
+          for (const item of involved.length > 0 ? involved : [site]) {
+            applyDrop(item, value)
+          }
+          setSelectedSites([])
+        }
       }
 
       window.addEventListener('pointermove', onMove)
       window.addEventListener('pointerup', onUp)
+    }
+  }
+
+  function applyToSelected(value: string) {
+    if (selectedSites.length === 0) {
+      notify('info', t('dash.edit.pickFirst'))
+      return
+    }
+    const involved = sites.filter((item) => selectedSites.includes(item.domain))
+    for (const item of involved) applyDrop(item, value)
+    setSelectedSites([])
+  }
+
+  /** Plus proche expiration d'un site (pages non épinglées), pour signaler l'urgence. */
+  function siteUrgency(site: Site): { text: string; danger: boolean } | null {
+    const times = site.pages
+      .filter((page) => !page.pinned && page.expires_at)
+      .map((page) => new Date(page.expires_at as string).getTime())
+    if (times.length === 0) return null
+    const diff = Math.min(...times) - Date.now()
+    if (diff <= 0) return { text: t('exp.expired'), danger: true }
+    const hours = Math.ceil(diff / 3600000)
+    if (hours > 48) return null
+    return {
+      text: hours < 24 ? fmt(t('exp.hours'), { n: hours }) : fmt(t('exp.days'), { n: Math.ceil(hours / 24) }),
+      danger: false,
     }
   }
 
@@ -1437,45 +1487,56 @@ export function Dashboard() {
                   </Button>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">{t('dash.edit.hint')}</p>
+                {selectedSites.length > 0 && (
+                  <p className="mt-2 text-xs font-medium text-foreground">
+                    {fmt(t('dash.edit.selected'), { n: selectedSites.length })}
+                  </p>
+                )}
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {REASON_ORDER.map((reason) => (
-                    <span
+                    <button
                       key={reason}
+                      type="button"
                       data-drop-target={`reason:${reason}`}
+                      onClick={() => applyToSelected(`reason:${reason}`)}
                       className={cn(
                         'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                         dragOverTarget === `reason:${reason}`
                           ? 'border-lime bg-lime text-lime-foreground'
-                          : 'border-border text-foreground/70',
+                          : 'border-border text-foreground/70 hover:border-foreground/30',
                       )}
                     >
                       {t(`reason.${reason}`)}
-                    </span>
+                    </button>
                   ))}
-                  <span
+                  <button
+                    type="button"
                     data-drop-target="reason:none"
+                    onClick={() => applyToSelected('reason:none')}
                     className={cn(
                       'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                       dragOverTarget === 'reason:none'
                         ? 'border-lime bg-lime text-lime-foreground'
-                        : 'border-border text-foreground/70',
+                        : 'border-border text-foreground/70 hover:border-foreground/30',
                     )}
                   >
                     {t('view.all')}
-                  </span>
+                  </button>
                   {groups.map((group) => (
-                    <span
+                    <button
                       key={group.id}
+                      type="button"
                       data-drop-target={`project:${group.id}`}
+                      onClick={() => applyToSelected(`project:${group.id}`)}
                       className={cn(
                         'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                         dragOverTarget === `project:${group.id}`
                           ? 'border-lime bg-lime text-lime-foreground'
-                          : 'border-border text-foreground/70',
+                          : 'border-border text-foreground/70 hover:border-foreground/30',
                       )}
                     >
                       {group.name}
-                    </span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -1524,6 +1585,7 @@ export function Dashboard() {
               >
                 {sites.map((site) => {
                   const layers = Math.min(site.visits, MAX_STACK) - 1
+                  const urgency = siteUrgency(site)
                   return (
                     <div key={site.domain} data-site={site.domain} className="relative">
                       {Array.from({ length: Math.max(0, layers) }).map((_, index) => (
@@ -1548,11 +1610,17 @@ export function Dashboard() {
                             }}
                             className={cn(
                               'absolute inset-0 z-10 flex touch-none items-center justify-center rounded-2xl bg-background/85 select-none',
+                              selectedSites.includes(site.domain) &&
+                                'bg-lime/10 ring-2 ring-lime ring-inset',
                               draggingSite?.domain === site.domain && 'opacity-40',
                             )}
                           >
                             <span className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium shadow-none">
-                              <GripVertical className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                              {selectedSites.includes(site.domain) ? (
+                                <Check className="size-3.5 text-lime" aria-hidden="true" />
+                              ) : (
+                                <GripVertical className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                              )}
                               {site.domain}
                             </span>
                           </div>
@@ -1627,6 +1695,23 @@ export function Dashboard() {
                               when: timeAgo(site.lastVisit, t),
                             })}
                           </p>
+                          {urgency && (
+                            <span
+                              className={cn(
+                                'mt-1 inline-flex w-fit items-center gap-1 text-[10px] font-medium',
+                                urgency.danger ? 'text-destructive' : 'text-foreground/60',
+                              )}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={cn(
+                                  'size-1.5 rounded-full',
+                                  urgency.danger ? 'bg-destructive' : 'bg-lime',
+                                )}
+                              />
+                              {urgency.text}
+                            </span>
+                          )}
                           {site.reason && (
                             <span className="mt-2 inline-flex w-fit rounded-full border px-2 py-0.5 text-[10px] text-muted-foreground">
                               {isReason(site.reason) ? t(`reason.${site.reason}`) : site.reason}

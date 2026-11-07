@@ -1,4 +1,5 @@
-// Vérifie le mode déplacement : activation, glisser d'une carte vers une section, toast.
+// Vérifie le mode déplacement : sélection par appui, déplacement via une cible,
+// et glisser-déposer. Desktop et mobile.
 import { chromium } from 'playwright'
 
 const BASE = 'http://localhost:5173'
@@ -16,58 +17,84 @@ async function login(page) {
   await page.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
 }
 
-async function main() {
-  const browser = await chromium.launch()
-  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+async function run(label, viewport, browser) {
+  let failures = 0
+  const fail = (message) => {
+    failures += 1
+    console.log(`   FAIL ${message}`)
+  }
+  const page = await browser.newPage({ viewport })
   await login(page)
 
-  // Entrer en mode déplacement
   await page.getByRole('button', { name: /Modifier|Edit/ }).first().click()
   await page.getByText(/Mode déplacement|Move mode/).waitFor({ timeout: 5000 })
-  console.log('OK   mode déplacement activé')
+  console.log(`${label} : mode déplacement activé`)
 
-  // Trouver une carte (overlay du mode déplacement) et une cible
-  const overlay = page.locator('[role="button"][aria-label]').first()
-  const card = overlay
-  const chip = page.locator('[data-drop-target="reason:explore"]').first()
+  // 1. Appui sur une carte = sélection
+  const card = page.locator('[role="button"][aria-label]').first()
   await card.scrollIntoViewIfNeeded()
-  const cardBox = await card.boundingBox()
-  const chipBox = await chip.boundingBox()
-  if (!cardBox || !chipBox) {
-    console.log('FAIL carte ou cible introuvable')
-    process.exit(1)
-  }
+  await card.click()
+  await page.waitForTimeout(300)
+  const selectedText = await page
+    .getByText(/carte\(s\) sélectionnée|card\(s\) selected/)
+    .first()
+    .textContent({ timeout: 3000 })
+    .catch(() => null)
+  if (selectedText) console.log(`   OK sélection : ${selectedText.trim()}`)
+  else fail('la sélection de carte ne s’affiche pas')
 
-  // Glisser avec la souris (génère des pointer events)
-  await page.mouse.move(cardBox.x + cardBox.width / 2, cardBox.y + cardBox.height / 2)
-  await page.mouse.down()
-  const steps = 12
-  for (let i = 1; i <= steps; i += 1) {
-    await page.mouse.move(
-      cardBox.x + ((chipBox.x + chipBox.width / 2 - cardBox.x) * i) / steps,
-      cardBox.y + ((chipBox.y + chipBox.height / 2 - cardBox.y) * i) / steps,
-    )
-    await page.waitForTimeout(25)
-  }
-  await page.mouse.up()
-
+  // 2. Clic sur une cible = déplacement (pas de glisser)
+  await page.locator('[data-drop-target="reason:finish"]').first().click()
   const toast = await page
     .getByText(/Déplacé dans|Moved to/)
     .first()
     .textContent({ timeout: 8000 })
     .catch(() => null)
-  console.log(toast ? `OK   dépôt accepté : ${toast.trim()}` : 'FAIL aucun toast après le dépôt')
+  if (toast) console.log(`   OK déplacement par appui : ${toast.trim()}`)
+  else fail('aucun déplacement après clic sur une cible')
 
-  // Terminer le mode
+  // 3. Glisser-déposer d'une autre carte vers une cible
+  const cards = page.locator('[role="button"][aria-label]')
+  const dragCard = cards.nth(1)
+  const chip = page.locator('[data-drop-target="reason:remember"]').first()
+  await dragCard.scrollIntoViewIfNeeded()
+  const from = await dragCard.boundingBox()
+  const to = await chip.boundingBox()
+  if (from && to) {
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2)
+    await page.mouse.down()
+    for (let i = 1; i <= 10; i += 1) {
+      await page.mouse.move(
+        from.x + ((to.x + to.width / 2 - from.x) * i) / 10,
+        from.y + ((to.y + to.height / 2 - from.y) * i) / 10,
+      )
+      await page.waitForTimeout(20)
+    }
+    await page.mouse.up()
+    const dragToast = await page
+      .getByText(/Déplacé dans|Moved to/)
+      .first()
+      .textContent({ timeout: 6000 })
+      .catch(() => null)
+    if (dragToast) console.log(`   OK glisser-déposer : ${dragToast.trim()}`)
+    else fail('le glisser-déposer ne fonctionne pas')
+  } else {
+    fail('carte ou cible introuvable pour le glisser')
+  }
+
   await page.getByRole('button', { name: /Terminer|Done/ }).click()
-  const stillEditing = await page
-    .getByText(/Mode déplacement|Move mode/)
-    .isVisible()
-    .catch(() => false)
-  console.log(stillEditing ? 'FAIL mode toujours actif' : 'OK   mode terminé')
+  await page.close()
+  return failures
+}
 
+async function main() {
+  const browser = await chromium.launch()
+  let failures = 0
+  failures += await run('desktop 1280', { width: 1280, height: 900 }, browser)
+  failures += await run('mobile 390', { width: 390, height: 844 }, browser)
   await browser.close()
-  process.exit(toast ? 0 : 1)
+  console.log(failures === 0 ? '\nMode déplacement : tout fonctionne.' : `\n${failures} problème(s).`)
+  process.exit(failures > 0 ? 1 : 0)
 }
 
 main().catch((error) => {
