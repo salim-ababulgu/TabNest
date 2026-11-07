@@ -73,6 +73,16 @@ import {
   visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
+import { NestNav } from '@/components/dashboard/NestNav'
+import {
+  countCollections,
+  loadNest,
+  matchesRule,
+  newCollectionId,
+  saveNest,
+  type CollectionRule,
+  type NestConfig,
+} from '@/lib/collections'
 import {
   buildAlerts,
   loadReadAlerts,
@@ -343,6 +353,8 @@ export function Dashboard() {
 
   const [view, setView] = useState<View>('all')
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
+  const [nest, setNest] = useState<NestConfig>({ hidden: [], collections: [] })
+  const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null)
   // Deux informations distinctes : l'extension est-elle présente (détection),
   // et à quel compte est-elle reliée (connexion).
   const [extensionDetected, setExtensionDetected] = useState(false)
@@ -460,13 +472,51 @@ export function Dashboard() {
     const id = Date.now() + Math.random()
     setToasts((current) => [...current, { id, level, message }])
     window.setTimeout(() => {
-      setToasts((current) => current.filter((toast) => toast.id !== id))
-    }, 4500)
+      setToasts((current) => current.filter((toast) => toast.id !== id))    }, 4500)
   }, [])
 
   useEffect(() => {
     if (user?.id) setReadAlerts(loadReadAlerts(user.id))
   }, [user?.id])
+
+  useEffect(() => {
+    if (user?.id) setNest(loadNest(user.id))
+  }, [user?.id])
+
+  function updateNest(next: NestConfig) {
+    setNest(next)
+    if (user?.id) saveNest(user.id, next)
+  }
+
+  function addCollection(name: string, rule: CollectionRule) {
+    const collection = { id: newCollectionId(), name, rule }
+    updateNest({ ...nest, collections: [...nest.collections, collection] })
+    setActiveCollectionId(collection.id)
+    notify('success', fmt(t('nest.created'), { name }))
+  }
+
+  function removeCollection(id: string) {
+    updateNest({ ...nest, collections: nest.collections.filter((item) => item.id !== id) })
+    if (activeCollectionId === id) setActiveCollectionId(null)
+  }
+
+  function hideBuiltin(id: string) {
+    updateNest({ ...nest, hidden: [...nest.hidden, id] })
+    if (view === id) setView('all')
+  }
+
+  function renameCollection(id: string, name: string) {
+    updateNest({
+      ...nest,
+      collections: nest.collections.map((item) =>
+        item.id === id ? { ...item, name } : item,
+      ),
+    })
+  }
+
+  function restoreDefaults() {
+    updateNest({ ...nest, hidden: [] })
+  }
 
   useEffect(() => {
     try {
@@ -711,6 +761,27 @@ export function Dashboard() {
   }
 
   function applyDrop(site: Site, value: string) {
+    // Une cible peut être une étagère personnalisée : on applique sa règle.
+    if (value.startsWith('collection:')) {
+      const collection = nest.collections.find(
+        (item) => item.id === value.slice('collection:'.length),
+      )
+      if (!collection) return
+      if (collection.rule.type === 'reason') {
+        void moveSite(site, {
+          kind: 'reason',
+          reason: collection.rule.reason,
+          label: collection.name,
+        })
+      } else if (collection.rule.type === 'group') {
+        void moveSite(site, {
+          kind: 'project',
+          groupId: collection.rule.groupId,
+          label: collection.name,
+        })
+      }
+      return
+    }
     // Une cible peut être une section du menu (identifiant de vue) : on la
     // traduit en raison avant d'appliquer.
     if (!value.startsWith('reason:') && !value.startsWith('project:')) {
@@ -1046,11 +1117,13 @@ export function Dashboard() {
   }
 
   const normalizedQuery = query.trim().toLowerCase()
+  const activeCollection = nest.collections.find((item) => item.id === activeCollectionId) ?? null
   const visiblePages = pages.filter((page) => {
     if (normalizedQuery) {
       const haystack = `${page.title ?? ''} ${page.url} ${domainOf(page.url)}`.toLowerCase()
       if (!haystack.includes(normalizedQuery)) return false
     }
+    if (activeCollection) return matchesRule(page, activeCollection.rule)
     if (selectedGroup) return page.group_id === selectedGroup
     if (view === 'all') return true
     if (view === 'finish') return page.reason === 'finish'
@@ -1069,9 +1142,11 @@ export function Dashboard() {
       return b.visits - a.visits
     })
     .slice(0, 10)
-  const currentTitle = selectedGroup
-    ? groupName(selectedGroup) ?? t('dash.project')
-    : t(VIEW_TITLES[view])
+  const currentTitle = activeCollection
+    ? activeCollection.name
+    : selectedGroup
+      ? groupName(selectedGroup) ?? t('dash.project')
+      : t(VIEW_TITLES[view])
 
   function expiryText(page: Page): string {
     if (page.pinned) return t('exp.pinned')
@@ -1084,6 +1159,63 @@ export function Dashboard() {
     const hours = Math.ceil(diff / (60 * 60 * 1000))
     if (hours < 24) return fmt(t('exp.hours'), { n: hours })
     return fmt(t('exp.days'), { n: Math.ceil(hours / 24) })
+  }
+
+  const nestNavProps = {
+    builtins: VIEWS.filter((item) => !nest.hidden.includes(item.id)).map((item) => ({
+      id: item.id,
+      labelKey: item.labelKey,
+      icon: item.icon,
+      count: countFor(item.id),
+    })),
+    collections: nest.collections,
+    collectionCounts: countCollections(nest.collections, pages),
+    view,
+    activeCollection: activeCollectionId,
+    editMode,
+    projects: groups.map((group) => ({
+      id: group.id,
+      name: group.name,
+      count: pages.filter((page) => page.group_id === group.id).length,
+    })),
+    selectedGroup,
+    keepViews: ['today', 'all', 'archives'],
+    onSelectView: (id: string) => {
+      if (editMode) {
+        moveSelectionToView(id as View)
+        return
+      }
+      setView(id as View)
+      setSelectedGroup(null)
+      setActiveCollectionId(null)
+      setMobileMenuOpen(false)
+    },
+    onSelectCollection: (id: string) => {
+      setActiveCollectionId(id)
+      setSelectedGroup(null)
+      setMobileMenuOpen(false)
+    },
+    onSelectGroup: (id: string) => {
+      if (editMode) {
+        moveSelectionToGroup(id)
+        return
+      }
+      setSelectedGroup(id)
+      setActiveCollectionId(null)
+      setMobileMenuOpen(false)
+    },
+    onAddCollection: addCollection,
+    onRemoveCollection: removeCollection,
+    onRenameCollection: renameCollection,
+    onHideBuiltin: hideBuiltin,
+    onRestoreDefaults: restoreDefaults,
+    onToggleEdit: () => setEditMode((current) => !current),
+    onAddProject: () => {
+      setShowAddProject(true)
+      setMobileMenuOpen(false)
+    },
+    dropViews: Object.keys(DROP_REASONS),
+    dragOver: dragOverTarget,
   }
 
   return (
@@ -1126,161 +1258,7 @@ export function Dashboard() {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-          <nav className="flex flex-col gap-0.5">
-            {VIEWS.map((item) => {
-              const Icon = item.icon
-              const active = !selectedGroup && view === item.id
-              const count = countFor(item.id)
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  data-drop-target={item.id in DROP_REASONS ? item.id : undefined}
-                  onClick={() => {
-                    if (editMode) {
-                      moveSelectionToView(item.id)
-                      return
-                    }
-                    setView(item.id)
-                    setSelectedGroup(null)
-                  }}
-                  onDragOver={(event) => {
-                    if (!editMode || !(item.id in DROP_REASONS)) return
-                    event.preventDefault()
-                    event.dataTransfer.dropEffect = 'move'
-                    setDragOverTarget(item.id)
-                  }}
-                  onDragLeave={() =>
-                    setDragOverTarget((current) => (current === item.id ? null : current))
-                  }
-                  onDrop={(event) => {
-                    event.preventDefault()
-                    if (!editMode || !(item.id in DROP_REASONS)) return
-                    setDragOverTarget(null)
-                    moveSelectionToView(item.id)
-                  }}
-                  title={sidebarCollapsed ? t(item.labelKey) : undefined}
-                  aria-label={sidebarCollapsed ? t(item.labelKey) : undefined}
-                  className={cn(
-                    'flex items-center gap-2.5 rounded-lg text-sm transition-colors',
-                    sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
-                    active
-                      ? 'bg-sidebar-accent text-sidebar-foreground'
-                      : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
-                    editMode && item.id in DROP_REASONS
-                      ? 'cursor-copy ring-1 ring-lime/50'
-                      : editMode && 'opacity-40',
-                    dragOverTarget === item.id && 'bg-lime text-lime-foreground ring-2 ring-lime',
-                  )}
-                >
-                  <Icon className="size-4 shrink-0" aria-hidden="true" />
-                  {!sidebarCollapsed && (
-                    <>
-                      <span className="flex-1 text-left">{t(item.labelKey)}</span>
-                      {count > 0 && (
-                        <span className="text-xs tabular-nums opacity-70">{count}</span>
-                      )}
-                    </>
-                  )}
-                </button>
-              )
-            })}
-          </nav>
-
-          <div
-            className={cn(
-              'mt-5 mb-1 flex items-center justify-between',
-              sidebarCollapsed ? 'justify-center px-1' : 'px-3',
-            )}
-          >
-            {!sidebarCollapsed && (
-              <span className="text-xs font-medium text-sidebar-foreground/60">
-                {t('dash.projects')}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={() => setShowAddProject(true)}
-              className="rounded-md p-1 text-sidebar-foreground/50 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-              aria-label={t('dash.newProject')}
-              title={t('dash.newProject')}
-            >
-              <Plus className="size-3.5" aria-hidden="true" />
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-0.5">
-            {groups.length === 0
-              ? !sidebarCollapsed && (
-                  <p className="px-3 py-2 text-xs text-sidebar-foreground/45">
-                    {t('dash.noProjects')}
-                  </p>
-                )
-              : groups.map((group) => {
-                  const active = selectedGroup === group.id
-                  const count = pages.filter((page) => page.group_id === group.id).length
-                  return (
-                    <button
-                      key={group.id}
-                      type="button"
-                      data-drop-target={`project:${group.id}`}
-                      onClick={() => {
-                        if (editMode) {
-                          moveSelectionToGroup(group.id)
-                          return
-                        }
-                        setSelectedGroup(group.id)
-                      }}
-                      onDragOver={(event) => {
-                        if (!editMode) return
-                        event.preventDefault()
-                        event.dataTransfer.dropEffect = 'move'
-                        setDragOverTarget(`project:${group.id}`)
-                      }}
-                      onDragLeave={() =>
-                        setDragOverTarget((current) =>
-                          current === `project:${group.id}` ? null : current,
-                        )
-                      }
-                      onDrop={(event) => {
-                        event.preventDefault()
-                        if (!editMode) return
-                        setDragOverTarget(null)
-                        moveSelectionToGroup(group.id)
-                      }}
-                      title={group.name}
-                      aria-label={group.name}
-                      className={cn(
-                        'flex items-center gap-2.5 rounded-lg text-sm transition-colors',
-                        sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
-                        active
-                          ? 'bg-sidebar-accent text-sidebar-foreground'
-                          : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
-                        editMode && 'cursor-copy ring-1 ring-lime/50',
-                        dragOverTarget === `project:${group.id}` &&
-                          'bg-lime text-lime-foreground ring-2 ring-lime',
-                      )}
-                    >
-                      {sidebarCollapsed ? (
-                        <span
-                          aria-hidden="true"
-                          className="grid size-6 place-items-center rounded-full bg-sidebar-accent text-[10px] font-semibold uppercase"
-                        >
-                          {group.name.charAt(0)}
-                        </span>
-                      ) : (
-                        <>
-                          <span className="size-2 shrink-0 rounded-full bg-lime" />
-                          <span className="flex-1 truncate text-left">{group.name}</span>
-                          {count > 0 && (
-                            <span className="text-xs tabular-nums opacity-70">{count}</span>
-                          )}
-                        </>
-                      )}
-                    </button>
-                  )
-                })}
-          </div>
+          <NestNav {...nestNavProps} collapsed={sidebarCollapsed} />
         </div>
 
         <div className="shrink-0 border-t border-sidebar-border px-2 py-2">
@@ -2304,37 +2282,12 @@ export function Dashboard() {
       <MobileMenu
         open={mobileMenuOpen}
         onOpenChange={setMobileMenuOpen}
-        view={view}
-        views={VIEWS}
-        groups={groups}
-        selectedGroup={selectedGroup}
-        onSelectView={(next) => {
-          setView(next)
-          setSelectedGroup(null)
-          setMobileMenuOpen(false)
-        }}
-        onSelectGroup={(id) => {
-          setSelectedGroup(id)
-          setMobileMenuOpen(false)
-        }}
-        editMode={editMode}
-        onMoveToView={(next) => {
-          moveSelectionToView(next)
-          setMobileMenuOpen(false)
-        }}
-        onMoveToGroup={(id) => {
-          moveSelectionToGroup(id)
-          setMobileMenuOpen(false)
-        }}
-        onAddProject={() => {
-          setMobileMenuOpen(false)
-          setShowAddProject(true)
-        }}
+        nav={nestNavProps}
+        email={user?.email}
         onOpenSettings={() => {
           setMobileMenuOpen(false)
           setShowSettings(true)
         }}
-        email={user?.email}
         onSignOut={() => void signOut()}
       />
     </div>

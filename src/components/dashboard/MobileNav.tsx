@@ -1,19 +1,16 @@
-import type { ComponentType } from 'react'
-import { Archive, Clock, LayoutGrid, Menu, Plus, Settings, Sparkles, Compass, LogOut } from 'lucide-react'
+import type { ComponentProps } from 'react'
+import { Archive, Clock, LayoutGrid, Menu, Settings, Sparkles, Compass, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import type { Group } from '@/lib/pages'
+import { NestNav } from '@/components/dashboard/NestNav'
 import { useLangValue } from '@/components/landing/i18n'
 
 type NavView = 'today' | 'all' | 'finish' | 'explore' | 'remember' | 'resources' | 'ephemeral' | 'archives'
-
-type ViewItem = { id: NavView; labelKey: string; icon: ComponentType<{ className?: string }> }
 
 const TABS: { id: 'today' | 'all' | 'explore' | 'archives'; labelKey: string; icon: typeof Clock }[] = [
   { id: 'today', labelKey: 'view.today', icon: Clock },
@@ -94,35 +91,17 @@ export function MobileTabBar({
 export function MobileMenu({
   open,
   onOpenChange,
-  view,
-  views,
-  groups,
-  selectedGroup,
-  onSelectView,
-  onSelectGroup,
-  onAddProject,
-  onOpenSettings,
   email,
+  onOpenSettings,
   onSignOut,
-  editMode = false,
-  onMoveToView,
-  onMoveToGroup,
+  nav,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  view: NavView
-  views: ViewItem[]
-  groups: Group[]
-  selectedGroup: string | null
-  onSelectView: (view: NavView) => void
-  onSelectGroup: (id: string) => void
-  onAddProject: () => void
-  onOpenSettings: () => void
+  nav: ComponentProps<typeof NestNav>
   email: string | null | undefined
+  onOpenSettings: () => void
   onSignOut: () => void
-  editMode?: boolean
-  onMoveToView?: (view: NavView) => void
-  onMoveToGroup?: (id: string) => void
 }) {
   const { t } = useLangValue()
   return (
@@ -138,100 +117,7 @@ export function MobileMenu({
         </SheetHeader>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
-          <p className="px-3 pt-2 pb-1 text-xs font-medium text-muted-foreground">
-            {t('nav.mobile.sections')}
-          </p>
-          <div className="flex flex-col gap-0.5">
-            {views.map((item) => {
-              const Icon = item.icon
-              const active = !selectedGroup && view === item.id
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  data-drop-target={
-                    item.id === 'today' ||
-                    item.id === 'all' ||
-                    item.id === 'finish' ||
-                    item.id === 'explore' ||
-                    item.id === 'remember'
-                      ? item.id
-                      : undefined
-                  }
-                  onClick={() => {
-                    if (editMode) {
-                      const canReceive =
-                        item.id === 'today' ||
-                        item.id === 'all' ||
-                        item.id === 'finish' ||
-                        item.id === 'explore' ||
-                        item.id === 'remember'
-                      if (canReceive) onMoveToView?.(item.id)
-                      return
-                    }
-                    onSelectView(item.id)
-                  }}
-                  className={cn(
-                    'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
-                    active ? 'bg-accent text-foreground' : 'text-foreground/75 hover:bg-accent',
-                    editMode &&
-                      (item.id === 'today' ||
-                        item.id === 'all' ||
-                        item.id === 'finish' ||
-                        item.id === 'explore' ||
-                        item.id === 'remember')
-                      ? 'text-lime'
-                      : editMode && 'opacity-40',
-                  )}
-                >
-                  <Icon className="size-4 shrink-0" aria-hidden="true" />
-                  <span className="flex-1 text-left">{t(item.labelKey)}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="mt-4 flex items-center justify-between px-3 pb-1">
-            <p className="text-xs font-medium text-muted-foreground">{t('dash.projects')}</p>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={onAddProject}
-              aria-label={t('dash.newProject')}
-            >
-              <Plus className="size-3.5" aria-hidden="true" />
-            </Button>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            {groups.length === 0 ? (
-              <p className="px-3 py-2 text-xs text-muted-foreground">{t('dash.noProjects')}</p>
-            ) : (
-              groups.map((group) => (
-                <button
-                  key={group.id}
-                  type="button"
-                  data-drop-target={`project:${group.id}`}
-                  onClick={() => {
-                    if (editMode) {
-                      onMoveToGroup?.(group.id)
-                      return
-                    }
-                    onSelectGroup(group.id)
-                  }}
-                  className={cn(
-                    'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
-                    selectedGroup === group.id
-                      ? 'bg-accent text-foreground'
-                      : 'text-foreground/75 hover:bg-accent',
-                    editMode && 'text-lime',
-                  )}
-                >
-                  <span className="size-2 shrink-0 rounded-full bg-lime" aria-hidden="true" />
-                  <span className="flex-1 truncate text-left">{group.name}</span>
-                </button>
-              ))
-            )}
-          </div>
+          <NestNav {...nav} compact />
         </div>
 
         <div className="border-t border-border p-3">
