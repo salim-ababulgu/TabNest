@@ -302,9 +302,9 @@ function Modal({
         if (!open) onClose()
       }}
     >
-      <DialogContent className="max-h-[85vh] overflow-y-auto p-6 sm:max-w-lg">
+      <DialogContent className="max-h-[85vh] overflow-x-hidden overflow-y-auto p-5 sm:max-w-lg sm:p-6">
         <DialogHeader>
-          <DialogTitle className="font-heading text-xl font-semibold">{title}</DialogTitle>
+          <DialogTitle className="pr-8 font-heading text-xl font-semibold">{title}</DialogTitle>
         </DialogHeader>
         {children}
       </DialogContent>
@@ -1484,12 +1484,12 @@ export function Dashboard() {
         <Modal title={selectedSite.domain} onClose={() => setSelectedSite(null)}>
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3">
-              <SiteAvatar site={selectedSite} className="size-10 rounded-lg border" />
+              <SiteAvatar site={selectedSite} className="size-10 shrink-0 rounded-lg border" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">
                   {fmt(t('dash.visitsTotal'), { n: selectedSite.visits })}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="min-w-0 truncate text-xs text-muted-foreground">
                   {fmt(t('dash.siteMeta'), {
                     p: selectedSite.pages.length,
                     when: timeAgo(selectedSite.lastVisit, t),
@@ -1500,6 +1500,7 @@ export function Dashboard() {
                 size="sm"
                 variant={selectedSite.pinned ? 'default' : 'outline'}
                 onClick={() => void handleTogglePin(selectedSite)}
+                className="shrink-0"
               >
                 <Pin className="size-3.5" />
                 {selectedSite.pinned ? t('dash.pinned') : t('dash.pinAction')}
@@ -1509,8 +1510,8 @@ export function Dashboard() {
             <div className="space-y-2">
               {uniquePages(selectedSite.pages).map((page) => {
                 return (
-                  <div key={page.id} className="flex flex-wrap items-center gap-2 rounded-lg border p-2">
-                    <div className="min-w-0 flex-1 basis-full sm:basis-0">
+                  <div key={page.id} className="rounded-lg border p-2">
+                    <div className="min-w-0">
                       <a
                         href={page.url}
                         target="_blank"
@@ -1524,45 +1525,45 @@ export function Dashboard() {
                         {fmt(t('dash.visits'), { n: page.visit_count })}, {expiryText(page)}
                       </p>
                     </div>
-                    <div className="ml-auto flex items-center gap-1.5">
-                    <Select
-                      value={page.reason ?? 'none'}
-                      onValueChange={(value) =>
-                        handleSetReason(page, value === 'none' ? null : value)
-                      }
-                    >
-                      <SelectTrigger size="sm" className="w-28">
-                        <SelectValue placeholder={t('dash.why')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">{t('dash.none')}</SelectItem>
-                        {REASON_ORDER.map((reason) => (
-                          <SelectItem key={reason} value={reason}>
-                            {t(`reason.${reason}`)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <div className="flex shrink-0 gap-1">
-                      <Button
-                        size="icon-sm"
-                        variant="outline"
-                        onClick={() => handleVisit(page)}
-                        title={t('dash.visitAction')}
-                        aria-label={t('dash.visitAction')}
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <Select
+                        value={page.reason ?? 'none'}
+                        onValueChange={(value) =>
+                          handleSetReason(page, value === 'none' ? null : value)
+                        }
                       >
-                        <Clock className="size-3.5" />
-                      </Button>
-                      <Button
-                        size="icon-sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(page)}
-                        title="Supprimer"
-                        aria-label="Supprimer"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </Button>
-                    </div>
+                        <SelectTrigger size="sm" className="min-w-0 flex-1 sm:w-32 sm:flex-none">
+                          <SelectValue placeholder={t('dash.why')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">{t('dash.none')}</SelectItem>
+                          {REASON_ORDER.map((reason) => (
+                            <SelectItem key={reason} value={reason}>
+                              {t(`reason.${reason}`)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="ml-auto flex shrink-0 gap-1">
+                        <Button
+                          size="icon-sm"
+                          variant="outline"
+                          onClick={() => handleVisit(page)}
+                          title={t('dash.visitAction')}
+                          aria-label={t('dash.visitAction')}
+                        >
+                          <Clock className="size-3.5" />
+                        </Button>
+                        <Button
+                          size="icon-sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(page)}
+                          title={t('dash.deleteAction')}
+                          aria-label={t('dash.deleteAction')}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )
