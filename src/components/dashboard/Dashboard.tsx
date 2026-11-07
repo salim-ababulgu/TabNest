@@ -681,6 +681,11 @@ export function Dashboard() {
     }
   }
 
+  /** Toutes les pages d'un site, même celles masquées par la vue courante. */
+  function pagesOfSite(domain: string): Page[] {
+    return pages.filter((page) => domainOf(page.url) === domain)
+  }
+
   /** Déplace un site entier (toutes ses pages) vers une section ou un projet. */
   async function moveSite(
     site: Site,
@@ -689,11 +694,12 @@ export function Dashboard() {
       | { kind: 'project'; groupId: string | null; label: string },
   ) {
     try {
+      const allPages = pagesOfSite(site.domain)
       if (target.kind === 'reason') {
-        await Promise.all(site.pages.map((page) => setReason(page, target.reason)))
+        await Promise.all(allPages.map((page) => setReason(page, target.reason)))
       } else {
         await setGroupForPages(
-          site.pages.map((page) => page.id),
+          allPages.map((page) => page.id),
           target.groupId,
         )
       }
@@ -722,13 +728,31 @@ export function Dashboard() {
     }
   }
 
-  /** Mode déplacement : appui court = sélection ; glissement = dépôt sur une cible. */
+  /** Mode déplacement : appui court = sélection ; glissement = la carte entière suit
+   *  le pointeur (GSAP) et rétrécit quand elle survole une section du menu. */
   function startEditDrag(site: Site) {
     return (event: ReactPointerEvent<HTMLDivElement>) => {
       event.preventDefault()
       const startX = event.clientX
       const startY = event.clientY
+      const cardElement = (event.currentTarget as HTMLElement).closest('article') as HTMLElement | null
+      const cardRect = cardElement?.getBoundingClientRect() ?? null
+
       let moved = false
+      let ghost: HTMLElement | null = null
+      let moveX: ((value: number) => void) | null = null
+      let moveY: ((value: number) => void) | null = null
+      let shrunk = false
+
+      const cleanupGhost = () => {
+        if (ghost) {
+          ghost.remove()
+          ghost = null
+        }
+        if (cardElement) cardElement.style.opacity = ''
+        moveX = null
+        moveY = null
+      }
 
       const findTarget = (x: number, y: number) => {
         const element = document.elementFromPoint(x, y)
@@ -736,13 +760,53 @@ export function Dashboard() {
         return target?.dataset.dropTarget ?? null
       }
 
+      const createGhost = () => {
+        if (!cardElement || !cardRect) return
+        ghost = cardElement.cloneNode(true) as HTMLElement
+        ghost.style.cssText = [
+          'position: fixed',
+          `left:${cardRect.left}px`,
+          `top:${cardRect.top}px`,
+          `width:${cardRect.width}px`,
+          `height:${cardRect.height}px`,
+          'margin:0',
+          'pointer-events:none',
+          'z-index:60',
+          'border-radius:16px',
+          'will-change:transform',
+        ].join(';')
+        document.body.appendChild(ghost)
+        cardElement.style.opacity = '0.35'
+        moveX = gsap.quickTo(ghost, 'x', { duration: 0.14, ease: 'power3.out' })
+        moveY = gsap.quickTo(ghost, 'y', { duration: 0.14, ease: 'power3.out' })
+      }
+
       const onMove = (moveEvent: PointerEvent) => {
         const distance = Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY)
         if (!moved && distance < 6) return
-        moved = true
-        setDraggingSite(site)
+        if (!moved) {
+          moved = true
+          createGhost()
+          setDraggingSite(site)
+        }
+        const dx = moveEvent.clientX - startX
+        const dy = moveEvent.clientY - startY
+        moveX?.(dx)
+        moveY?.(dy)
         setDragPos({ x: moveEvent.clientX, y: moveEvent.clientY })
-        setDragOverTarget(findTarget(moveEvent.clientX, moveEvent.clientY))
+        const target = findTarget(moveEvent.clientX, moveEvent.clientY)
+        setDragOverTarget(target)
+
+        // La carte rétrécit quand elle arrive sur une cible de la navigation.
+        if (ghost) {
+          if (target && !shrunk) {
+            shrunk = true
+            gsap.to(ghost, { scale: 0.55, opacity: 0.85, duration: 0.18, ease: 'power2.out' })
+          } else if (!target && shrunk) {
+            shrunk = false
+            gsap.to(ghost, { scale: 1, opacity: 1, duration: 0.18, ease: 'power2.out' })
+          }
+        }
       }
 
       const onUp = (upEvent: PointerEvent) => {
@@ -754,6 +818,7 @@ export function Dashboard() {
         setDragPos(null)
 
         if (!moved) {
+          cleanupGhost()
           setSelectedSites((current) =>
             current.includes(site.domain)
               ? current.filter((domain) => domain !== site.domain)
@@ -761,16 +826,49 @@ export function Dashboard() {
           )
           return
         }
-        if (value) {
-          const targets = selectedSites.includes(site.domain)
-            ? selectedSites
-            : [site.domain]
+
+        const finish = () => {
+          cleanupGhost()
+          if (!value) return
+          const targets = selectedSites.includes(site.domain) ? selectedSites : [site.domain]
           const involved = sites.filter((item) => targets.includes(item.domain))
           for (const item of involved.length > 0 ? involved : [site]) {
             applyDrop(item, value)
           }
           setSelectedSites([])
         }
+
+        if (ghost && value) {
+          const targetElement = document
+            .elementFromPoint(upEvent.clientX, upEvent.clientY)
+            ?.closest('[data-drop-target]') as HTMLElement | null
+          const rect = targetElement?.getBoundingClientRect()
+          if (rect && cardRect) {
+            gsap.to(ghost, {
+              x: rect.left + rect.width / 2 - (cardRect.left + cardRect.width / 2),
+              y: rect.top + rect.height / 2 - (cardRect.top + cardRect.height / 2),
+              scale: 0.15,
+              opacity: 0,
+              duration: 0.22,
+              ease: 'power2.in',
+              onComplete: finish,
+            })
+            return
+          }
+        }
+        if (ghost && !value) {
+          gsap.to(ghost, {
+            x: 0,
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            duration: 0.2,
+            ease: 'power2.out',
+            onComplete: finish,
+          })
+          return
+        }
+        finish()
       }
 
       window.addEventListener('pointermove', onMove)
