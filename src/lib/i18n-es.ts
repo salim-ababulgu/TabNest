@@ -205,6 +205,7 @@ export const ES_ALL: Record<string, Entry> = {
   'kind.documentation': 'Documentación',
   'kind.ephemeral': 'Efímera',
   'exp.none': 'Sin expiración',
+  'exp.pinned': 'Fijada, se conserva sin límite',
   'exp.expired': 'Expirada',
   'exp.expiredDays': 'Expirada hace {n} d',
   'exp.hours': 'Expira en {n} h',

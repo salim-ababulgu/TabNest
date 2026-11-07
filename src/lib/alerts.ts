@@ -30,11 +30,13 @@ export function buildAlerts(
   const alerts: AppAlert[] = []
 
   const expired = pages.filter((page) => {
+    if (page.pinned) return false
     const time = expiryTime(page)
     return time !== null && time < now
   })
 
   const soon = pages.filter((page) => {
+    if (page.pinned) return false
     const time = expiryTime(page)
     return time !== null && time >= now && time - now <= SOON_MS
   })

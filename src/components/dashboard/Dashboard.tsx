@@ -136,6 +136,7 @@ type Site = {
 }
 
 function isExpired(page: Page): boolean {
+  if (page.pinned) return false
   if (!page.expires_at) return false
   return new Date(page.expires_at).getTime() < Date.now()
 }
@@ -799,6 +800,7 @@ export function Dashboard() {
     : t(VIEW_TITLES[view])
 
   function expiryText(page: Page): string {
+    if (page.pinned) return t('exp.pinned')
     if (!page.expires_at) return t('exp.none')
     const diff = new Date(page.expires_at).getTime() - Date.now()
     if (diff <= 0) {

@@ -196,6 +196,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'kind.documentation': '文档',
   'kind.ephemeral': '临时',
   'exp.none': '永不过期',
+  'exp.pinned': '已固定，无限期保留',
   'exp.expired': '已过期',
   'exp.expiredDays': '已过期 {n} 天',
   'exp.hours': '{n} 小时后过期',

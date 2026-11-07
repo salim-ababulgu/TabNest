@@ -126,6 +126,31 @@ export async function setReason(page: Page, reason: string | null): Promise<void
 
 export async function setPinned(ids: string[], value: boolean): Promise<void> {
   if (ids.length === 0) return
-  const { error } = await supabase.from('pages').update({ pinned: value }).in('id', ids)
-  if (error) throw error
+
+  if (value) {
+    // Épingler : la page est conservée sans limite (le minuteur est suspendu).
+    const { error } = await supabase.from('pages').update({ pinned: true }).in('id', ids)
+    if (error) throw error
+    return
+  }
+
+  // Désépingler : le compte à rebours repart de maintenant, sinon la page
+  // pourrait expirer immédiatement après avoir été conservée.
+  const { data, error: readError } = await supabase
+    .from('pages')
+    .select('id, kind, reason, visit_count')
+    .in('id', ids)
+  if (readError) throw readError
+
+  const now = new Date()
+  for (const page of data ?? []) {
+    const { error } = await supabase
+      .from('pages')
+      .update({
+        pinned: false,
+        expires_at: computeExpiry(page.kind, page.visit_count, now, page.reason),
+      })
+      .eq('id', page.id)
+    if (error) throw error
+  }
 }
