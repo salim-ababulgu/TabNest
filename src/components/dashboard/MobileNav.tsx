@@ -51,6 +51,7 @@ export function MobileTabBar({
             <li key={tab.id}>
               <button
                 type="button"
+                data-drop-target={canReceive ? tab.id : undefined}
                 onClick={() => {
                   if (editMode) {
                     if (canReceive) onMoveToView?.(tab.id)
@@ -148,6 +149,15 @@ export function MobileMenu({
                 <button
                   key={item.id}
                   type="button"
+                  data-drop-target={
+                    item.id === 'today' ||
+                    item.id === 'all' ||
+                    item.id === 'finish' ||
+                    item.id === 'explore' ||
+                    item.id === 'remember'
+                      ? item.id
+                      : undefined
+                  }
                   onClick={() => {
                     if (editMode) {
                       const canReceive =
@@ -200,6 +210,7 @@ export function MobileMenu({
                 <button
                   key={group.id}
                   type="button"
+                  data-drop-target={`project:${group.id}`}
                   onClick={() => {
                     if (editMode) {
                       onMoveToGroup?.(group.id)

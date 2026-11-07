@@ -711,6 +711,15 @@ export function Dashboard() {
   }
 
   function applyDrop(site: Site, value: string) {
+    // Une cible peut être une section du menu (identifiant de vue) : on la
+    // traduit en raison avant d'appliquer.
+    if (!value.startsWith('reason:') && !value.startsWith('project:')) {
+      if (value in DROP_REASONS) {
+        const reason = DROP_REASONS[value as View] ?? null
+        applyDrop(site, `reason:${reason ?? 'none'}`)
+      }
+      return
+    }
     if (value.startsWith('reason:')) {
       const raw = value.slice('reason:'.length)
       const reason = raw === 'none' ? null : raw
@@ -1126,6 +1135,7 @@ export function Dashboard() {
                 <button
                   key={item.id}
                   type="button"
+                  data-drop-target={item.id in DROP_REASONS ? item.id : undefined}
                   onClick={() => {
                     if (editMode) {
                       moveSelectionToView(item.id)
@@ -1213,6 +1223,7 @@ export function Dashboard() {
                     <button
                       key={group.id}
                       type="button"
+                      data-drop-target={`project:${group.id}`}
                       onClick={() => {
                         if (editMode) {
                           moveSelectionToGroup(group.id)
