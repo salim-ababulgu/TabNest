@@ -10,7 +10,7 @@ async function login(page) {
   await page.getByLabel('Votre adresse e-mail').fill(EMAIL)
   await page.getByRole('button', { name: 'Commencer', exact: true }).click()
   await page.waitForTimeout(700)
-  await page.getByRole('button', { name: /^Connexion$/ }).click()
+  await page.getByRole('tab', { name: /^Connexion$/ }).click()
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: /^Se connecter$/ }).click()
   await page.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })

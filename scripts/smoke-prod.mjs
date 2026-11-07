@@ -41,7 +41,7 @@ async function main() {
   await page.getByLabel('Votre adresse e-mail').fill(EMAIL)
   await page.getByRole('button', { name: 'Commencer', exact: true }).click()
   await page.waitForTimeout(800)
-  await page.getByRole('button', { name: 'Connexion', exact: true }).click()
+  await page.getByRole('tab', { name: 'Connexion', exact: true }).click()
   await page.waitForTimeout(400)
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: 'Se connecter', exact: true }).click()

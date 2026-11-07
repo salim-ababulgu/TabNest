@@ -89,7 +89,7 @@ async function signInOrUp(page) {
   }).then((response) => response.ok)
 
   if (exists) {
-    await page.getByRole('button', { name: 'Connexion', exact: true }).click()
+    await page.getByRole('tab', { name: 'Connexion', exact: true }).click()
     await page.locator('#password').fill(PASSWORD)
     await page.getByRole('button', { name: 'Se connecter', exact: true }).click()
   } else {
