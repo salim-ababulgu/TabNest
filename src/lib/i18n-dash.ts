@@ -102,6 +102,8 @@ const FR: Record<string, Entry> = {
   'dash.emptyState':
     'Vos pages apparaîtront ici dès que l’extension sera active (ou ajoute-en une manuellement).',
   'dash.details': 'Détails',
+  'dash.moveTo': 'Déplacer vers…',
+  'dash.toast.movedTo': 'Déplacé dans « {name} »',
   'dash.pinned': 'Épinglé',
   'dash.visits': '{n} visite(s)',
   'dash.visitsTotal': '{n} visite(s) au total',
@@ -336,6 +338,8 @@ const EN: Record<string, Entry> = {
   'dash.noResults': 'No page matches "{q}".',
   'dash.emptyState': 'Your pages will appear here once the extension is active (or add one manually).',
   'dash.details': 'Details',
+  'dash.moveTo': 'Move to…',
+  'dash.toast.movedTo': 'Moved to “{name}”',
   'dash.pinned': 'Pinned',
   'dash.visits': '{n} visit(s)',
   'dash.visitsTotal': '{n} visit(s) in total',

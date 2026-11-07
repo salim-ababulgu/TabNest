@@ -66,6 +66,7 @@ import {
   createPage,
   fetchGroups,
   fetchPages,
+  setGroupForPages,
   setPinned,
   setReason,
   visitPage,
@@ -122,6 +123,15 @@ const VIEW_TITLES: Record<View, string> = {
 
 const NO_GROUP = 'none'
 const MAX_STACK = 4
+
+/** Sections qui acceptent le dépôt d'une carte : raison appliquée aux pages du site. */
+const DROP_REASONS: Partial<Record<View, string | null>> = {
+  today: 'decide',
+  finish: 'finish',
+  explore: 'explore',
+  remember: 'remember',
+  all: null,
+}
 
 type Site = {
   domain: string
@@ -353,6 +363,9 @@ export function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [onboardingHidden, setOnboardingHidden] = useState(false)
   const [query, setQuery] = useState('')
+  const [draggingSite, setDraggingSite] = useState<Site | null>(null)
+  const [dragOverTarget, setDragOverTarget] = useState<string | null>(null)
+  const [moveSelect, setMoveSelect] = useState('none')
   const searchRef = useRef<HTMLInputElement>(null)
   const [browserNotifications, setBrowserNotifications] = useState<
     NotificationPermission | 'unsupported'
@@ -540,6 +553,10 @@ export function Dashboard() {
   }, [onboardingDone, notify])
 
   useEffect(() => {
+    setMoveSelect('none')
+  }, [selectedSite?.domain])
+
+  useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault()
@@ -660,6 +677,51 @@ export function Dashboard() {
       )
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
+  /** Déplace un site entier (toutes ses pages) vers une section ou un projet. */
+  async function moveSite(
+    site: Site,
+    target:
+      | { kind: 'reason'; reason: string | null; label: string }
+      | { kind: 'project'; groupId: string | null; label: string },
+  ) {
+    try {
+      if (target.kind === 'reason') {
+        await Promise.all(site.pages.map((page) => setReason(page, target.reason)))
+      } else {
+        await setGroupForPages(
+          site.pages.map((page) => page.id),
+          target.groupId,
+        )
+      }
+      await load()
+      notify('success', fmt(t('dash.toast.movedTo'), { name: target.label }))
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
+  function applyMoveFromSelect(value: string) {
+    if (!selectedSite || value === 'none') return
+    if (value.startsWith('reason:')) {
+      const reason = value.slice('reason:'.length)
+      void moveSite(selectedSite, {
+        kind: 'reason',
+        reason,
+        label: isReason(reason) ? t(`reason.${reason}`) : reason,
+      }).finally(() => setMoveSelect('none'))
+      return
+    }
+    if (value.startsWith('project:')) {
+      const groupId = value.slice('project:'.length)
+      const group = groups.find((item) => item.id === groupId)
+      void moveSite(selectedSite, {
+        kind: 'project',
+        groupId,
+        label: group?.name ?? '',
+      }).finally(() => setMoveSelect('none'))
     }
   }
 
@@ -865,6 +927,26 @@ export function Dashboard() {
                     setView(item.id)
                     setSelectedGroup(null)
                   }}
+                  onDragOver={(event) => {
+                    if (!draggingSite || !(item.id in DROP_REASONS)) return
+                    event.preventDefault()
+                    event.dataTransfer.dropEffect = 'move'
+                    setDragOverTarget(item.id)
+                  }}
+                  onDragLeave={() =>
+                    setDragOverTarget((current) => (current === item.id ? null : current))
+                  }
+                  onDrop={(event) => {
+                    event.preventDefault()
+                    if (!draggingSite || !(item.id in DROP_REASONS)) return
+                    setDragOverTarget(null)
+                    void moveSite(draggingSite, {
+                      kind: 'reason',
+                      reason: DROP_REASONS[item.id] ?? null,
+                      label: t(item.labelKey),
+                    })
+                    setDraggingSite(null)
+                  }}
                   title={sidebarCollapsed ? t(item.labelKey) : undefined}
                   aria-label={sidebarCollapsed ? t(item.labelKey) : undefined}
                   className={cn(
@@ -873,6 +955,7 @@ export function Dashboard() {
                     active
                       ? 'bg-sidebar-accent text-sidebar-foreground'
                       : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+                    dragOverTarget === item.id && 'ring-2 ring-lime ring-offset-1 ring-offset-sidebar',
                   )}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
@@ -926,6 +1009,28 @@ export function Dashboard() {
                       key={group.id}
                       type="button"
                       onClick={() => setSelectedGroup(group.id)}
+                      onDragOver={(event) => {
+                        if (!draggingSite) return
+                        event.preventDefault()
+                        event.dataTransfer.dropEffect = 'move'
+                        setDragOverTarget(`project:${group.id}`)
+                      }}
+                      onDragLeave={() =>
+                        setDragOverTarget((current) =>
+                          current === `project:${group.id}` ? null : current,
+                        )
+                      }
+                      onDrop={(event) => {
+                        event.preventDefault()
+                        if (!draggingSite) return
+                        setDragOverTarget(null)
+                        void moveSite(draggingSite, {
+                          kind: 'project',
+                          groupId: group.id,
+                          label: group.name,
+                        })
+                        setDraggingSite(null)
+                      }}
                       title={group.name}
                       aria-label={group.name}
                       className={cn(
@@ -934,6 +1039,8 @@ export function Dashboard() {
                         active
                           ? 'bg-sidebar-accent text-sidebar-foreground'
                           : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+                        dragOverTarget === `project:${group.id}` &&
+                          'ring-2 ring-lime ring-offset-1 ring-offset-sidebar',
                       )}
                     >
                       {sidebarCollapsed ? (
@@ -1378,7 +1485,19 @@ export function Dashboard() {
                           }}
                         />
                       ))}
-                      <article className="relative flex flex-col overflow-hidden rounded-2xl border bg-card">
+                      <article
+                        className="relative flex flex-col overflow-hidden rounded-2xl border bg-card"
+                        draggable
+                        onDragStart={(event) => {
+                          setDraggingSite(site)
+                          event.dataTransfer.effectAllowed = 'move'
+                          event.dataTransfer.setData('text/plain', site.domain)
+                        }}
+                        onDragEnd={() => {
+                          setDraggingSite(null)
+                          setDragOverTarget(null)
+                        }}
+                      >
                         <button
                           type="button"
                           onClick={() => setSelectedSite(site)}
@@ -1505,6 +1624,27 @@ export function Dashboard() {
                 <Pin className="size-3.5" />
                 {selectedSite.pinned ? t('dash.pinned') : t('dash.pinAction')}
               </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="shrink-0 text-xs text-muted-foreground">{t('dash.moveTo')}</span>
+              <Select value={moveSelect} onValueChange={applyMoveFromSelect}>
+                <SelectTrigger size="sm" className="min-w-0 flex-1 sm:w-56 sm:flex-none">
+                  <SelectValue placeholder={t('dash.moveTo')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {REASON_ORDER.map((reason) => (
+                    <SelectItem key={reason} value={`reason:${reason}`}>
+                      {t(`reason.${reason}`)}
+                    </SelectItem>
+                  ))}
+                  {groups.map((group) => (
+                    <SelectItem key={group.id} value={`project:${group.id}`}>
+                      {group.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

@@ -291,6 +291,8 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.emptyState':
     'Sus páginas aparecerán aquí cuando la extensión esté activa (o añada una manualmente).',
   'dash.details': 'Detalles',
+  'dash.moveTo': 'Mover a…',
+  'dash.toast.movedTo': 'Movido a «{name}»',
   'dash.pinned': 'Fijado',
   'dash.visits': '{n} visita(s)',
   'dash.visitsTotal': '{n} visita(s) en total',

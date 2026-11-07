@@ -124,6 +124,12 @@ export async function setReason(page: Page, reason: string | null): Promise<void
   if (error) throw error
 }
 
+export async function setGroupForPages(ids: string[], groupId: string | null): Promise<void> {
+  if (ids.length === 0) return
+  const { error } = await supabase.from('pages').update({ group_id: groupId }).in('id', ids)
+  if (error) throw error
+}
+
 export async function setPinned(ids: string[], value: boolean): Promise<void> {
   if (ids.length === 0) return
 

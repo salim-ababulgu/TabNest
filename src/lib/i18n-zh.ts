@@ -278,6 +278,8 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.noResults': '没有页面与「{q}」匹配。',
   'dash.emptyState': '扩展开启后，你的页面会显示在这里（也可以手动添加）。',
   'dash.details': '详情',
+  'dash.moveTo': '移动到…',
+  'dash.toast.movedTo': '已移动到「{name}」',
   'dash.pinned': '已置顶',
   'dash.visits': '{n} 次访问',
   'dash.visitsTotal': '共 {n} 次访问',
