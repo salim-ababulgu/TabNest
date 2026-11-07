@@ -312,9 +312,11 @@ function Modal({
         if (!open) onClose()
       }}
     >
-      <DialogContent className="max-h-[85vh] overflow-x-hidden overflow-y-auto p-5 sm:max-w-lg sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="pr-8 font-heading text-xl font-semibold">{title}</DialogTitle>
+      <DialogContent className="max-h-[85dvh] min-w-0 max-w-[calc(100%-2rem)] overflow-x-hidden overflow-y-auto p-5 sm:max-w-lg sm:p-6">
+        <DialogHeader className="min-w-0">
+          <DialogTitle className="min-w-0 truncate pr-8 font-heading text-xl font-semibold">
+            {title}
+          </DialogTitle>
         </DialogHeader>
         {children}
       </DialogContent>
@@ -1601,7 +1603,7 @@ export function Dashboard() {
 
       {selectedSite && (
         <Modal title={selectedSite.domain} onClose={() => setSelectedSite(null)}>
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
               <SiteAvatar site={selectedSite} className="size-10 shrink-0 rounded-lg border" />
               <div className="min-w-0 flex-1">
@@ -1650,14 +1652,14 @@ export function Dashboard() {
             <div className="space-y-2">
               {uniquePages(selectedSite.pages).map((page) => {
                 return (
-                  <div key={page.id} className="rounded-lg border p-2">
+                  <div key={page.id} className="min-w-0 rounded-lg border p-2">
                     <div className="min-w-0">
                       <a
                         href={page.url}
                         target="_blank"
                         rel="noreferrer"
                         title={page.url}
-                        className="block truncate text-sm hover:underline"
+                        className="block min-w-0 truncate text-sm hover:underline"
                       >
                         {page.title || page.url}
                       </a>
@@ -1672,7 +1674,7 @@ export function Dashboard() {
                           handleSetReason(page, value === 'none' ? null : value)
                         }
                       >
-                        <SelectTrigger size="sm" className="min-w-0 flex-1 sm:w-32 sm:flex-none">
+                      <SelectTrigger size="sm" className="min-w-0 max-w-full flex-1 sm:w-32 sm:flex-none">
                           <SelectValue placeholder={t('dash.why')} />
                         </SelectTrigger>
                         <SelectContent>
