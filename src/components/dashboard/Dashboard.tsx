@@ -74,6 +74,15 @@ import {
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
 import { NestNav } from '@/components/dashboard/NestNav'
+import { SkeletonGrid } from '@/components/dashboard/skeletons'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  CARD_BODY_CLASS,
+  CARD_GRID_CLASS,
+  CARD_SHELL_CLASS,
+  CARD_THUMB_CLASS,
+} from '@/components/dashboard/cardLayout'
+import { useSkeletonVisible } from '@/lib/useSkeletonVisible'
 import {
   countCollections,
   loadNest,
@@ -342,6 +351,7 @@ export function Dashboard() {
   const [groups, setGroups] = useState<Group[]>([])
   const [pages, setPages] = useState<Page[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadedOnce, setLoadedOnce] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [url, setUrl] = useState('')
@@ -395,6 +405,7 @@ export function Dashboard() {
       const [nextGroups, nextPages] = await Promise.all([fetchGroups(), fetchPages()])
       setGroups(nextGroups)
       setPages(nextPages)
+      setLoadedOnce(true)
     } catch (cause) {
       if (!silent) setError(cause instanceof Error ? cause.message : t('dash.loadError'))
     } finally {
@@ -1116,6 +1127,8 @@ export function Dashboard() {
     return pages.filter((page) => !page.reason || page.reason === 'decide').length
   }
 
+  const showSkeleton = useSkeletonVisible(loading && !loadedOnce)
+
   const normalizedQuery = query.trim().toLowerCase()
   const activeCollection = nest.collections.find((item) => item.id === activeCollectionId) ?? null
   const visiblePages = pages.filter((page) => {
@@ -1216,6 +1229,7 @@ export function Dashboard() {
     },
     dropViews: Object.keys(DROP_REASONS),
     dragOver: dragOverTarget,
+    loading: loading && !loadedOnce,
   }
 
   return (
@@ -1475,6 +1489,33 @@ export function Dashboard() {
             </div>
           </section>
 
+          {!loadedOnce && !onboardingHidden && !onboardingDone && (
+            <section
+              aria-busy="true"
+              data-skeleton-onboarding=""
+              className="mt-6 rounded-2xl border bg-card p-6"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <Skeleton className="h-6 w-56" />
+                  <Skeleton className="mt-2 h-4 w-40" />
+                </div>
+                <Skeleton className="size-5" />
+              </div>
+              <div className="mt-5 space-y-3">
+                {[0, 1, 2].map((index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <Skeleton className="size-6 rounded-full" delay={index * 60} />
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton className="h-4 w-2/5" delay={index * 60} />
+                      <Skeleton className="h-3 w-3/5" delay={index * 60} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {!onboardingHidden && !onboardingDone && !loading && (
             <section data-dash-anim className="mt-6 rounded-2xl border bg-card p-6">
               <div className="flex items-start justify-between gap-3">
@@ -1550,8 +1591,24 @@ export function Dashboard() {
             </section>
           )}
 
-          {topSites.length > 0 && (
-            <section data-dash-anim className="mt-8">
+          {loading && !loadedOnce ? (
+            <section className="mt-8" aria-busy="true" data-skeleton-top="">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-7 w-40" />
+                <Skeleton className="h-3.5 w-24" />
+              </div>
+              <div className="mt-3 flex gap-4 overflow-hidden pb-2">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="flex w-20 shrink-0 flex-col items-center gap-1.5">
+                    <Skeleton className="size-16 rounded-full" delay={(index % 6) * 60} />
+                    <Skeleton className="h-3.5 w-16" delay={(index % 6) * 60} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : (
+            topSites.length > 0 && (
+              <section data-dash-anim className="mt-8">
               <div className="flex items-center justify-between">
                 <h2 className="font-heading text-lg font-medium tracking-tight">
                   {t('dash.mostVisited')}
@@ -1575,16 +1632,23 @@ export function Dashboard() {
                   </button>
                 ))}
               </div>
-            </section>
+              </section>
+            )
           )}
 
           <section className="mt-8">
             <div data-dash-anim className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="font-heading text-2xl font-medium tracking-tight">{currentTitle}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {fmt(t('dash.counts'), { s: sites.length, p: visiblePages.length })}
-                  {view === 'today' && !selectedGroup ? ` ${t('dash.todayHint')}` : ''}
+                <p className="mt-1 min-h-5 text-sm text-muted-foreground">
+                  {loading && !loadedOnce ? (
+                    <Skeleton className="h-4 w-44" />
+                  ) : (
+                    <>
+                      {fmt(t('dash.counts'), { s: sites.length, p: visiblePages.length })}
+                      {view === 'today' && !selectedGroup ? ` ${t('dash.todayHint')}` : ''}
+                    </>
+                  )}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -1656,21 +1720,9 @@ export function Dashboard() {
             )}
 
             {loading ? (
-              <div className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="animate-pulse overflow-hidden rounded-2xl border bg-card"
-                  >
-                    <div className="aspect-[16/10] bg-muted/60" />
-                    <div className="space-y-2 p-4">
-                      <div className="h-4 w-1/2 rounded bg-muted/60" />
-                      <div className="h-3 w-3/4 rounded bg-muted/50" />
-                      <div className="h-3 w-2/5 rounded bg-muted/50" />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              showSkeleton ? (
+                <SkeletonGrid count={9} />
+              ) : null
             ) : sites.length === 0 ? (
               <div className="mt-6 rounded-xl border border-dashed bg-card px-4 py-12 text-center text-sm text-muted-foreground">
                 {query ? (
@@ -1694,7 +1746,7 @@ export function Dashboard() {
               <div
                 ref={gridRef}
                 data-dash-anim
-                className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3"
+                className={CARD_GRID_CLASS}
               >
                 {sites.map((site) => {
                   const layers = Math.min(site.visits, MAX_STACK) - 1
@@ -1712,10 +1764,7 @@ export function Dashboard() {
                         />
                       ))}
                       <article
-                        className={cn(
-                          'relative flex flex-row overflow-hidden rounded-2xl border bg-card transition-colors sm:flex-col',
-                          !editMode && 'hover:border-foreground/25',
-                        )}
+                        className={cn(CARD_SHELL_CLASS, !editMode && 'hover:border-foreground/25')}
                       >
                         {editMode && (
                           <div
@@ -1748,7 +1797,7 @@ export function Dashboard() {
                         <button
                           type="button"
                           onClick={() => setSelectedSite(site)}
-                          className="relative block aspect-square w-16 shrink-0 overflow-hidden bg-secondary text-left sm:aspect-[16/10] sm:w-full"
+                          className={CARD_THUMB_CLASS}
                         >
                           <div className="absolute inset-0 bg-secondary">
                             {site.themeColor && (
@@ -1792,7 +1841,7 @@ export function Dashboard() {
                           </div>
                         </button>
 
-                        <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-4">
+                        <div className={CARD_BODY_CLASS}>
                           <div className="flex min-w-0 items-center gap-1.5">
                             <button
                               type="button"

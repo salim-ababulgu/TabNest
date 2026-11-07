@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
@@ -177,3 +177,65 @@
 }
 
 
+
+/* Chargement squelettique : une vague miel traverse chaque forme en diagonale. */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  contain: paint;
+  background-color: #ece5d2;
+  --sk-delay: 0ms;
+}
+
+.dark .skeleton-shimmer {
+  background-color: #2b3a31;
+}
+
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    #f3d9a6 46%,
+    #e8a13c 50%,
+    #f3d9a6 54%,
+    transparent 62%
+  );
+  opacity: 0.45;
+  transform: translate3d(-55%, 0, 0);
+  will-change: transform;
+  animation: skeleton-miel 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  animation-delay: var(--sk-delay);
+  pointer-events: none;
+}
+
+.dark .skeleton-shimmer::after {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    #6b5227 47%,
+    #e8a13c 50%,
+    #6b5227 53%,
+    transparent 60%
+  );
+  opacity: 0.22;
+}
+
+@keyframes skeleton-miel {
+  0% {
+    transform: translate3d(-55%, 0, 0);
+  }
+  16%,
+  100% {
+    transform: translate3d(155%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after {
+    animation: none;
+    opacity: 0.3;
+  }
+}

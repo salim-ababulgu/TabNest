@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
 import gsap from 'gsap'
 import { Check, Pencil, Plus, RotateCcw, X } from 'lucide-react'
@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useLangValue } from '@/components/landing/i18n'
+import { Skeleton } from '@/components/ui/skeleton'
+import { SkeletonNavRow } from '@/components/dashboard/skeletons'
 import {
   MAX_COLLECTIONS,
   dropActionFor,
@@ -53,6 +55,7 @@ export function NestNav({
   onAddProject,
   dropViews = [],
   dragOver = null,
+  loading = false,
   compact = false,
   collapsed = false,
 }: {
@@ -77,6 +80,7 @@ export function NestNav({
   onAddProject?: () => void
   dropViews?: string[]
   dragOver?: string | null
+  loading?: boolean
   compact?: boolean
   collapsed?: boolean
 }) {
@@ -172,6 +176,21 @@ export function NestNav({
   const smallIconClass = compact
     ? 'text-foreground/50 hover:text-destructive'
     : 'text-sidebar-foreground/50 hover:text-destructive'
+
+  // Pendant le premier chargement, la liste montre des rangées squelettes
+  // plutôt que des compteurs à zéro (évite le clignotement des chiffres).
+  if (loading && !collapsed) {
+    return (
+      <div role="status" aria-busy="true" data-skeleton-nav="" className="space-y-0.5">
+        <div className={cn('pb-1', compact ? 'px-3' : 'px-3')}>
+          <Skeleton className="h-3 w-24" />
+        </div>
+        {Array.from({ length: 8 }).map((_, index) => (
+          <SkeletonNavRow key={index} delay={(index % 6) * 60} />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-0.5">
