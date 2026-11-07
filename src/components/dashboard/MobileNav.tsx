@@ -27,10 +27,14 @@ export function MobileTabBar({
   view,
   onSelect,
   onOpenMenu,
+  editMode = false,
+  onMoveToView,
 }: {
   view: NavView
   onSelect: (view: NavView) => void
   onOpenMenu: () => void
+  editMode?: boolean
+  onMoveToView?: (view: NavView) => void
 }) {
   const { t } = useLangValue()
   return (
@@ -42,15 +46,25 @@ export function MobileTabBar({
         {TABS.map((tab) => {
           const Icon = tab.icon
           const active = view === tab.id
+          const canReceive = tab.id === 'today' || tab.id === 'all' || tab.id === 'explore'
           return (
             <li key={tab.id}>
               <button
                 type="button"
-                onClick={() => onSelect(tab.id)}
-                aria-current={active ? 'page' : undefined}
+                onClick={() => {
+                  if (editMode) {
+                    if (canReceive) onMoveToView?.(tab.id)
+                    return
+                  }
+                  onSelect(tab.id)
+                }}
+                aria-current={active && !editMode ? 'page' : undefined}
+                disabled={editMode && !canReceive}
                 className={cn(
                   'flex w-full flex-col items-center gap-1 py-2.5 text-[10px] transition-colors',
-                  active ? 'text-foreground' : 'text-muted-foreground',
+                  editMode && canReceive && 'text-lime',
+                  editMode && !canReceive && 'opacity-40',
+                  !editMode && (active ? 'text-foreground' : 'text-muted-foreground'),
                 )}
               >
                 <Icon className="size-5" aria-hidden="true" />
@@ -89,6 +103,9 @@ export function MobileMenu({
   onOpenSettings,
   email,
   onSignOut,
+  editMode = false,
+  onMoveToView,
+  onMoveToGroup,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -102,6 +119,9 @@ export function MobileMenu({
   onOpenSettings: () => void
   email: string | null | undefined
   onSignOut: () => void
+  editMode?: boolean
+  onMoveToView?: (view: NavView) => void
+  onMoveToGroup?: (id: string) => void
 }) {
   const { t } = useLangValue()
   return (
@@ -128,10 +148,30 @@ export function MobileMenu({
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => onSelectView(item.id)}
+                  onClick={() => {
+                    if (editMode) {
+                      const canReceive =
+                        item.id === 'today' ||
+                        item.id === 'all' ||
+                        item.id === 'finish' ||
+                        item.id === 'explore' ||
+                        item.id === 'remember'
+                      if (canReceive) onMoveToView?.(item.id)
+                      return
+                    }
+                    onSelectView(item.id)
+                  }}
                   className={cn(
                     'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
                     active ? 'bg-accent text-foreground' : 'text-foreground/75 hover:bg-accent',
+                    editMode &&
+                      (item.id === 'today' ||
+                        item.id === 'all' ||
+                        item.id === 'finish' ||
+                        item.id === 'explore' ||
+                        item.id === 'remember')
+                      ? 'text-lime'
+                      : editMode && 'opacity-40',
                   )}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
@@ -160,12 +200,19 @@ export function MobileMenu({
                 <button
                   key={group.id}
                   type="button"
-                  onClick={() => onSelectGroup(group.id)}
+                  onClick={() => {
+                    if (editMode) {
+                      onMoveToGroup?.(group.id)
+                      return
+                    }
+                    onSelectGroup(group.id)
+                  }}
                   className={cn(
                     'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
                     selectedGroup === group.id
                       ? 'bg-accent text-foreground'
                       : 'text-foreground/75 hover:bg-accent',
+                    editMode && 'text-lime',
                   )}
                 >
                   <span className="size-2 shrink-0 rounded-full bg-lime" aria-hidden="true" />

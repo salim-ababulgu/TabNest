@@ -125,6 +125,15 @@ const VIEW_TITLES: Record<View, string> = {
 const NO_GROUP = 'none'
 const MAX_STACK = 4
 
+/** En mode déplacement, ces sections servent de destinations. */
+const DROP_REASONS: Partial<Record<View, string | null>> = {
+  today: 'decide',
+  finish: 'finish',
+  explore: 'explore',
+  remember: 'remember',
+  all: null,
+}
+
 type Site = {
   domain: string
   pages: Page[]
@@ -769,14 +778,40 @@ export function Dashboard() {
     }
   }
 
-  function applyToSelected(value: string) {
+  /** Déplace la sélection vers une section du menu (mode déplacement). */
+  function moveSelectionToView(view: View) {
+    if (!(view in DROP_REASONS)) return
+    if (selectedSites.length === 0) {
+      notify('info', t('dash.edit.pickFirst'))
+      return
+    }
+    const reason = DROP_REASONS[view] ?? null
+    const involved = sites.filter((item) => selectedSites.includes(item.domain))
+    for (const item of involved) {
+      applyDrop(item, `reason:${reason ?? 'none'}`)
+    }
+    setSelectedSites([])
+  }
+
+  /** Déplace la sélection vers un projet (mode déplacement). */
+  function moveSelectionToGroup(groupId: string) {
     if (selectedSites.length === 0) {
       notify('info', t('dash.edit.pickFirst'))
       return
     }
     const involved = sites.filter((item) => selectedSites.includes(item.domain))
-    for (const item of involved) applyDrop(item, value)
+    for (const item of involved) {
+      applyDrop(item, `project:${groupId}`)
+    }
     setSelectedSites([])
+  }
+
+  function exitEditMode() {
+    setEditMode(false)
+    setSelectedSites([])
+    setDragOverTarget(null)
+    setDraggingSite(null)
+    setDragPos(null)
   }
 
   /** Plus proche expiration d'un site (pages non épinglées), pour signaler l'urgence. */
@@ -994,8 +1029,27 @@ export function Dashboard() {
                   key={item.id}
                   type="button"
                   onClick={() => {
+                    if (editMode) {
+                      moveSelectionToView(item.id)
+                      return
+                    }
                     setView(item.id)
                     setSelectedGroup(null)
+                  }}
+                  onDragOver={(event) => {
+                    if (!editMode || !(item.id in DROP_REASONS)) return
+                    event.preventDefault()
+                    event.dataTransfer.dropEffect = 'move'
+                    setDragOverTarget(item.id)
+                  }}
+                  onDragLeave={() =>
+                    setDragOverTarget((current) => (current === item.id ? null : current))
+                  }
+                  onDrop={(event) => {
+                    event.preventDefault()
+                    if (!editMode || !(item.id in DROP_REASONS)) return
+                    setDragOverTarget(null)
+                    moveSelectionToView(item.id)
                   }}
                   title={sidebarCollapsed ? t(item.labelKey) : undefined}
                   aria-label={sidebarCollapsed ? t(item.labelKey) : undefined}
@@ -1005,6 +1059,10 @@ export function Dashboard() {
                     active
                       ? 'bg-sidebar-accent text-sidebar-foreground'
                       : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+                    editMode && item.id in DROP_REASONS
+                      ? 'cursor-copy ring-1 ring-lime/50'
+                      : editMode && 'opacity-40',
+                    dragOverTarget === item.id && 'bg-lime text-lime-foreground ring-2 ring-lime',
                   )}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
@@ -1057,7 +1115,30 @@ export function Dashboard() {
                     <button
                       key={group.id}
                       type="button"
-                      onClick={() => setSelectedGroup(group.id)}
+                      onClick={() => {
+                        if (editMode) {
+                          moveSelectionToGroup(group.id)
+                          return
+                        }
+                        setSelectedGroup(group.id)
+                      }}
+                      onDragOver={(event) => {
+                        if (!editMode) return
+                        event.preventDefault()
+                        event.dataTransfer.dropEffect = 'move'
+                        setDragOverTarget(`project:${group.id}`)
+                      }}
+                      onDragLeave={() =>
+                        setDragOverTarget((current) =>
+                          current === `project:${group.id}` ? null : current,
+                        )
+                      }
+                      onDrop={(event) => {
+                        event.preventDefault()
+                        if (!editMode) return
+                        setDragOverTarget(null)
+                        moveSelectionToGroup(group.id)
+                      }}
                       title={group.name}
                       aria-label={group.name}
                       className={cn(
@@ -1066,6 +1147,9 @@ export function Dashboard() {
                         active
                           ? 'bg-sidebar-accent text-sidebar-foreground'
                           : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+                        editMode && 'cursor-copy ring-1 ring-lime/50',
+                        dragOverTarget === `project:${group.id}` &&
+                          'bg-lime text-lime-foreground ring-2 ring-lime',
                       )}
                     >
                       {sidebarCollapsed ? (
@@ -1468,77 +1552,19 @@ export function Dashboard() {
             </div>
 
             {editMode && (
-              <div className="mt-4 rounded-2xl border border-lime bg-card p-3 max-sm:sticky max-sm:top-16 max-sm:z-20">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="flex items-center gap-2 text-sm font-medium">
-                    <GripVertical className="size-4 text-muted-foreground" aria-hidden="true" />
-                    {t('dash.edit.title')}
-                  </p>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setEditMode(false)
-                      setDragOverTarget(null)
-                      setDraggingSite(null)
-                      setDragPos(null)
-                    }}
-                  >
-                    {t('dash.edit.done')}
-                  </Button>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{t('dash.edit.hint')}</p>
-                {selectedSites.length > 0 && (
-                  <p className="mt-2 text-xs font-medium text-foreground">
-                    {fmt(t('dash.edit.selected'), { n: selectedSites.length })}
-                  </p>
-                )}
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {REASON_ORDER.map((reason) => (
-                    <button
-                      key={reason}
-                      type="button"
-                      data-drop-target={`reason:${reason}`}
-                      onClick={() => applyToSelected(`reason:${reason}`)}
-                      className={cn(
-                        'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                        dragOverTarget === `reason:${reason}`
-                          ? 'border-lime bg-lime text-lime-foreground'
-                          : 'border-border text-foreground/70 hover:border-foreground/30',
-                      )}
-                    >
-                      {t(`reason.${reason}`)}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    data-drop-target="reason:none"
-                    onClick={() => applyToSelected('reason:none')}
-                    className={cn(
-                      'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                      dragOverTarget === 'reason:none'
-                        ? 'border-lime bg-lime text-lime-foreground'
-                        : 'border-border text-foreground/70 hover:border-foreground/30',
-                    )}
-                  >
-                    {t('view.all')}
-                  </button>
-                  {groups.map((group) => (
-                    <button
-                      key={group.id}
-                      type="button"
-                      data-drop-target={`project:${group.id}`}
-                      onClick={() => applyToSelected(`project:${group.id}`)}
-                      className={cn(
-                        'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                        dragOverTarget === `project:${group.id}`
-                          ? 'border-lime bg-lime text-lime-foreground'
-                          : 'border-border text-foreground/70 hover:border-foreground/30',
-                      )}
-                    >
-                      {group.name}
-                    </button>
-                  ))}
-                </div>
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-lime bg-card px-3 py-2 max-sm:sticky max-sm:top-16 max-sm:z-20">
+                <p className="flex items-center gap-1.5 text-xs font-medium">
+                  <GripVertical className="size-4 text-muted-foreground" aria-hidden="true" />
+                  {t('dash.edit.title')}
+                </p>
+                <p className="min-w-0 flex-1 text-xs text-muted-foreground">
+                  {selectedSites.length > 0
+                    ? `${fmt(t('dash.edit.selected'), { n: selectedSites.length })} · ${t('dash.edit.hint')}`
+                    : t('dash.edit.hint')}
+                </p>
+                <Button size="sm" variant="ghost" onClick={exitEditMode}>
+                  {t('dash.edit.done')}
+                </Button>
               </div>
             )}
 
@@ -1598,7 +1624,12 @@ export function Dashboard() {
                           }}
                         />
                       ))}
-                      <article className="relative flex flex-row overflow-hidden rounded-2xl border bg-card sm:flex-col">
+                      <article
+                        className={cn(
+                          'relative flex flex-row overflow-hidden rounded-2xl border bg-card transition-colors sm:flex-col',
+                          !editMode && 'hover:border-foreground/25',
+                        )}
+                      >
                         {editMode && (
                           <div
                             role="button"
@@ -1609,10 +1640,12 @@ export function Dashboard() {
                               if (event.key === 'Enter') setEditMode(false)
                             }}
                             className={cn(
-                              'absolute inset-0 z-10 flex touch-none items-center justify-center rounded-2xl bg-background/85 select-none',
+                              'absolute inset-0 z-10 flex touch-none items-center justify-center rounded-2xl bg-background/85 transition-colors select-none hover:bg-lime/5 hover:ring-1 hover:ring-lime/40',
                               selectedSites.includes(site.domain) &&
                                 'bg-lime/10 ring-2 ring-lime ring-inset',
-                              draggingSite?.domain === site.domain && 'opacity-40',
+                              draggingSite?.domain === site.domain
+                                ? 'cursor-grabbing opacity-40'
+                                : 'cursor-grab',
                             )}
                           >
                             <span className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium shadow-none">
@@ -2155,6 +2188,8 @@ export function Dashboard() {
           setSelectedGroup(null)
         }}
         onOpenMenu={() => setMobileMenuOpen(true)}
+        editMode={editMode}
+        onMoveToView={(next) => moveSelectionToView(next)}
       />
 
       <MobileMenu
@@ -2171,6 +2206,15 @@ export function Dashboard() {
         }}
         onSelectGroup={(id) => {
           setSelectedGroup(id)
+          setMobileMenuOpen(false)
+        }}
+        editMode={editMode}
+        onMoveToView={(next) => {
+          moveSelectionToView(next)
+          setMobileMenuOpen(false)
+        }}
+        onMoveToGroup={(id) => {
+          moveSelectionToGroup(id)
           setMobileMenuOpen(false)
         }}
         onAddProject={() => {

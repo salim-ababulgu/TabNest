@@ -281,7 +281,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.moveTo': '移动到…',
   'dash.edit.start': '编辑',
   'dash.edit.title': '移动模式',
-  'dash.edit.hint': '点选一张或多张卡片，再点某个分区。在电脑上也可以直接拖动卡片。',
+  'dash.edit.hint': '点选一张或多张卡片，再点菜单里的某个分区。',
   'dash.edit.selected': '已选择 {n} 张卡片',
   'dash.edit.pickFirst': '请先选择一张卡片。',
   'dash.edit.done': '完成',
