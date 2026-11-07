@@ -304,7 +304,7 @@ function Modal({
         if (!open) onClose()
       }}
     >
-      <DialogContent className="max-h-[85dvh] min-w-0 max-w-[calc(100%-2rem)] overflow-x-hidden overflow-y-auto p-5 sm:max-w-lg sm:p-6">
+      <DialogContent className="max-h-[85dvh] min-w-0 max-w-[calc(100%-2rem)] overflow-x-hidden overflow-y-auto p-5 max-sm:inset-0 max-sm:top-0 max-sm:left-0 max-sm:h-full max-sm:max-h-none max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:ring-0 sm:max-w-lg sm:p-6">
         <DialogHeader className="min-w-0">
           <DialogTitle className="min-w-0 truncate pr-8 font-heading text-xl font-semibold">
             {title}
@@ -1418,7 +1418,7 @@ export function Dashboard() {
             </div>
 
             {editMode && (
-              <div className="mt-4 rounded-2xl border border-lime bg-card p-3">
+              <div className="mt-4 rounded-2xl border border-lime bg-card p-3 max-sm:sticky max-sm:top-16 max-sm:z-20">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="flex items-center gap-2 text-sm font-medium">
                     <GripVertical className="size-4 text-muted-foreground" aria-hidden="true" />
@@ -1482,7 +1482,7 @@ export function Dashboard() {
             )}
 
             {loading ? (
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={index}
@@ -1517,7 +1517,11 @@ export function Dashboard() {
                 )}
               </div>
             ) : (
-              <div ref={gridRef} data-dash-anim className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <div
+                ref={gridRef}
+                data-dash-anim
+                className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3"
+              >
                 {sites.map((site) => {
                   const layers = Math.min(site.visits, MAX_STACK) - 1
                   return (
@@ -1525,14 +1529,14 @@ export function Dashboard() {
                       {Array.from({ length: Math.max(0, layers) }).map((_, index) => (
                         <div
                           key={index}
-                          className="absolute inset-0 rounded-2xl border bg-card"
+                          className="absolute inset-0 hidden rounded-2xl border bg-card sm:block"
                           style={{
                             transform: `translate(${(index + 1) * 5}px, ${(index + 1) * 5}px)`,
                             opacity: 0.5 - index * 0.12,
                           }}
                         />
                       ))}
-                      <article className="relative flex flex-col overflow-hidden rounded-2xl border bg-card">
+                      <article className="relative flex flex-row overflow-hidden rounded-2xl border bg-card sm:flex-col">
                         {editMode && (
                           <div
                             role="button"
@@ -1556,7 +1560,7 @@ export function Dashboard() {
                         <button
                           type="button"
                           onClick={() => setSelectedSite(site)}
-                          className="relative block aspect-[16/10] w-full overflow-hidden bg-secondary text-left"
+                          className="relative block aspect-square w-16 shrink-0 overflow-hidden bg-secondary text-left sm:aspect-[16/10] sm:w-full"
                         >
                           <div className="absolute inset-0 bg-secondary">
                             {site.themeColor && (
@@ -1566,7 +1570,7 @@ export function Dashboard() {
                               />
                             )}
                             <div className="grid h-full place-items-center">
-                              <span className="font-heading text-6xl font-semibold uppercase text-ink/20">
+                              <span className="font-heading text-2xl font-semibold uppercase text-ink/20 sm:text-6xl">
                                 {site.domain.charAt(0)}
                               </span>
                             </div>
@@ -1582,7 +1586,7 @@ export function Dashboard() {
                               }}
                             />
                           )}
-                          <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-black/50 p-3 text-xs text-white">
+                          <div className="absolute inset-x-0 top-0 hidden items-center gap-2 bg-black/50 p-3 text-xs text-white sm:flex">
                             <img
                               src={faviconFor(site)}
                               alt=""
@@ -1600,15 +1604,23 @@ export function Dashboard() {
                           </div>
                         </button>
 
-                        <div className="flex flex-1 flex-col p-4">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedSite(site)}
-                            className="text-left font-heading text-lg leading-snug hover:underline"
-                          >
-                            {site.domain}
-                          </button>
-                          <p className="mt-1 text-xs text-muted-foreground">
+                        <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-4">
+                          <div className="flex min-w-0 items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSite(site)}
+                              className="min-w-0 truncate text-left font-heading text-base leading-snug hover:underline sm:text-lg"
+                            >
+                              {site.domain}
+                            </button>
+                            {site.pinned && (
+                              <span
+                                aria-hidden="true"
+                                className="size-1.5 shrink-0 rounded-full bg-lime sm:hidden"
+                              />
+                            )}
+                          </div>
+                          <p className="mt-0.5 truncate text-[11px] text-muted-foreground sm:mt-1 sm:text-xs">
                             {fmt(t('dash.cardMeta'), {
                               p: site.pages.length,
                               v: site.visits,
@@ -1620,7 +1632,7 @@ export function Dashboard() {
                               {isReason(site.reason) ? t(`reason.${site.reason}`) : site.reason}
                             </span>
                           )}
-                          <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3">
+                          <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2 sm:pt-3">
                             <div className="flex flex-wrap gap-1">
                               {site.pages.slice(0, 3).map((page) => (
                                 <Badge key={page.id} variant="outline">
@@ -1725,6 +1737,7 @@ export function Dashboard() {
                           onClick={() => handleVisit(page)}
                           title={t('dash.visitAction')}
                           aria-label={t('dash.visitAction')}
+                          className="max-sm:size-9"
                         >
                           <Clock className="size-3.5" />
                         </Button>
@@ -1734,6 +1747,7 @@ export function Dashboard() {
                           onClick={() => handleDelete(page)}
                           title={t('dash.deleteAction')}
                           aria-label={t('dash.deleteAction')}
+                          className="max-sm:size-9"
                         >
                           <Trash2 className="size-3.5" />
                         </Button>
