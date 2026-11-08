@@ -1,11 +1,11 @@
-﻿import type { Entry } from '@/lib/i18n'
+import type { Entry } from '@/lib/i18n'
 
 // 简体中文词典（落地页 + 产品）。键与 FR/EN 词典完全一致。
 export const ZH_ALL: Record<string, Entry> = {
   'hero.h1a': 'TabNest 保存你访问的',
   'hero.h1b': '每一个页面。',
   'hero.sub':
-    '关闭标签页，什么都不会丢失。一款自动保存页面、按项目整理、并为每页设定存活期限的扩展。再也不用因为怕丢线索而开着 50 个标签页。',
+    '关闭标签页，页面会留下。一款自动保存页面、按项目整理、并为每页设定有效期的扩展。过期页面会进入归档，可随时恢复。再也不用因为怕丢线索而开着 50 个标签页。',
   'hero.cta': '免费开始使用',
   'hero.install': '安装扩展',
   'hero.how': '如何运作',
@@ -84,6 +84,8 @@ export const ZH_ALL: Record<string, Entry> = {
   'comparison.note':
     '以上描述的是一类产品，并非特指某个竞品：大多数标签页和书签管理扩展都在本地存储数据，无需账号。',
 
+  'pricing.beta': '测试期免费：当前所有功能对所有人开放。付费方案将在一切就绪并可验证后开放。',
+  'pricing.waitlist': '开放付费时通知我',
   'pricing.title': '免费开始。',
   'pricing.sub': '保存页面，TabNest 永远免费。付费方案只增加便利，核心功能从不收费。',
   'pricing.rec': '推荐',
@@ -140,7 +142,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'faq.a6': '可以。页面存在你的账号里，而不是浏览器里：在另一台设备上登录，它们就在那里。',
   'faq.q7': '扩展会申请哪些权限？',
   'faq.a7':
-    '读取当前页面的网址和标题，以及保存你的登录会话。它无法访问页面内容、你的密码，也无法查看其他标签页。',
+    '读取当前页面的网址、标题、图标和主色，以及保存你的登录会话。它从不读取页面内容，看不到你的密码，也不读取你的其他标签页。历史记录与书签是两项可选权限，仅用于你主动触发的导入，可以拒绝。',
   'faq.q8': '关闭标签页或重启浏览器会怎样？',
   'faq.a8': '什么都不会丢：页面在访问时就已经保存。这与依赖浏览器的会话正好相反。',
   'faq.q9': 'TabNest 能在手机上用吗？',
@@ -316,6 +318,15 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.autoCloseTitle': '关闭过期标签页',
   'dash.autoCloseDesc': '在 TabNest 扩展中：自动关闭已过期、未激活且未固定的标签页。页面仍保留在 TabNest。',
   'dash.autoCloseWhere': '在扩展中设置',
+  'dash.deleteAccount': '删除我的账户',
+  'dash.deleteAccountDesc': '永久删除你的页面、项目和账户。',
+  'dash.deleteAccountAction': '删除',
+  'dash.deleteAccountConfirmTitle': '删除你的账户？',
+  'dash.deleteAccountConfirmDesc': '此操作不可撤销：你的页面、项目和账户都会被删除，无法恢复。',
+  'dash.toast.accountDeleted': '账户已删除。',
+  'dash.loadTimeout': '网络太慢。请检查网络后重试。',
+  'dash.retry': '重试',
+  'dash.mobileReadOnly': '在手机上，TabNest 为只读模式：自动捕捉由电脑上的扩展完成。',
   'dash.cancel': '取消',
   'dash.toast.projectRenamed': '已重命名项目。',
   'dash.toast.projectDeleted': '已删除项目（页面已保留）。',
@@ -487,7 +498,11 @@ export const ZH_ALL: Record<string, Entry> = {
   'auth.passwordPlaceholderLogin': '你的密码',
   'auth.emailPlaceholder': 'you@example.com',
 
-  'ext.pill': 'Chrome 与 Edge · 测试版',
+  'ext.pill': 'Chrome 与 Edge · 公测版',
+  'ext.download.title': '下载扩展',
+  'ext.download.text': 'ZIP 文件，以开发者模式安装一次。Chrome 应用商店发布正在准备中。',
+  'ext.download.button': '下载扩展（.zip）',
+  'ext.download.meta': '版本 0.6.0 · 下方四步安装',
   'ext.title': '安装扩展，其余的一切自动保存。',
   'ext.sub':
     '扩展是 TabNest 的魔法所在：无需任何点击，自动保存你访问的每个页面。四步设置，一次完成。',

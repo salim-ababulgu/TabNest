@@ -53,7 +53,7 @@ async function main() {
   if (emailErrorVisible) ok('erreur d’e-mail invalide affichée')
   else fail('aucune erreur pour un e-mail invalide')
 
-  await page.locator('#email').fill('demo@tabnest.demo')
+  await page.locator('#email').fill(process.env.TABNEST_DEMO_EMAIL ?? '')
   await page.locator('#password').fill('123')
   await page.locator('#password').blur()
   await page.waitForTimeout(200)
@@ -64,7 +64,7 @@ async function main() {
   if (stillDisabled) ok('bouton toujours bloqué avec un mot de passe court')
   else fail('bouton actif malgré un mot de passe court')
 
-  await page.locator('#password').fill('DemoCapture-2025!')
+  await page.locator('#password').fill(process.env.TABNEST_DEMO_PASSWORD ?? '')
   await page.waitForTimeout(200)
   const enabled = await page.locator('#login-btn').isEnabled()
   if (enabled) ok('bouton activé quand tout est valide')

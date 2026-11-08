@@ -1,14 +1,14 @@
-﻿import { chromium } from "playwright"
+import { chromium } from "playwright"
 const b = await chromium.launch()
 async function run(name, w, h, dark) {
   const p = await b.newPage({ viewport: { width: w, height: h } })
   await p.addInitScript((d) => localStorage.setItem("tabnest-theme", d), dark ? "dark" : "light")
   await p.goto("http://localhost:5173/", { waitUntil: "networkidle" })
-  await p.getByLabel("Votre adresse e-mail").fill("demo@tabnest.demo")
+  await p.getByLabel("Votre adresse e-mail").fill(process.env.TABNEST_DEMO_EMAIL ?? '')
   await p.getByRole("button", { name: "Commencer", exact: true }).click()
   await p.waitForTimeout(600)
   await p.getByRole("tab", { name: /^Connexion$/ }).click()
-  await p.locator("#password").fill("DemoCapture-2025!")
+  await p.locator("#password").fill(process.env.TABNEST_DEMO_PASSWORD ?? '')
   await p.getByRole("button", { name: /^Se connecter$/ }).click()
   await p.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
   await p.waitForTimeout(800)

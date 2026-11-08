@@ -6,8 +6,8 @@
 import { chromium } from 'playwright'
 
 const BASE = 'https://tabnest-alb.pages.dev'
-const EMAIL = 'demo@tabnest.demo'
-const PASSWORD = 'DemoCapture-2025!'
+const EMAIL = process.env.TABNEST_DEMO_EMAIL ?? ''
+const PASSWORD = process.env.TABNEST_DEMO_PASSWORD ?? ''
 
 const results = []
 

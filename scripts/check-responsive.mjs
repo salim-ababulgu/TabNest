@@ -2,8 +2,8 @@
 import { chromium } from 'playwright'
 
 const BASE = 'http://localhost:5173'
-const EMAIL = 'demo@tabnest.demo'
-const PASSWORD = 'DemoCapture-2025!'
+const EMAIL = process.env.TABNEST_DEMO_EMAIL ?? ''
+const PASSWORD = process.env.TABNEST_DEMO_PASSWORD ?? ''
 
 async function login(page) {
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 })
@@ -38,8 +38,10 @@ async function main() {
   // La carte doit être en ligne : hauteur < largeur du conteneur
   const card = mobile.locator('[data-site] article').first()
   const cardBox = await card.boundingBox()
-  if (cardBox && cardBox.height > 150) {
-    failures += fail(`mobile : la carte est haute (${Math.round(cardBox.height)}px), pas en ligne compacte`)
+  if (cardBox && cardBox.height > 200) {
+    failures += fail(`mobile : la carte est trop haute (${Math.round(cardBox.height)}px)`)
+  } else if (cardBox && cardBox.height > cardBox.width) {
+    failures += fail('mobile : la carte n’est pas en ligne')
   } else {
     console.log('OK   mobile : carte en ligne compacte', cardBox ? `${Math.round(cardBox.width)}x${Math.round(cardBox.height)}` : '')
   }

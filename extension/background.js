@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY, MICROLINK_API_KEY } from './config.js'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
 
 const IGNORED =
   /^(chrome|edge|about|chrome-extension|devtools|view-source|file|data|blob):/i
@@ -118,18 +118,12 @@ async function sendPage(url, method, headers, body) {
 
 const enrichedOnce = new Set()
 
-async function enrichWithMicrolink(url) {
-  if (!MICROLINK_API_KEY) return null
-  try {
-    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`, {
-      headers: { 'x-api-key': MICROLINK_API_KEY },
-    })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data?.data ?? null
-  } catch {
-    return null
-  }
+/**
+ * L'enrichissement (image de partage) est prévu côté serveur : aucune clé
+ * tierce n'est embarquée dans l'extension. On garde les métadonnées de la page.
+ */
+async function enrichWithServer() {
+  return null
 }
 
 async function capture(url, title, faviconUrl, increment = true, ogImageUrl = '', themeColor = '') {
@@ -183,7 +177,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
     const rowMissingImage = !exists || !rows[0]?.og_image_url
     if (rowMissingImage && !enrichedOnce.has(url) && (!ogImage || !favicon || !finalTitle)) {
       enrichedOnce.add(url)
-      const enriched = await enrichWithMicrolink(url)
+      const enriched = await enrichWithServer()
       if (enriched) {
         finalTitle = finalTitle || enriched.title || ''
         const image = sanitizeUrl(enriched.image?.url)

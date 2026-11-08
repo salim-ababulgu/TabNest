@@ -70,7 +70,7 @@ async function main() {
     } else fail(`${label} : bouton actif avec mot de passe faible`)
 
     // E-mail valide + mot de passe complet → bouton actif
-    await page.locator('#email').fill('demo@tabnest.demo')
+    await page.locator('#email').fill(process.env.TABNEST_DEMO_EMAIL ?? '')
     await page.locator('#password').fill('MotDePasse2026!')
     await page.waitForTimeout(300)
     const enabled = await page.getByRole('button', { name: /^Créer un compte$/ }).isEnabled()
@@ -86,7 +86,7 @@ async function main() {
 
     // Erreur Supabase traduite (mauvais mot de passe, compte existant)
     await page.getByRole('tab', { name: 'Connexion' }).click()
-    await page.locator('#email').fill('demo@tabnest.demo')
+    await page.locator('#email').fill(process.env.TABNEST_DEMO_EMAIL ?? '')
     await page.locator('#password').fill('MauvaisMotDePasse!123')
     await page.getByRole('button', { name: /^Se connecter$/ }).click()
     const errorBox = await page

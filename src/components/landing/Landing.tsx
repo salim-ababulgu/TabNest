@@ -61,7 +61,7 @@ function LandingContent({ onStart }: LandingProps) {
             </span>
             <span className="font-heading text-lg font-semibold text-brand-cream">TabNest</span>
           </a>
-          <nav className="hidden items-center gap-7 text-sm text-brand-cream/60 md:flex">
+          <nav className="hidden items-center gap-7 text-sm text-brand-cream/70 md:flex">
             <a href="#principe" className="transition-colors hover:text-brand-cream">
               {t('nav.principle')}
             </a>
@@ -119,7 +119,7 @@ function LandingContent({ onStart }: LandingProps) {
             <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
               {t('split.principle.title')}
             </h2>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-foreground/60">
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-foreground/70">
               {t('split.principle.text')}
             </p>
           </Reveal>
@@ -153,7 +153,7 @@ function LandingContent({ onStart }: LandingProps) {
             <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               {t('split.auto.title')}
             </h2>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-brand-cream/55">
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-brand-cream/70">
               {t('split.auto.text')}
             </p>
           </Reveal>
@@ -177,7 +177,7 @@ function LandingContent({ onStart }: LandingProps) {
             <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl">
               {t('split.projects.title')}
             </h2>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-foreground/60">
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-foreground/70">
               {t('split.projects.text')}
             </p>
           </Reveal>
@@ -256,7 +256,7 @@ function LandingContent({ onStart }: LandingProps) {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder={t('cta.emailPlaceholder')}
-                className="h-10 min-w-0 flex-1 bg-transparent px-4 text-left text-sm text-foreground outline-none placeholder:text-foreground/40"
+                className="h-10 min-w-0 flex-1 bg-transparent px-4 text-left text-sm text-foreground outline-none placeholder:text-foreground/65"
               />
               <button
                 type="submit"
@@ -265,7 +265,7 @@ function LandingContent({ onStart }: LandingProps) {
                 {t('cta.button')}
               </button>
             </form>
-            <p className="mt-4 text-xs text-foreground/50">{t('cta.note')}</p>
+            <p className="mt-4 text-xs text-foreground/65">{t('cta.note')}</p>
           </Reveal>
         </div>
       </section>
@@ -276,7 +276,7 @@ function LandingContent({ onStart }: LandingProps) {
           <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
             {t('privacy.title')}
           </h2>
-          <p className="mt-6 text-sm leading-relaxed text-foreground/60">{t('privacy.text')}</p>
+          <p className="mt-6 text-sm leading-relaxed text-foreground/70">{t('privacy.text')}</p>
         </Reveal>
       </section>
 
@@ -289,11 +289,11 @@ function LandingContent({ onStart }: LandingProps) {
               </span>
               <span className="font-heading text-lg font-semibold">TabNest</span>
             </div>
-            <p className="mt-3 max-w-[22ch] text-foreground/50">{t('footer.tagline')}</p>
+            <p className="mt-3 max-w-[22ch] text-foreground/65">{t('footer.tagline')}</p>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-foreground/45">{t('footer.product')}</p>
+            <p className="text-xs font-medium text-foreground/65">{t('footer.product')}</p>
             <ul className="mt-3 space-y-2 text-foreground/70">
               <li>
                 <a href="#comment" className="hover:text-foreground">
@@ -319,7 +319,7 @@ function LandingContent({ onStart }: LandingProps) {
           </div>
 
           <div>
-            <p className="text-xs font-medium text-foreground/45">{t('footer.legal')}</p>
+            <p className="text-xs font-medium text-foreground/65">{t('footer.legal')}</p>
             <ul className="mt-3 space-y-2 text-foreground/70">
               <li>
                 <a href="/mentions-legales" className="hover:text-foreground">
@@ -350,7 +350,7 @@ function LandingContent({ onStart }: LandingProps) {
           </div>
 
           <div>
-            <p className="text-xs font-medium text-foreground/45">{t('footer.contact')}</p>
+            <p className="text-xs font-medium text-foreground/65">{t('footer.contact')}</p>
             <ul className="mt-3 space-y-2 text-foreground/70">
               <li>
                 <a href="mailto:salimababulgu@gmail.com" className="hover:text-foreground">
@@ -358,7 +358,7 @@ function LandingContent({ onStart }: LandingProps) {
                 </a>
               </li>
             </ul>
-            <p className="mt-4 text-[11px] leading-relaxed text-foreground/40">{t('footer.editor')}</p>
+            <p className="mt-4 text-[11px] leading-relaxed text-foreground/65">{t('footer.editor')}</p>
           </div>
         </div>
       </footer>

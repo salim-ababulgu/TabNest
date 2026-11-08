@@ -1,4 +1,4 @@
-﻿// Dictionnaire de la landing (fr / en) et détection de langue.
+// Dictionnaire de la landing (fr / en) et détection de langue.
 // Le dashboard reste en français pour l'instant : seule la page publique est bilingue.
 
 export type Lang = 'fr' | 'en' | 'es' | 'zh'
@@ -11,7 +11,7 @@ const FR: Dict = {
   'hero.h1a': 'TabNest garde les pages',
   'hero.h1b': 'que vous visitez.',
   'hero.sub':
-    "Vous fermez vos onglets, rien n'est perdu. Une extension qui enregistre automatiquement vos pages, les range par projets et leur donne une durée de vie. Fini les 50 onglets ouverts par peur de perdre le fil.",
+    "Vous fermez vos onglets, vos pages restent. Une extension qui enregistre automatiquement vos pages, les range par projets et leur donne une durée de vie. Celles qui expirent passent dans les archives, restaurables. Fini les 50 onglets ouverts par peur de perdre le fil.",
   'hero.cta': 'Commencer gratuitement',
   'hero.install': "Installer l'extension",
   'hero.how': 'Comment ça marche',
@@ -92,6 +92,9 @@ const FR: Dict = {
   'comparison.note':
     "Description d'une catégorie de produit, pas d'un concurrent précis : la plupart des extensions de gestion d'onglets et de favoris stockent vos données localement, sans compte.",
 
+  'pricing.beta':
+    'La bêta est gratuite : toutes les fonctions actuelles sont ouvertes à tous. Les offres payantes seront activées plus tard, quand tout sera prêt et vérifiable.',
+  'pricing.waitlist': 'Être prévenu à l’ouverture des offres',
   'pricing.title': 'Gratuit pour commencer.',
   'pricing.sub':
     "TabNest reste gratuit pour garder vos pages. Les formules payantes ajouteront du confort, jamais l'essentiel.",
@@ -151,10 +154,10 @@ const FR: Dict = {
     "Oui. Vos pages sont dans votre compte, pas dans le navigateur : connectez-vous depuis un autre appareil et elles sont là.",
   'faq.q7': "Quelles permissions l'extension demande-t-elle ?",
   'faq.a7':
-    "Lire l'adresse et le titre de la page active, et stocker votre session. Elle n'a accès ni au contenu des pages, ni à vos mots de passe, ni à vos autres onglets.",
+    "Lire l'adresse, le titre, l'icône et la couleur de la page active, et stocker votre session. Elle ne lit jamais le contenu des pages, ne voit pas vos mots de passe et ne lit pas vos autres onglets. Deux permissions optionnelles (historique, favoris) ne servent qu'à l'import que vous déclenchez vous-même, et peuvent être refusées.",
   'faq.q8': 'Que se passe-t-il si je ferme un onglet ou si le navigateur redémarre ?',
   'faq.a8':
-    "Rien n'est perdu : la page a déjà été enregistrée au moment de la visite. C'est l'inverse de la session qui dépend du navigateur.",
+    "Rien n'est perdu au moment de la fermeture : la page est déjà enregistrée. Elle reste disponible jusqu'à la fin de sa durée de vie, puis dans les archives, restaurables. C'est l'inverse d'une session qui dépend du navigateur.",
   'faq.q9': 'TabNest fonctionne-t-il sur mobile ?',
   'faq.a9':
     "L'extension est disponible sur les navigateurs de bureau (Chrome, Edge). Les navigateurs mobiles limitent les extensions ; nous travaillons sur une solution pour téléphone.",
@@ -235,7 +238,7 @@ const EN: Dict = {
   'hero.h1a': 'TabNest keeps the pages',
   'hero.h1b': 'you visit.',
   'hero.sub':
-    'Close your tabs, lose nothing. An extension that saves your pages automatically, sorts them into projects and gives each one a lifetime. No more 50 open tabs kept out of fear.',
+    'Close your tabs, your pages stay. An extension that saves your pages automatically, sorts them into projects and gives each one a lifetime. Expired pages move to the archives, where you can restore them. No more 50 open tabs kept out of fear.',
   'hero.cta': 'Start for free',
   'hero.install': 'Install the extension',
   'hero.how': 'How it works',
@@ -373,10 +376,10 @@ const EN: Dict = {
     'Yes. Your pages live in your account, not in the browser: sign in from another device and they are there.',
   'faq.q7': 'What permissions does the extension ask for?',
   'faq.a7':
-    'Reading the active page address and title, and storing your session. It cannot read page content, your passwords, or your other tabs.',
+    'Reading the active page address, title, icon and colour, and storing your session. It never reads page content, never sees your passwords and never reads your other tabs. Two optional permissions (history, bookmarks) are only used for the import you trigger yourself, and can be refused.',
   'faq.q8': 'What happens if I close a tab or the browser restarts?',
   'faq.a8':
-    'Nothing is lost: the page was already saved at visit time. The opposite of a session that depends on the browser.',
+    'Nothing is lost when you close: the page is already saved. It stays available until the end of its lifetime, then in the archives, restorable. The opposite of a session that depends on the browser.',
   'faq.q9': 'Does TabNest work on mobile?',
   'faq.a9':
     'The extension works on desktop browsers (Chrome, Edge). Mobile browsers restrict extensions; we are working on a phone solution.',

@@ -63,7 +63,7 @@ async function main() {
     await page.waitForTimeout(700)
     const auth = await page.evaluate(() => {
       const card = document.querySelector('.rounded-2xl.border.bg-card')
-      const heading = document.querySelector('h2')
+      const heading = document.querySelector('h1, h2')
       return {
         dark: document.documentElement.classList.contains('dark'),
         cardBg: card ? getComputedStyle(card).backgroundColor : '',

@@ -310,9 +310,9 @@ export function AuthForm({
             data-auth-anim
             className={cn('transition-opacity', switching && 'pointer-events-none')}
           >
-            <h2 className="font-heading text-2xl font-semibold">
+            <h1 className="font-heading text-2xl font-semibold">
               {mode === 'login' ? t('auth.loginTitle') : t('auth.signupTitle')}
-            </h2>
+            </h1>
             <p className="mt-1 text-sm text-muted-foreground">{t('auth.subtitle')}</p>
           </div>
 
@@ -377,7 +377,7 @@ export function AuthForm({
 
           <form
             id="auth-form"
-            role="tabpanel"
+            role="region"
             aria-labelledby={`auth-tab-${mode}`}
             onSubmit={handleSubmit}
             className="mt-5 space-y-4"

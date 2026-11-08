@@ -32,8 +32,8 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   process.exit(1)
 }
 
-const EMAIL = 'demo@tabnest.demo'
-const PASSWORD = 'DemoCapture-2025!'
+const EMAIL = process.env.TABNEST_DEMO_EMAIL ?? ''
+const PASSWORD = process.env.TABNEST_DEMO_PASSWORD ?? ''
 
 const days = (n) => new Date(Date.now() + n * 24 * 3600 * 1000).toISOString()
 const hoursAgo = (n) => new Date(Date.now() - n * 3600 * 1000).toISOString()

@@ -22,7 +22,7 @@ export function ComparisonSection() {
           <thead>
             <tr className="border-b border-border">
               <th scope="col" className="w-1/4 py-3 pr-4 font-medium" />
-              <th scope="col" className="py-3 pr-4 font-medium text-foreground/60">
+              <th scope="col" className="py-3 pr-4 font-medium text-foreground/70">
                 {t('comparison.local')}
               </th>
               <th scope="col" className="py-3 font-medium">
@@ -36,7 +36,7 @@ export function ComparisonSection() {
                 <th scope="row" className="py-4 pr-4 font-medium">
                   {t(`comparison.${row}.label`)}
                 </th>
-                <td className="py-4 pr-4 leading-relaxed text-foreground/60">
+                <td className="py-4 pr-4 leading-relaxed text-foreground/70">
                   {t(`comparison.${row}.local`)}
                 </td>
                 <td className="py-4 leading-relaxed">{t(`comparison.${row}.tabnest`)}</td>

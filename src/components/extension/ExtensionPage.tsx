@@ -44,6 +44,24 @@ export function ExtensionPage() {
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-foreground/75">{t('ext.sub')}</p>
 
+        <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="font-heading text-lg font-medium">{t('ext.download.title')}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-foreground/70">
+              {t('ext.download.text')}
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">{t('ext.download.meta')}</p>
+          </div>
+          <a
+            href="/downloads/tabnest-extension.zip"
+            download="tabnest-extension.zip"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-lime px-5 text-sm font-semibold text-lime-foreground hover:bg-lime/90"
+          >
+            {t('ext.download.button')}
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </a>
+        </div>
+
         <ol className="mt-10 space-y-6">
           {STEP_KEYS.map((step) => (
             <li key={step.titleKey} className="flex gap-4">

@@ -84,7 +84,7 @@ export function Hero({ onStart }: { onStart: () => void }) {
           <span className="block">{t('hero.h1a')}</span>
           <span className="block">{t('hero.h1b')}</span>
         </h1>
-        <p className="mt-6 max-w-xl text-sm leading-relaxed text-brand-cream/60">{t('hero.sub')}</p>
+        <p className="mt-6 max-w-xl text-sm leading-relaxed text-brand-cream/70">{t('hero.sub')}</p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <button
             type="button"
@@ -100,7 +100,7 @@ export function Hero({ onStart }: { onStart: () => void }) {
             {t('hero.install')}
           </a>
         </div>
-        <p className="mt-4 text-xs text-brand-cream/45">
+        <p className="mt-4 text-xs text-brand-cream/65">
           <a href="#comment" className="underline-offset-2 hover:text-brand-cream/80 hover:underline">
             {t('hero.how')}
           </a>

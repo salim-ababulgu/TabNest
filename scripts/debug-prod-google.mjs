@@ -21,7 +21,7 @@ async function main() {
   })
 
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 })
-  await page.getByLabel('Votre adresse e-mail').fill('demo@tabnest.demo')
+  await page.getByLabel('Votre adresse e-mail').fill(process.env.TABNEST_DEMO_EMAIL ?? '')
   await page.getByRole('button', { name: 'Commencer', exact: true }).click()
   await page.waitForTimeout(800)
   await page.getByRole('button', { name: /Continuer avec Google|Continue with Google/ }).click()

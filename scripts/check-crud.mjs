@@ -1,10 +1,10 @@
-﻿// Vérifie le CRUD complet : projets (créer, renommer, supprimer),
+// Vérifie le CRUD complet : projets (créer, renommer, supprimer),
 // pages expirées (masquées, restaurées), formulaire de retour.
 import { chromium } from 'playwright'
 
 const BASE = 'http://localhost:5173'
-const EMAIL = 'demo@tabnest.demo'
-const PASSWORD = 'DemoCapture-2025!'
+const EMAIL = process.env.TABNEST_DEMO_EMAIL ?? ''
+const PASSWORD = process.env.TABNEST_DEMO_PASSWORD ?? ''
 
 async function login(page) {
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 })

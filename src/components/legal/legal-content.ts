@@ -1,4 +1,4 @@
-﻿// Textes légaux de TabNest.
+// Textes légaux de TabNest.
 // Brouillons rédigés selon le droit français (RGPD, loi Informatique et Libertés,
 // Code de la consommation). Ils doivent être relus par un juriste avant publication.
 // Éditeur : ABA (personne physique, activité non immatriculée à ce jour).
@@ -171,7 +171,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
         title: '5. Durées de conservation',
         list: [
           'Données de compte : conservées tant que votre compte existe, puis supprimées dans un délai maximal de 30 jours après la suppression du compte.',
-          'Pages enregistrées : conservées selon leur durée de vie (3, 7, 14 ou 90 jours selon la raison de garder choisie, allongée à chaque visite). Les pages arrivées à échéance ne sont plus affichées et sont supprimées automatiquement.',
+          'Pages enregistrées : conservées selon leur durée de vie (3, 7, 14 ou 90 jours selon la raison de garder choisie, allongée à chaque visite). Les pages arrivées à échéance ne sont plus affichées dans les vues courantes ; elles restent accessibles dans les Archives, où vous pouvez les restaurer ou les effacer. Aucune purge automatique n’est effectuée à ce jour : elles sont supprimées à votre demande ou avec votre compte.',
           'Projets : supprimés avec votre compte ou à votre demande.',
           'Journaux techniques : conservés au maximum 6 mois.',
         ],
@@ -242,7 +242,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
           'Vous devez fournir une adresse e-mail valide et garder votre mot de passe confidentiel.',
           'Vous êtes responsable de l’activité réalisée depuis votre compte.',
           'Un compte est personnel : il ne doit pas être partagé ni revendu.',
-          'Vous pouvez supprimer votre compte à tout moment ; la suppression entraîne celle de vos données dans les délais indiqués par la politique de confidentialité.',
+          'Vous pouvez supprimer votre compte à tout moment depuis Paramètres → « Supprimer mon compte » ; la suppression entraîne celle de vos données dans les délais indiqués par la politique de confidentialité.',
         ],
       },
       {
@@ -315,13 +315,13 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
     title: 'Cookies et traceurs',
     updated: '1er novembre 2025',
     intro:
-      "Cette page décrit ce que TabNest stocke sur votre appareil. Nous n'utilisons aujourd'hui aucun traceur publicitaire, aucun cookie de réseaux sociaux et aucun outil de mesure d'audience.",
+      "Cette page décrit ce que TabNest stocke sur votre appareil. Nous n'utilisons aujourd'hui aucun traceur publicitaire ni cookie de réseaux sociaux. La mesure d'audience (PostHog) n'est pas activée actuellement : le code est en place mais reste inactif tant qu'aucune clé n'est configurée, et elle ne se chargera qu'avec votre accord.",
     sections: [
       {
         title: '1. Le principe',
         paragraphs: [
           "La CNIL distingue les traceurs strictement nécessaires au service (dispense de consentement) des traceurs qui ne le sont pas (publicité, mesure d’audience, réseaux sociaux), qui exigent votre consentement préalable.",
-          "TabNest n’utilise que des traceurs strictement nécessaires. C’est pourquoi vous ne voyez pas de bandeau de consentement : il n’y a rien à autoriser ni à refuser aujourd’hui.",
+          "TabNest n’utilise aujourd’hui que des traceurs strictement nécessaires, c’est pourquoi vous ne voyez pas de bandeau : la mesure d’audience est désactivée. Si elle est activée plus tard, un bandeau bloquant apparaîtra au premier passage et rien ne sera chargé avant votre choix.",
         ],
       },
       {
@@ -359,7 +359,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '3. Mesure d’audience (uniquement avec votre accord)',
         paragraphs: [
-          'Si vous l’acceptez, nous utilisons PostHog pour mesurer l’usage du service (pages consultées, création de compte, installation de l’extension) afin de comprendre où les utilisateurs rencontrent des difficultés. PostHog est hébergé dans l’Union européenne.',
+          'Lorsque la mesure d’audience sera activée (elle ne l’est pas aujourd’hui), et si vous l’acceptez, nous utiliserons PostHog pour mesurer l’usage du service (pages consultées, création de compte, installation de l’extension) afin de comprendre où les utilisateurs rencontrent des difficultés. PostHog est hébergé dans l’Union européenne.',
           'Nous avons désactivé l’enregistrement de session (aucune capture de votre navigation) et la collecte automatique de clics. Aucun cookie publicitaire, aucun pixel de réseaux sociaux, aucun profilage publicitaire.',
         ],
       },
@@ -374,7 +374,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '5. Votre choix, et comment le modifier',
         paragraphs: [
-          'Le bandeau s’affiche au premier passage : rien n’est chargé avant votre choix, et refuser est aussi simple qu’accepter.',
+          'Aujourd’hui, aucun bandeau ne s’affiche car aucun traceur non nécessaire n’est actif. Si la mesure d’audience est activée, le bandeau s’affichera au premier passage : rien ne sera chargé avant votre choix, et refuser sera aussi simple qu’accepter.',
           'Vous pouvez retirer votre consentement à tout moment en effaçant les données du site dans votre navigateur (Paramètres → Confidentialité → Effacer les données de navigation pour tabnest) : le bandeau réapparaîtra et vous pourrez choisir à nouveau.',
         ],
       },

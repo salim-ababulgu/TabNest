@@ -24,6 +24,7 @@ import {
   RotateCcw,
   Search,
   Settings,
+  Smartphone,
   Sparkles,
   Trash2,
   X,
@@ -60,6 +61,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { MobileMenu, MobileTabBar } from '@/components/dashboard/MobileNav'
 import { useAuth } from '@/lib/auth'
+import { supabase } from '@/lib/supabase'
 import { PAGE_KINDS } from '@/lib/lifetime'
 import type { PageKind } from '@/lib/lifetime'
 import { REASON_ORDER, isReason } from '@/lib/reason'
@@ -385,6 +387,7 @@ export function Dashboard() {
 
   const [showSettings, setShowSettings] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
+  const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false)
   const [showAddPage, setShowAddPage] = useState(false)
   const [showAddProject, setShowAddProject] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
@@ -415,7 +418,18 @@ export function Dashboard() {
     if (!silent) setLoading(true)
     if (!silent) setError(null)
     try {
-      const [nextGroups, nextPages] = await Promise.all([fetchGroups(), fetchPages()])
+      // Délai maximal : sans cela, une panne réseau laisse des squelettes à l'infini.
+      const timeout = <T,>(promise: Promise<T>): Promise<T> =>
+        Promise.race([
+          promise,
+          new Promise<T>((_, reject) =>
+            window.setTimeout(() => reject(new Error(t('dash.loadTimeout'))), 12000),
+          ),
+        ])
+      const [nextGroups, nextPages] = await Promise.all([
+        timeout(fetchGroups()),
+        timeout(fetchPages()),
+      ])
       setGroups(nextGroups)
       setPages(nextPages)
       setLoadedOnce(true)
@@ -1128,6 +1142,17 @@ export function Dashboard() {
     }
   }
 
+  async function deleteMyAccount() {
+    try {
+      const { error } = await supabase.rpc('delete_my_account')
+      if (error) throw error
+      notify('success', t('dash.toast.accountDeleted'))
+      await signOut()
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
   async function handleRefresh() {    setRefreshing(true)
     try {
       await load(true)
@@ -1523,13 +1548,26 @@ export function Dashboard() {
 
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-28 md:px-6 md:py-8 md:pb-8">
           {error && (
-            <p
+            <div
               role="alert"
-              className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
-              {error}
-            </p>
+              <span>{error}</span>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => void load()}
+                className="border-destructive/40 text-destructive"
+              >
+                {t('dash.retry')}
+              </Button>
+            </div>
           )}
+
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-border bg-card p-3 text-xs leading-relaxed text-muted-foreground md:hidden">
+            <Smartphone className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <span>{t('dash.mobileReadOnly')}</span>
+          </div>
 
           <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-5 py-8 md:px-8 md:py-10">
             <div className="relative">
@@ -1571,6 +1609,7 @@ export function Dashboard() {
             </section>
           )}
 
+          <div className="hidden md:block">
           {!onboardingHidden && !onboardingDone && !loading && (
             <section data-dash-anim className="mt-6 rounded-2xl border bg-card p-6">
               <div className="flex items-start justify-between gap-3">
@@ -1645,6 +1684,7 @@ export function Dashboard() {
               </div>
             </section>
           )}
+          </div>
 
           {loading && !loadedOnce ? (
             <section className="mt-8" aria-busy="true" data-skeleton-top="">
@@ -1918,7 +1958,7 @@ export function Dashboard() {
                                 event.currentTarget.style.display = 'none'
                               }}
                             />
-                            <span className="truncate">{site.domain}</span>
+                            <span className="hidden truncate sm:inline">{site.domain}</span>
                             {site.pinned && (
                               <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-[10px] font-medium text-lime-foreground">
                                 {t('dash.pinned')}
@@ -1943,6 +1983,11 @@ export function Dashboard() {
                               />
                             )}
                           </div>
+                          {site.pages[0]?.title && (
+                            <p className="mt-0.5 truncate text-[11px] text-foreground/70 sm:text-xs">
+                              {site.pages[0].title}
+                            </p>
+                          )}
                           <p className="mt-0.5 truncate text-[11px] text-muted-foreground sm:mt-1 sm:text-xs">
                             {fmt(t('dash.cardMeta'), {
                               p: site.pages.length,
@@ -1950,6 +1995,11 @@ export function Dashboard() {
                               when: timeAgo(site.lastVisit, t),
                             })}
                           </p>
+                          {site.pages[0] && (
+                            <p className="mt-1 text-[11px] text-muted-foreground">
+                              {expiryText(site.pages[0])}
+                            </p>
+                          )}
                           {urgency && (
                             <span
                               className={cn(
@@ -2113,6 +2163,27 @@ export function Dashboard() {
           </div>
         </Modal>
       )}
+
+      <AlertDialog open={confirmDeleteAccount} onOpenChange={setConfirmDeleteAccount}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dash.deleteAccountConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('dash.deleteAccountConfirmDesc')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('dash.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                setConfirmDeleteAccount(false)
+                void deleteMyAccount()
+              }}
+            >
+              {t('dash.deleteAccountAction')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog
         open={Boolean(pageToDelete)}
@@ -2429,6 +2500,23 @@ export function Dashboard() {
               <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground">
                 {t('dash.autoCloseWhere')}
               </span>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-xl border border-destructive/40 p-4">
+              <div>
+                <p className="text-sm font-medium text-destructive">{t('dash.deleteAccount')}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {t('dash.deleteAccountDesc')}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-destructive"
+                onClick={() => setConfirmDeleteAccount(true)}
+              >
+                {t('dash.deleteAccountAction')}
+              </Button>
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">

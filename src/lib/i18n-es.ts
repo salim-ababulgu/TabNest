@@ -1,11 +1,11 @@
-﻿import type { Entry } from '@/lib/i18n'
+import type { Entry } from '@/lib/i18n'
 
 // Dictionnaire espagnol (landing + produit). Clés identiques aux dictionnaires FR/EN.
 export const ES_ALL: Record<string, Entry> = {
   'hero.h1a': 'TabNest guarda las páginas',
   'hero.h1b': 'que usted visita.',
   'hero.sub':
-    'Cierre sus pestañas y no pierda nada. Una extensión que guarda sus páginas automáticamente, las organiza por proyectos y les da una vida útil. Se acabaron las 50 pestañas abiertas por miedo a perder el hilo.',
+    'Cierra tus pestañas, tus páginas se quedan. Una extensión que guarda tus páginas automáticamente, las organiza por proyectos y les da una vida útil. Las que caducan pasan a los archivos, donde puedes restaurarlas. Se acabaron las 50 pestañas abiertas por miedo a perder el hilo.',
   'hero.cta': 'Empezar gratis',
   'hero.install': 'Instalar la extensión',
   'hero.how': 'Cómo funciona',
@@ -86,6 +86,9 @@ export const ES_ALL: Record<string, Entry> = {
   'comparison.note':
     'Descripción de una categoría de producto, no de un competidor concreto: la mayoría de las extensiones de gestión de pestañas y marcadores guardan sus datos localmente, sin cuenta.',
 
+  'pricing.beta':
+    'La beta es gratuita: todas las funciones actuales están abiertas a todos. Las ofertas de pago se activarán más adelante, cuando todo esté listo y verificable.',
+  'pricing.waitlist': 'Avísame cuando abran las ofertas',
   'pricing.title': 'Gratis para empezar.',
   'pricing.sub':
     'TabNest seguirá siendo gratis para guardar sus páginas. Los planes de pago añadirán comodidad, nunca lo esencial.',
@@ -145,7 +148,7 @@ export const ES_ALL: Record<string, Entry> = {
     'Sí. Sus páginas están en su cuenta, no en el navegador: inicie sesión desde otro dispositivo y allí estarán.',
   'faq.q7': '¿Qué permisos pide la extensión?',
   'faq.a7':
-    'Leer la dirección y el título de la página activa, y guardar su sesión. No tiene acceso al contenido de las páginas, ni a sus contraseñas, ni a sus otras pestañas.',
+    'Leer la dirección, el título, el icono y el color de la página activa, y guardar tu sesión. Nunca lee el contenido de las páginas, no ve tus contraseñas y no lee tus otras pestañas. Dos permisos opcionales (historial, marcadores) solo sirven para la importación que tú mismo activas, y pueden rechazarse.',
   'faq.q8': '¿Qué pasa si cierro una pestaña o si el navegador se reinicia?',
   'faq.a8':
     'No se pierde nada: la página ya se guardó en el momento de la visita. Es lo contrario de una sesión que depende del navegador.',
@@ -330,6 +333,17 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.autoCloseDesc':
     'Desde la extensión TabNest: cierra las pestañas caducadas, inactivas y no fijadas. Las páginas siguen en TabNest.',
   'dash.autoCloseWhere': 'Ajuste en la extensión',
+  'dash.deleteAccount': 'Eliminar mi cuenta',
+  'dash.deleteAccountDesc': 'Borra definitivamente tus páginas, proyectos y cuenta.',
+  'dash.deleteAccountAction': 'Eliminar',
+  'dash.deleteAccountConfirmTitle': '¿Eliminar tu cuenta?',
+  'dash.deleteAccountConfirmDesc':
+    'Esta acción es definitiva: se borrarán tus páginas, proyectos y cuenta. No se podrá restaurar nada.',
+  'dash.toast.accountDeleted': 'Cuenta eliminada.',
+  'dash.loadTimeout': 'La conexión es demasiado lenta. Revisa tu red e inténtalo de nuevo.',
+  'dash.retry': 'Reintentar',
+  'dash.mobileReadOnly':
+    'En móvil, TabNest es de solo lectura: la captura automática funciona con la extensión en el ordenador.',
   'dash.cancel': 'Cancelar',
   'dash.toast.projectRenamed': 'Proyecto renombrado.',
   'dash.toast.projectDeleted': 'Proyecto eliminado (las páginas se conservan).',
@@ -504,7 +518,12 @@ export const ES_ALL: Record<string, Entry> = {
   'auth.passwordPlaceholderLogin': 'Tu contraseña',
   'auth.emailPlaceholder': 'usted@ejemplo.com',
 
-  'ext.pill': 'Chrome y Edge · versión de prueba',
+  'ext.pill': 'Chrome y Edge · beta',
+  'ext.download.title': 'Descargar la extensión',
+  'ext.download.text':
+    'Archivo ZIP para instalar una vez en modo desarrollador. La publicación en Chrome Web Store está en preparación.',
+  'ext.download.button': 'Descargar la extensión (.zip)',
+  'ext.download.meta': 'Versión 0.6.0 · instalación en 4 pasos abajo',
   'ext.title': 'Instale la extensión y conserve todo lo demás.',
   'ext.sub':
     'La extensión es lo que hace mágico a TabNest: guarda las páginas que usted visita sin necesidad de hacer clic. Cuatro pasos, una sola vez.',

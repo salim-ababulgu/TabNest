@@ -139,6 +139,17 @@ const FR: Record<string, Entry> = {
   'dash.autoCloseDesc':
     'Depuis l’extension TabNest : elle ferme les onglets expirés, inactifs et non épinglés. Les pages restent dans TabNest.',
   'dash.autoCloseWhere': 'Réglage dans l’extension',
+  'dash.deleteAccount': 'Supprimer mon compte',
+  'dash.deleteAccountDesc': 'Efface définitivement vos pages, vos projets et votre compte.',
+  'dash.deleteAccountAction': 'Supprimer',
+  'dash.deleteAccountConfirmTitle': 'Supprimer votre compte ?',
+  'dash.deleteAccountConfirmDesc':
+    'Cette action est définitive : vos pages, vos projets et votre compte seront effacés. Aucune restauration ne sera possible.',
+  'dash.toast.accountDeleted': 'Compte supprimé.',
+  'dash.loadTimeout': 'La connexion est trop lente. Vérifie ton réseau, puis réessaie.',
+  'dash.retry': 'Réessayer',
+  'dash.mobileReadOnly':
+    'Sur mobile, TabNest est en lecture seule : la capture automatique fonctionne depuis l’extension sur ordinateur.',
   'dash.cancel': 'Annuler',
   'dash.toast.projectRenamed': 'Projet renommé.',
   'dash.toast.projectDeleted': 'Projet supprimé (les pages sont conservées).',
@@ -319,13 +330,18 @@ const FR: Record<string, Entry> = {
   'auth.passwordPlaceholderLogin': 'Ton mot de passe',
   'auth.emailPlaceholder': 'toi@exemple.com',
 
-  'ext.pill': 'Chrome et Edge · version de test',
+  'ext.pill': 'Chrome et Edge · bêta publique',
+  'ext.download.title': 'Télécharger l’extension',
+  'ext.download.text':
+    'Fichier ZIP à installer une fois en mode développeur. La publication sur le Chrome Web Store est en préparation.',
+  'ext.download.button': 'Télécharger l’extension (.zip)',
+  'ext.download.meta': 'Version 0.6.0 · installation en 4 étapes ci-dessous',
   'ext.title': 'Installez l’extension, gardez tout le reste.',
   'ext.sub':
     'L’extension est ce qui rend TabNest magique : elle enregistre les pages que vous visitez, sans que vous ayez à cliquer. Quatre étapes, une seule fois.',
-  'ext.s1.title': 'Téléchargez le dossier de l’extension',
+  'ext.s1.title': 'Téléchargez le fichier de l’extension',
   'ext.s1.text':
-    'Le dossier « extension » du projet contient le manifeste, les scripts et l’interface de l’extension (version de test).',
+    'Cliquez sur « Télécharger l’extension (.zip) » puis décompressez le fichier dans un dossier de votre ordinateur.',
   'ext.s2.title': 'Chrome ou Edge : ouvrez « chrome://extensions »',
   'ext.s2.text':
     'Activez le mode développeur (interrupteur en haut à droite), puis cliquez sur « Charger l’extension non empaquetée » et sélectionnez le dossier.',
@@ -339,10 +355,11 @@ const FR: Record<string, Entry> = {
   'ext.sees.1':
     'Elle lit l’adresse, le titre, l’icône du site, l’image de partage publique et la couleur dominante de la page.',
   'ext.sees.2':
-    'Elle ne lit jamais le contenu de la page, ne prend aucune capture d’écran et n’enregistre pas vos mots de passe.',
-  'ext.sees.3': 'Vous pouvez la désactiver d’un clic, sans la désinstaller.',
+    'Sur demande explicite, elle peut aussi lire votre historique ou vos favoris pour les importer : rien n’est lu sans votre clic, et seules les adresses et titres sont envoyés.',
+  'ext.sees.3':
+    'Elle ne lit jamais le contenu des pages, ne prend aucune capture d’écran, n’enregistre aucun mot de passe et ne lit pas vos autres onglets. Vous pouvez la mettre en pause d’un clic, sans la désinstaller.',
   'ext.note':
-    'La version publique de l’extension sera publiée sur le Chrome Web Store. En attendant, cette installation manuelle est réservée aux tests : elle demande le mode développeur de Chrome.',
+    'Cette installation manuelle demande le mode développeur de Chrome. La publication sur le Chrome Web Store est en préparation ; en attendant, c’est la seule façon d’installer l’extension.',
   'ext.openApp': 'Ouvrir l’application',
   'ext.back': 'Retour au site',
 }
@@ -478,6 +495,17 @@ const EN: Record<string, Entry> = {
   'dash.autoCloseDesc':
     'From the TabNest extension: it closes expired, inactive, non-pinned tabs. Pages stay in TabNest.',
   'dash.autoCloseWhere': 'Setting in the extension',
+  'dash.deleteAccount': 'Delete my account',
+  'dash.deleteAccountDesc': 'Permanently erases your pages, projects and account.',
+  'dash.deleteAccountAction': 'Delete',
+  'dash.deleteAccountConfirmTitle': 'Delete your account?',
+  'dash.deleteAccountConfirmDesc':
+    'This is permanent: your pages, projects and account will be erased. Nothing can be restored.',
+  'dash.toast.accountDeleted': 'Account deleted.',
+  'dash.loadTimeout': 'The connection is too slow. Check your network, then try again.',
+  'dash.retry': 'Try again',
+  'dash.mobileReadOnly':
+    'On mobile, TabNest is read-only: automatic capture runs from the extension on your computer.',
   'dash.cancel': 'Cancel',
   'dash.toast.projectRenamed': 'Project renamed.',
   'dash.toast.projectDeleted': 'Project deleted (pages are kept).',
@@ -656,7 +684,12 @@ const EN: Record<string, Entry> = {
   'auth.passwordPlaceholderLogin': 'Your password',
   'auth.emailPlaceholder': 'you@example.com',
 
-  'ext.pill': 'Chrome and Edge · test build',
+  'ext.pill': 'Chrome and Edge · public beta',
+  'ext.download.title': 'Download the extension',
+  'ext.download.text':
+    'ZIP file to install once in developer mode. Chrome Web Store publication is in progress.',
+  'ext.download.button': 'Download the extension (.zip)',
+  'ext.download.meta': 'Version 0.6.0 · 4-step install below',
   'ext.title': 'Install the extension, keep everything else.',
   'ext.sub':
     'The extension is what makes TabNest magical: it saves the pages you visit, with no clicking. Four steps, once.',

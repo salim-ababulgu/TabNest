@@ -14,7 +14,17 @@ export function PricingSection() {
           {t('pricing.sub')}
         </p>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-[1fr_1.35fr_1fr] md:items-start">
+        <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-lime/40 bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="max-w-2xl text-sm leading-relaxed text-foreground/80">{t('pricing.beta')}</p>
+          <a
+            href="mailto:salimababulgu@gmail.com?subject=TabNest%20-%20offres%20payantes"
+            className="inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-border px-4 text-xs font-medium hover:bg-accent"
+          >
+            {t('pricing.waitlist')}
+          </a>
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-[1fr_1.35fr_1fr] md:items-start">
           {PLANS.map((plan) => {
             const features = list(`plans.${plan.id}.features`)
             return (
@@ -39,19 +49,27 @@ export function PricingSection() {
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-sm text-foreground/60">{t(`plans.${plan.id}.desc`)}</p>
+                <p className="mt-1 text-sm text-foreground/70">{t(`plans.${plan.id}.desc`)}</p>
 
                 <p className="mt-5">
-                  <span
-                    className={`font-heading font-medium ${
-                      plan.highlight ? 'text-4xl' : 'text-3xl'
-                    }`}
-                  >
-                    {plan.price}
-                  </span>{' '}
-                  <span className="text-xs text-muted-foreground">
-                    {t(`plans.${plan.id}.period`)}
-                  </span>
+                  {plan.id === 'free' || plan.checkoutUrl ? (
+                    <>
+                      <span
+                        className={`font-heading font-medium ${
+                          plan.highlight ? 'text-4xl' : 'text-3xl'
+                        }`}
+                      >
+                        {plan.price}
+                      </span>{' '}
+                      <span className="text-xs text-muted-foreground">
+                        {t(`plans.${plan.id}.period`)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-heading text-2xl font-medium text-muted-foreground">
+                      {t('pricing.coming')}
+                    </span>
+                  )}
                 </p>
 
                 <ul className="mt-5 space-y-2 text-sm text-foreground/75">

@@ -1,4 +1,4 @@
-﻿import { chromium } from "playwright"
+import { chromium } from "playwright"
 import path from "node:path"
 import os from "node:os"
 import fs from "node:fs"
@@ -19,8 +19,8 @@ await page.setViewportSize({ width: 336, height: 720 })
 await page.goto(`chrome-extension://${id}/popup.html`)
 await page.waitForTimeout(500)
 await page.screenshot({ path: "public/screenshots/popup-auth.png" })
-await page.locator("#email").fill("demo@tabnest.demo")
-await page.locator("#password").fill("DemoCapture-2025!")
+await page.locator("#email").fill(process.env.TABNEST_DEMO_EMAIL ?? '')
+await page.locator("#password").fill(process.env.TABNEST_DEMO_PASSWORD ?? '')
 await page.locator("#login-btn").click()
 await page.waitForTimeout(2500)
 await page.locator("details summary", { hasText: "Importer" }).click()
