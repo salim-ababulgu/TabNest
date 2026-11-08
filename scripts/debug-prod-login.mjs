@@ -1,7 +1,7 @@
 // Diagnostic de la connexion en production : capture le message d'erreur affiché.
 import { chromium } from 'playwright'
 
-const BASE = 'https://tabnest-alb.pages.dev'
+const BASE = 'https://filnest.pages.dev'
 const EMAIL = process.env.TABNEST_DEMO_EMAIL ?? ''
 const PASSWORD = process.env.TABNEST_DEMO_PASSWORD ?? ''
 

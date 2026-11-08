@@ -1,7 +1,7 @@
 // Diagnostic : erreur exacte de la connexion Google en production.
 import { chromium } from 'playwright'
 
-const BASE = 'https://tabnest-alb.pages.dev'
+const BASE = 'https://filnest.pages.dev'
 
 async function main() {
   const browser = await chromium.launch()
