@@ -281,7 +281,173 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log('[TabNest] extension installée / mise à jour')
 })
 
+/**
+ * Connexion Google directement dans l'extension (sans passer par le site).
+ * Prérequis Supabase : fournisseur Google activé et URL de redirection
+ * `https://<extension-id>.chromiumapp.org/` autorisée dans Authentication → URL Configuration.
+ */
+async function googleSignIn() {
+  const redirectUri = chrome.identity.getRedirectURL()
+  const authorizeUrl =
+    `${SUPABASE_URL}/auth/v1/authorize?provider=google` +
+    `&redirect_to=${encodeURIComponent(redirectUri)}` +
+    `&flow_type=implicit`
+
+  return new Promise((resolve) => {
+    chrome.identity.launchWebAuthFlow({ url: authorizeUrl, interactive: true }, async (redirected) => {
+      if (!redirected) {
+        resolve({ ok: false, error: 'Connexion annulée.' })
+        return
+      }
+      try {
+        const parsed = new URL(redirected)
+        const hash = new URLSearchParams(parsed.hash.replace(/^#/, ''))
+        const query = parsed.searchParams
+        const pick = (key) => hash.get(key) || query.get(key)
+        const errorDescription = pick('error_description')
+        if (errorDescription) {
+          resolve({ ok: false, error: errorDescription.replace(/\+/g, ' ') })
+          return
+        }
+        const accessToken = pick('access_token')
+        const refreshToken = pick('refresh_token')
+        if (!accessToken) {
+          resolve({
+            ok: false,
+            error: 'Réponse inattendue de Google (code sans jeton). Utilise l’e-mail et le mot de passe.',
+          })
+          return
+        }
+        const expiresIn = Number(pick('expires_in')) || 3600
+        let user = null
+        try {
+          const me = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+            headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${accessToken}` },
+          })
+          if (me.ok) user = await me.json()
+        } catch {
+          // profil non critique
+        }
+        const session = {
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          token_type: 'bearer',
+          expires_at: Math.floor(Date.now() / 1000) + expiresIn,
+          user,
+        }
+        await chrome.storage.local.set({ session })
+        resolve({ ok: true })
+      } catch (error) {
+        resolve({ ok: false, error: error instanceof Error ? error.message : 'Connexion impossible.' })
+      }
+    })
+  })
+}
+
+const authHeaders = (session) => ({
+  apikey: SUPABASE_ANON_KEY,
+  Authorization: `Bearer ${session.access_token}`,
+  'Content-Type': 'application/json',
+})
+
+async function fetchPageRow(session, url) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/pages?select=id,reason,pinned,group_id,title,visit_count,kind` +
+      `&url=eq.${encodeURIComponent(url)}&deleted_at=is.null`,
+    { headers: authHeaders(session) },
+  )
+  if (!res.ok) return null
+  const rows = await res.json()
+  return Array.isArray(rows) && rows.length > 0 ? rows[0] : null
+}
+
+async function fetchGroups(session) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/groups?select=id,name&order=name.asc`, {
+    headers: authHeaders(session),
+  })
+  if (!res.ok) return []
+  return res.json()
+}
+
+async function currentTab() {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true })
+  return tabs[0] ?? null
+}
+
+async function pageState() {
+  const session = await getSession()
+  if (!session) return { connected: false }
+  const tab = await currentTab()
+  if (!tab?.url) return { connected: true, page: null }
+  const [row, groups] = await Promise.all([fetchPageRow(session, tab.url), fetchGroups(session)])
+  return {
+    connected: true,
+    email: session.user?.email ?? null,
+    page: row,
+    groups,
+    tab: { url: tab.url, title: tab.title ?? '', favicon: tab.favIconUrl ?? '' },
+  }
+}
+
+/** Range la page courante : raison de garder, épingle ou projet. */
+async function classify(message) {
+  const session = await getSession()
+  if (!session) return { ok: false, error: 'Non connecté.' }
+  const tab = await currentTab()
+  if (!tab?.url) return { ok: false, error: 'Aucune page active.' }
+
+  let row = await fetchPageRow(session, tab.url)
+  if (!row) {
+    // Deux clics : on capture la page à la volée, puis on la range.
+    await capture(tab.url, tab.title ?? '', tab.favIconUrl ?? '', true)
+    row = await fetchPageRow(session, tab.url)
+  }
+  if (!row) {
+    return {
+      ok: false,
+      error: 'Cette page ne peut pas être enregistrée (adresse interne ou recherche).',
+    }
+  }
+
+  const body = {}
+  if (message.reason !== undefined) {
+    body.reason = message.reason
+    body.expires_at = computeExpiry(row.kind ?? 'normal', row.visit_count ?? 0, message.reason)
+  }
+  if (message.pinned !== undefined) {
+    body.pinned = message.pinned
+    if (!message.pinned) {
+      body.expires_at = computeExpiry(row.kind ?? 'normal', row.visit_count ?? 0, body.reason ?? row.reason)
+    }
+  }
+  if (message.groupId !== undefined) body.group_id = message.groupId || null
+  if (Object.keys(body).length === 0) return { ok: true }
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/pages?id=eq.${row.id}`, {
+    method: 'PATCH',
+    headers: { ...authHeaders(session), Prefer: 'return=minimal' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    return { ok: false, error: `Échec de l’enregistrement (${res.status}) ${detail.slice(0, 120)}` }
+  }
+  return { ok: true }
+}
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === 'google-signin') {
+    void googleSignIn().then(sendResponse)
+    return true
+  }
+  if (message?.type === 'page-state') {
+    void pageState().then(sendResponse)
+    return true
+  }
+  if (message?.type === 'classify') {
+    void classify(message).then(sendResponse)
+    return true
+  }
   if (message?.type === 'capture-current') {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0]
