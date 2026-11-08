@@ -2,25 +2,242 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Filnest — Fermez vos onglets, rien ne se perd</title>
     <meta
       name="description"
-      content="Filnest enregistre automatiquement les pages web que vous visitez, les classe par projets et leur donne une durée de vie. Fermez vos onglets, rien n’est perdu."
+      content="Filnest enregistre automatiquement les pages que vous visitez, les range par projets et leur donne une durée de vie. Fermez vos onglets : rien n'est perdu."
     />
+    <link rel="canonical" href="https://filnest.pages.dev/" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="author" content="ABA" />
     <meta name="theme-color" content="#f6f1e4" />
-    <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- Une URL par langue : le paramètre ?lang= est lu au chargement. -->
+    <link rel="alternate" hreflang="fr" href="https://filnest.pages.dev/?lang=fr" />
+    <link rel="alternate" hreflang="en" href="https://filnest.pages.dev/?lang=en" />
+    <link rel="alternate" hreflang="es" href="https://filnest.pages.dev/?lang=es" />
+    <link rel="alternate" hreflang="zh" href="https://filnest.pages.dev/?lang=zh" />
+    <link rel="alternate" hreflang="x-default" href="https://filnest.pages.dev/" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/icons/tabnest-48.png" />
+    <link rel="apple-touch-icon" href="/icons/tabnest-128.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Partage sur les réseaux sociaux et dans les messageries. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Filnest" />
-    <meta property="og:title" content="Filnest — Fermez vos onglets, rien n’est perdu" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale:alternate" content="en_GB" />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:title" content="Filnest — Fermez vos onglets, rien ne se perd" />
     <meta
       property="og:description"
-      content="Une extension qui enregistre automatiquement vos pages, les range par projets et leur donne une durée de vie."
+      content="Filnest enregistre automatiquement les pages que vous visitez, les range par projets et leur donne une durée de vie."
     />
-    <title>Filnest — Fermez vos onglets, rien n’est perdu</title>
+    <meta property="og:url" content="https://filnest.pages.dev/" />
+    <meta property="og:image" content="https://filnest.pages.dev/og-filnest.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Filnest : fermez vos onglets, rien ne se perd"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Filnest — Fermez vos onglets, rien ne se perd" />
+    <meta
+      name="twitter:description"
+      content="Une extension qui enregistre vos pages, les range par projets et leur donne une durée de vie."
+    />
+    <meta name="twitter:image" content="https://filnest.pages.dev/og-filnest.jpg" />
+
+    <link rel="preconnect" href="https://kgrkujedgqsmdlltzyzs.supabase.co" crossorigin />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://filnest.pages.dev/#website",
+            "url": "https://filnest.pages.dev/",
+            "name": "Filnest",
+            "inLanguage": "fr-FR",
+            "description": "Filnest enregistre les pages que vous visitez, les range par projets et leur donne une durée de vie.",
+            "publisher": { "@id": "https://filnest.pages.dev/#organization" }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://filnest.pages.dev/#organization",
+            "name": "Filnest",
+            "url": "https://filnest.pages.dev/",
+            "email": "salimababulgu@gmail.com",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://filnest.pages.dev/icons/tabnest-128.png",
+              "width": 128,
+              "height": 128
+            }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://filnest.pages.dev/#app",
+            "name": "Filnest",
+            "url": "https://filnest.pages.dev/",
+            "applicationCategory": "BrowserApplication",
+            "operatingSystem": "Chrome, Edge, Brave",
+            "inLanguage": "fr-FR",
+            "description": "Extension et service web qui gardent les pages visitées, les rangent par projets et leur donnent une durée de vie.",
+            "screenshot": "https://filnest.pages.dev/screenshots/dashboard-grid.png",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "EUR",
+              "description": "Offre gratuite : pages illimitées, quatre raisons de garder, projets et épinglage."
+            },
+            "featureList": [
+              "Capture automatique des pages visitées",
+              "Quatre raisons de garder une page",
+              "Durée de vie qui s'allonge à chaque visite",
+              "Classement par sites et par projets",
+              "Archives des pages expirées",
+              "Aucune capture d'écran, aucun contenu de page"
+            ],
+            "publisher": { "@id": "https://filnest.pages.dev/#organization" }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://filnest.pages.dev/#faq",
+            "inLanguage": "fr-FR",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Filnest lit-il le contenu de mes pages ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Non. Seules les métadonnées publiques sont enregistrées : adresse, titre, icône du site, image de partage et couleur dominante. Aucune capture d'écran, aucun texte de page."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Où sont stockées mes données ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Dans votre compte, sur notre base de données (Supabase). Chaque utilisateur ne peut accéder qu'à ses propres pages : le cloisonnement est appliqué au niveau de la base elle-même."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Puis-je désactiver la capture automatique ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Oui, à tout moment depuis le tableau de bord. L'extension arrête immédiatement d'enregistrer vos visites, sans désinstallation."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Que deviennent les pages expirées ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Elles basculent dans les archives et ne sont plus affichées. Vous pouvez les supprimer définitivement à tout moment, et la suppression de votre compte efface toutes vos données."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Pourquoi pas une extension de gestion d'onglets ou de favoris ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Les extensions classiques gardent des sessions ou des favoris sur un seul navigateur. Filnest garde la page avec la raison de la garder et une durée de vie, puis la retrouve sur tous vos appareils grâce à votre compte."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Je change d'ordinateur : je retrouve mes pages ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Oui. Vos pages sont dans votre compte, pas dans le navigateur : connectez-vous depuis un autre appareil et elles sont là."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Quelles permissions l'extension demande-t-elle ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Lire l'adresse, le titre, l'icône et la couleur de la page active, et stocker votre session. Elle ne lit jamais le contenu des pages, ne voit pas vos mots de passe et ne lit pas vos autres onglets. Deux permissions optionnelles (historique, favoris) ne servent qu'à l'import que vous déclenchez vous-même, et peuvent être refusées."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Que se passe-t-il si je ferme un onglet ou si le navigateur redémarre ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Rien n'est perdu au moment de la fermeture : la page est déjà enregistrée. Elle reste disponible jusqu'à la fin de sa durée de vie, puis dans les archives, restaurables. C'est l'inverse d'une session qui dépend du navigateur."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Filnest fonctionne-t-il sur mobile ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "L'extension est disponible sur les navigateurs de bureau (Chrome, Edge). Les navigateurs mobiles limitent les extensions ; nous travaillons sur une solution pour téléphone."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Est-ce gratuit ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Oui, gratuit aujourd'hui. Une formule payante viendra plus tard pour les besoins avancés, sans supprimer la version gratuite."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <!-- Filet de sécurité pour les visiteurs et les robots sans JavaScript. -->
+    <noscript>
+      <div
+        style="
+          max-width: 40rem;
+          margin: 0 auto;
+          padding: 64px 24px;
+          font-family: system-ui, sans-serif;
+          color: #26312a;
+          background: #f6f1e4;
+          line-height: 1.6;
+        "
+      >
+        <p style="font-family: Georgia, serif; font-size: 22px; margin: 0 0 32px">Filnest</p>
+        <h1 style="font-family: Georgia, serif; font-size: 34px; line-height: 1.1; margin: 0 0 16px">
+          Filnest garde les pages que vous visitez.
+        </h1>
+        <p style="margin: 0 0 16px">
+          Fermez vos onglets : rien ne se perd. Chaque page reçoit une durée de vie et revient au
+          bon moment.
+        </p>
+        <p style="margin: 0 0 16px">
+          Activez JavaScript pour utiliser le service, ou installez directement l’extension :
+          <a href="/extension">filnest.pages.dev/extension</a>.
+        </p>
+        <p style="margin: 0; font-size: 14px">
+          <a href="/cgu">Conditions d’utilisation</a> ·
+          <a href="/confidentialite">Confidentialité</a> ·
+          <a href="/mentions-legales">Mentions légales</a>
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

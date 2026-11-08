@@ -2,6 +2,8 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { AuthProvider, useAuth } from '@/lib/auth'
 import { PrivacyNotice } from '@/components/legal/PrivacyNotice'
+import { useLangValue } from '@/components/landing/i18n'
+import { applySeo } from '@/lib/seo'
 
 const AuthForm = lazy(() =>
   import('@/components/auth/AuthForm').then((module) => ({ default: module.AuthForm })),
@@ -67,6 +69,13 @@ function AppContent() {
   const [authEmail, setAuthEmail] = useState('')
   const pathname = usePathname()
   const legalSlug = LEGAL_ROUTES[pathname]
+  const { lang } = useLangValue()
+
+  // Titre, description, adresse canonique et langue du document, à chaque
+  // changement de page ou de langue.
+  useEffect(() => {
+    applySeo(pathname, lang)
+  }, [pathname, lang])
 
   if (pathname === '/extension') {
     return (

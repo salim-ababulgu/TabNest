@@ -278,6 +278,8 @@ export function ExtensionSection() {
               <img
                 src="/screenshots/popup-connected.png"
                 alt={t('extension.alt')}
+                width={336}
+                height={720}
                 loading="lazy"
                 decoding="async"
                 className="mx-auto block w-full max-w-[300px] rounded-[1.25rem]"

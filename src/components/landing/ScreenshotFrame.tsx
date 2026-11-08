@@ -11,6 +11,8 @@ export function ScreenshotFrame({
   crop = 'top',
   portrait = false,
   eager = false,
+  width = portrait ? 390 : 1280,
+  height = portrait ? 844 : 800,
   className,
 }: {
   src: string
@@ -19,6 +21,8 @@ export function ScreenshotFrame({
   crop?: 'top' | 'center'
   portrait?: boolean
   eager?: boolean
+  width?: number
+  height?: number
   className?: string
 }) {
   const dark = tone === 'dark'
@@ -52,8 +56,11 @@ export function ScreenshotFrame({
       <img
         src={src}
         alt={alt}
+        width={width}
+        height={height}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
+        fetchPriority={eager ? 'high' : 'auto'}
         className={cn(
           'block w-full object-cover',
           crop === 'top' ? 'object-top' : 'object-center',

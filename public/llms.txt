@@ -5,18 +5,21 @@
 > une durée de vie et les conserve pour que vous ne perdiez jamais le fil.
 > Principe produit : « Filnest ne vous demande pas de choisir quoi garder, il vous demande
 > **pourquoi** vous gardez. »
+> Adresse : https://filnest.pages.dev
 
 ## Ce que fait le service
 
-- Capture automatique des pages visitées (extension Chrome MV3).
+- Capture automatique des pages visitées (extension Chrome MV3, compatible Chrome, Edge, Brave).
 - Quatre raisons de garder une page, qui déterminent sa durée de vie :
   - À décider (3 jours), À finir (7 jours), Piste (14 jours), À retenir (90 jours).
   - La durée est allongée de 50 % à chaque nouvelle visite.
 - Classement par sites : pages d’un même site regroupées dans une seule fiche.
 - Épinglage d’un site pour le garder en tête de liste.
 - « Ressources » : sites visités une seule fois.
-- « Archives » : pages expirées.
+- « Archives » : pages expirées, restaurables.
 - Aucune capture d’écran, aucun contenu de page n’est lu ni stocké.
+- Gratuit aujourd’hui ; des formules payantes viendront plus tard sans supprimer l’offre gratuite.
+- Interface en quatre langues : français, anglais, espagnol, chinois simplifié.
 
 ## Données traitées
 
@@ -25,12 +28,16 @@ Adresse e-mail, identifiant de compte, mot de passe chiffré, données d’authe
 nombre de visites, dernière visite, raison de garder, épinglage, date d’expiration ; noms des
 projets créés. Les données sont cloisonnées par compte (règles de sécurité au niveau des lignes).
 
-## Pages légales
+## Pages
 
-- https://tabnest.example/confidentialite
-- https://tabnest.example/cgu
-- https://tabnest.example/cookies
-- https://tabnest.example/remboursement
+- Accueil : https://filnest.pages.dev/
+- Installer l’extension : https://filnest.pages.dev/extension
+- Confidentialité : https://filnest.pages.dev/confidentialite
+- Conditions d’utilisation : https://filnest.pages.dev/cgu
+- Cookies et traceurs : https://filnest.pages.dev/cookies
+- Remboursement : https://filnest.pages.dev/remboursement
+- Mentions légales : https://filnest.pages.dev/mentions-legales
+- Plan du site : https://filnest.pages.dev/sitemap.xml
 
 ## Contact
 

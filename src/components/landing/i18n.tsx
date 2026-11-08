@@ -25,10 +25,27 @@ export type LangContextValue = {
 let currentLang: Lang = detectLang()
 const listeners = new Set<() => void>()
 
+// Une URL par langue : la langue choisie s'écrit dans l'adresse des pages
+// traduites, pour que le lien partagé ouvre la bonne version.
+function syncLangInUrl(next: Lang) {
+  if (typeof window === 'undefined') return
+  const path = window.location.pathname
+  if (path !== '/' && path !== '/extension') return
+  try {
+    const url = new URL(window.location.href)
+    if (next === 'fr') url.searchParams.delete('lang')
+    else url.searchParams.set('lang', next)
+    window.history.replaceState(window.history.state, '', url)
+  } catch {
+    // historique indisponible
+  }
+}
+
 function setGlobalLang(next: Lang) {
   if (next === currentLang) return
   currentLang = next
   saveLang(next)
+  syncLangInUrl(next)
   document.documentElement.lang = next
   // Prévient l'extension (synchronisation de la langue dans les deux sens).
   window.dispatchEvent(new CustomEvent('tabnest:lang-changed', { detail: { lang: next } }))

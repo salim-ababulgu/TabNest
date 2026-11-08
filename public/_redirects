@@ -1,1 +1,4 @@
-/* /index.html 200
+# Les pages publiques sont générées en HTML statique au moment du build
+# (voir scripts/seo-build.mjs). Il n'y a volontairement aucune règle
+# fourre-tout : une adresse inconnue renvoie 404.html avec un vrai statut 404,
+# au lieu d'afficher l'accueil avec un statut 200 (faux 404 pour Google).

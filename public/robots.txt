@@ -1,0 +1,8 @@
+# Filnest — robots.txt
+# Le site public est ouvert à l'indexation ; l'administration ne l'est pas.
+
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://filnest.pages.dev/sitemap.xml

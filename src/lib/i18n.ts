@@ -541,6 +541,14 @@ const EN: Dict = {
 export const DICT: Partial<Record<Lang, Dict>> = { fr: FR, en: EN }
 
 export function detectLang(): Lang {
+  // L'URL fait foi : /?lang=en ouvre la version anglaise, même si un autre
+  // choix a été mémorisé auparavant sur cet appareil.
+  try {
+    const fromUrl = new URLSearchParams(window.location.search).get('lang')
+    if (fromUrl === 'fr' || fromUrl === 'en' || fromUrl === 'es' || fromUrl === 'zh') return fromUrl
+  } catch {
+    // URL illisible
+  }
   try {
     const saved = window.localStorage.getItem('tabnest-lang')
     if (saved === 'fr' || saved === 'en' || saved === 'es' || saved === 'zh') return saved

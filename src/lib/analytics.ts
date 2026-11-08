@@ -12,14 +12,22 @@
 //
 // Configuration : VITE_POSTHOG_KEY (clé publique `phc_…`) et VITE_POSTHOG_HOST
 // (optionnel). Sans clé, ce module est inerte : aucun appel réseau.
-
-import posthog from 'posthog-js'
+//
+// Le paquet PostHog n'est téléchargé qu'après un « oui » : il n'alourdit pas le
+// premier chargement de la page publique (temps d'affichage, référencement).
 
 const KEY = import.meta.env.VITE_POSTHOG_KEY as string | undefined
 const HOST =
   (import.meta.env.VITE_POSTHOG_HOST as string | undefined) ?? 'https://eu.i.posthog.com'
 
 const CONSENT_KEY = 'tabnest-analytics-consent'
+
+type PostHogClient = typeof import('posthog-js')['default']
+
+let client: PostHogClient | null = null
+let loading: Promise<PostHogClient | null> | null = null
+let ready = false
+const pending: string[] = []
 
 export type ConsentChoice = 'yes' | 'no'
 
@@ -38,19 +46,38 @@ export function readConsent(): ConsentChoice | null {
   }
 }
 
+function loadClient(): Promise<PostHogClient | null> {
+  if (client) return Promise.resolve(client)
+  if (!analyticsConfigured()) return Promise.resolve(null)
+  loading ??= import('posthog-js')
+    .then((module) => {
+      client = module.default
+      return client
+    })
+    .catch(() => null)
+  return loading
+}
+
 function initPostHog(): void {
   if (!analyticsConfigured()) return
-  try {
-    posthog.init(KEY as string, {
-      api_host: HOST,
-      capture_pageview: true,
-      persistence: 'localStorage',
-      autocapture: false,
-      disable_session_recording: true,
-    })
-  } catch {
-    // la mesure ne doit jamais casser l'application
-  }
+  void loadClient().then((ph) => {
+    if (!ph) return
+    try {
+      ph.init(KEY as string, {
+        api_host: HOST,
+        capture_pageview: true,
+        persistence: 'localStorage',
+        autocapture: false,
+        disable_session_recording: true,
+      })
+      ready = true
+      // Les événements arrivés pendant le téléchargement partent maintenant.
+      for (const name of pending) ph.capture(name)
+      pending.length = 0
+    } catch {
+      // la mesure ne doit jamais casser l'application
+    }
+  })
 }
 
 /** À appeler au démarrage : n'initialise que si le consentement a déjà été donné. */
@@ -69,7 +96,7 @@ export function saveConsent(choice: ConsentChoice): void {
     initPostHog()
   } else {
     try {
-      posthog.opt_out_capturing()
+      client?.opt_out_capturing()
     } catch {
       // déjà hors de portée
     }
@@ -79,7 +106,14 @@ export function saveConsent(choice: ConsentChoice): void {
 /** Envoie un événement, uniquement si le consentement est donné. */
 export function trackEvent(name: string): void {
   try {
-    if (readConsent() === 'yes') posthog.capture(name)
+    if (readConsent() !== 'yes') return
+    if (ready && client) {
+      client.capture(name)
+      return
+    }
+    // Le module est encore en cours de téléchargement : on met en attente.
+    pending.push(name)
+    initPostHog()
   } catch {
     // la mesure ne doit jamais casser l'application
   }

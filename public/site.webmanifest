@@ -1,0 +1,25 @@
+{
+  "name": "Filnest",
+  "short_name": "Filnest",
+  "description": "Filnest enregistre les pages que vous visitez, les range par projets et leur donne une durée de vie.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f1e4",
+  "theme_color": "#f6f1e4",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/icons/tabnest-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/tabnest-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

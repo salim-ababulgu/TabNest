@@ -1,0 +1,65 @@
+{
+  "site": "https://filnest.pages.dev",
+  "defaultLang": "fr",
+  "languages": ["fr", "en", "es", "zh"],
+  "routes": {
+    "/": {
+      "languages": ["fr", "en", "es", "zh"],
+      "title": {
+        "fr": "Filnest — Fermez vos onglets, rien ne se perd",
+        "en": "Filnest — Close your tabs, nothing is lost",
+        "es": "Filnest — Cierra tus pestañas, nada se pierde",
+        "zh": "Filnest — 关闭标签页，什么都不会丢"
+      },
+      "description": {
+        "fr": "Filnest enregistre automatiquement les pages que vous visitez, les range par projets et leur donne une durée de vie. Fermez vos onglets : rien n'est perdu.",
+        "en": "Filnest records every page you visit, files it into projects and gives it a lifetime. Close your tabs: nothing is lost.",
+        "es": "Filnest guarda cada página que visitas, la ordena por proyectos y le da una vida útil. Cierra tus pestañas: nada se pierde.",
+        "zh": "Filnest 会自动保存你访问的每个网页，按项目整理并设定有效期。关掉标签页，什么都不会丢。"
+      }
+    },
+    "/extension": {
+      "languages": ["fr", "en", "es", "zh"],
+      "title": {
+        "fr": "Installer l'extension Filnest (Chrome, Edge, Brave)",
+        "en": "Install the Filnest extension (Chrome, Edge, Brave)",
+        "es": "Instalar la extensión de Filnest (Chrome, Edge, Brave)",
+        "zh": "安装 Filnest 扩展（Chrome、Edge、Brave）"
+      },
+      "description": {
+        "fr": "Deux minutes pour installer l'extension Filnest : capture automatique des pages visitées, pause en un clic, aucune capture d'écran, vos données dans votre compte.",
+        "en": "Two minutes to install the Filnest extension: automatic capture of visited pages, one-click pause, no screenshots, your data in your account.",
+        "es": "Dos minutos para instalar la extensión de Filnest: captura automática de las páginas que visitas, pausa en un clic, sin capturas de pantalla.",
+        "zh": "两分钟安装 Filnest 扩展：自动保存访问的网页，一键暂停，绝不截图，数据保存在你的账户里。"
+      }
+    }
+  },
+  "private": {
+    "/admin": {
+      "title": "Administration — Filnest",
+      "description": "Espace réservé à l'administration de Filnest."
+    }
+  },
+  "legal": {
+    "/cgu": {
+      "title": "Conditions d'utilisation — Filnest",
+      "description": "Les règles d'utilisation du service Filnest : compte, pages conservées, offres gratuites et payantes, résiliation."
+    },
+    "/confidentialite": {
+      "title": "Politique de confidentialité — Filnest",
+      "description": "Quelles données Filnest enregistre, pourquoi, combien de temps, et comment les supprimer."
+    },
+    "/cookies": {
+      "title": "Cookies et traceurs — Filnest",
+      "description": "Thème, langue, préférences et mesure d'audience facultative : ce que Filnest stocke sur votre appareil, et pourquoi."
+    },
+    "/remboursement": {
+      "title": "Remboursement — Filnest",
+      "description": "Conditions de remboursement des offres payantes de Filnest."
+    },
+    "/mentions-legales": {
+      "title": "Mentions légales — Filnest",
+      "description": "Éditeur, hébergeur et informations légales du service Filnest."
+    }
+  }
+}
