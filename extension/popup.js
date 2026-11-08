@@ -477,6 +477,18 @@ importBookmarksBtn.addEventListener('click', async () => {
 refreshBtn.addEventListener('click', () => void refreshUi(true))
 
 logoutBtn.addEventListener('click', async () => {
+  // Révoque la session côté serveur avant d'effacer la copie locale.
+  const session = await getSession()
+  if (session?.access_token) {
+    try {
+      await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+        method: 'POST',
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${session.access_token}` },
+      })
+    } catch {
+      // hors ligne : on efface quand même la session locale
+    }
+  }
   await chrome.storage.local.remove('session')
   await refreshUi(false)
 })

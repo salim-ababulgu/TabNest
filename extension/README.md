@@ -57,6 +57,14 @@ Le popup existe en **FR / EN / ES / 中文**. La langue choisie dans l'extension
 
 Le formulaire de connexion valide l'e-mail par expression régulière et impose 6 caractères minimum ; le bouton reste désactivé tant que tout n'est pas valide. Le popup suit le mode clair/sombre du système et affiche des squelettes pendant le chargement.
 
+## Permissions
+
+- `tabs`, `storage` : lire l'adresse/titre de l'onglet actif et stocker la session.
+- `identity` : connexion Google dans l'extension.
+- `history`, `bookmarks` : **uniquement** pour l'import que vous déclenchez.
+- `alarms` : fermeture automatique des onglets expirés (désactivable, mode Pause).
+- Script de contenu : lit les métadonnées de la page (titre, icône, image de partage), **jamais son contenu**.
+
 ## Fichiers
 
 - `manifest.json` : manifeste MV3 (permissions `tabs`, `storage`, `identity`).
