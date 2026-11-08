@@ -16,6 +16,11 @@ const FR: Dict = {
   'hero.ctaSignup': 'Créer un compte gratuit',
   'hero.note': 'Gratuit, sans carte bancaire. Chrome, Edge ou Brave.',
   'hero.alt': 'Le tableau de bord Filnest : les pages gardées, rangées par sites et par visites',
+  'compare.before': 'Avant',
+  'compare.after': 'Après',
+  'compare.alt': 'Le tableau de bord Filnest : les pages gardées, rangées et calmes',
+  'compare.label':
+    'Comparaison : faites glisser entre des dizaines d’onglets ouverts et la même navigation rangée dans Filnest',
   'hero.cta': 'Commencer gratuitement',
   'hero.install': "Installer l'extension",
   'hero.how': 'Comment ça marche',
@@ -285,6 +290,11 @@ const EN: Dict = {
   'hero.ctaSignup': 'Create a free account',
   'hero.note': 'Free, no card. Chrome, Edge or Brave.',
   'hero.alt': 'The Filnest dashboard: kept pages, grouped by site and visits',
+  'compare.before': 'Before',
+  'compare.after': 'After',
+  'compare.alt': 'The Filnest dashboard: saved pages, sorted and calm',
+  'compare.label':
+    'Comparison: slide between dozens of open tabs and the same browsing filed in Filnest',
   'hero.cta': 'Start for free',
   'hero.install': 'Install the extension',
   'hero.how': 'How it works',

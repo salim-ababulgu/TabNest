@@ -10,6 +10,11 @@ export const ES_ALL: Record<string, Entry> = {
   'hero.ctaSignup': 'Crear una cuenta gratis',
   'hero.note': 'Gratis, sin tarjeta. Chrome, Edge o Brave.',
   'hero.alt': 'El panel de Filnest: las páginas guardadas, ordenadas por sitios y visitas',
+  'compare.before': 'Antes',
+  'compare.after': 'Después',
+  'compare.alt': 'El panel de Filnest: las páginas guardadas, ordenadas y tranquilas',
+  'compare.label':
+    'Comparación: desliza entre decenas de pestañas abiertas y la misma navegación ordenada en Filnest',
   'hero.cta': 'Empezar gratis',
   'hero.install': 'Instalar la extensión',
   'hero.how': 'Cómo funciona',

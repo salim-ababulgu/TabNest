@@ -1,4 +1,4 @@
-import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
+import { BeforeAfter } from '@/components/landing/BeforeAfter'
 import { useLang } from '@/components/landing/i18n'
 
 /**
@@ -42,16 +42,8 @@ export function Hero({ onStart }: { onStart: () => void }) {
         </div>
       </div>
 
-      <div className="mx-auto mt-16 w-full max-w-[1240px] px-6 md:mt-24 md:px-10">
-        <div className="overflow-hidden rounded-t-[1.5rem]">
-          <ScreenshotFrame
-            src="/screenshots/dashboard-overview.png"
-            alt={t('hero.alt')}
-            tone="light"
-            eager
-            className="rounded-none"
-          />
-        </div>
+      <div className="mx-auto mt-16 w-full max-w-[1240px] px-6 pb-16 md:mt-24 md:px-10 md:pb-24">
+        <BeforeAfter />
       </div>
     </section>
   )
