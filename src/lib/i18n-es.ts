@@ -214,6 +214,16 @@ export const ES_ALL: Record<string, Entry> = {
   'exp.days': 'Expira en {n} d',
 
   'view.today': 'Hoy',
+  'view.sites': 'Sitios',
+  'view.sitesTitle': 'Todos los sitios visitados',
+  'sites.col.domain': 'Sitio',
+  'sites.col.pages': 'Páginas',
+  'sites.col.visits': 'Visitas',
+  'sites.col.last': 'Última visita',
+  'sites.col.reason': 'Estante',
+  'sites.empty': 'Ningún sitio visitado por ahora.',
+  'sites.mobileMeta': '{p} p · {v} v',
+
   'view.todayTitle': 'Por decidir hoy',
   'view.finish': 'Por terminar',
   'view.explore': 'Pistas',
@@ -316,6 +326,10 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.unpinAction': 'Desfijar',
   'dash.deleteTitle': '¿Quitar esta página?',
   'dash.deleteDesc': '«{t}» se quitará de su lista.',
+  'dash.autoCloseTitle': 'Cerrar pestañas caducadas',
+  'dash.autoCloseDesc':
+    'Desde la extensión TabNest: cierra las pestañas caducadas, inactivas y no fijadas. Las páginas siguen en TabNest.',
+  'dash.autoCloseWhere': 'Ajuste en la extensión',
   'dash.cancel': 'Cancelar',
   'dash.toast.projectRenamed': 'Proyecto renombrado.',
   'dash.toast.projectDeleted': 'Proyecto eliminado (las páginas se conservan).',

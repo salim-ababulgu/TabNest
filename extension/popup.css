@@ -252,3 +252,36 @@ select {
 .status {
   margin: 10px 0 0;
 }
+
+.setting {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e2ddcf;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.switch input {
+  width: 16px;
+  height: 16px;
+  accent-color: #6b7f2a;
+}
+
+.import {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e2ddcf;
+}
+
+.import .row button {
+  font-size: 11px;
+}

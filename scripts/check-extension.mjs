@@ -69,6 +69,40 @@ async function main() {
     else fail('sélecteur de projet absent')
   }
 
+  // Import historique / favoris + fermeture automatique
+  const hasImport = await page.locator('#import-history').isVisible().catch(() => false)
+  if (hasImport) ok('bouton d’import de l’historique présent')
+  else fail('bouton d’import de l’historique absent')
+  const hasBookmarks = await page.locator('#import-bookmarks').isVisible().catch(() => false)
+  if (hasBookmarks) ok('bouton d’import des favoris présent')
+  else fail('bouton d’import des favoris absent')
+  const hasAutoClose = await page.locator('#auto-close').isVisible().catch(() => false)
+  if (hasAutoClose) ok('réglage de fermeture automatique présent')
+  else fail('réglage de fermeture automatique absent')
+
+  const settingsMessages = await page.evaluate(async () => {
+    const sent = []
+    const original = chrome.runtime.sendMessage
+    chrome.runtime.sendMessage = (message, callback) => {
+      sent.push(message?.type)
+      return original(message, callback)
+    }
+    document.querySelector('#auto-close').click()
+    document.querySelector('#import-history').click()
+    document.querySelector('#import-bookmarks').click()
+    return sent
+  })
+  if (settingsMessages.includes('set-auto-close')) ok('la bascule envoie « set-auto-close »')
+  else fail('la bascule n’envoie aucun message')
+  if (
+    settingsMessages.includes('import-history') &&
+    settingsMessages.includes('import-bookmarks')
+  ) {
+    ok('les imports envoient bien leurs messages')
+  } else {
+    fail('les boutons d’import n’envoient pas de message')
+  }
+
   // Les boutons de rangement déclenchent un message au service worker
   const messageTypes = await page.evaluate(() => {
     const sent = []

@@ -44,7 +44,11 @@ begin
       'pagesLast7d',   (select count(*) from public.pages where deleted_at is null and created_at > now() - interval '7 days'),
       'pagesLast24h',  (select count(*) from public.pages where deleted_at is null and created_at > now() - interval '24 hours'),
       'pagesExpired',  (select count(*) from public.pages where deleted_at is null and expires_at < now()),
-      'groupsTotal',   (select count(*) from public.groups)
+      'groupsTotal',   (select count(*) from public.groups),
+      'sitesTotal',    (select count(distinct substring(url from '^https?://(?:www\.)?([^/]+)'))
+                        from public.pages where deleted_at is null),
+      'sitesLast7d',   (select count(distinct substring(url from '^https?://(?:www\.)?([^/]+)'))
+                        from public.pages where deleted_at is null and created_at > now() - interval '7 days')
     )
   );
 end;

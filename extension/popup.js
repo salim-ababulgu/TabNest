@@ -14,6 +14,11 @@ const pageFavicon = document.getElementById('page-favicon')
 const saveState = document.getElementById('save-state')
 const pinBtn = document.getElementById('pin-btn')
 const groupSelect = document.getElementById('group-select')
+const autoClose = document.getElementById('auto-close')
+const autoCloseStatus = document.getElementById('auto-close-status')
+const importStatus = document.getElementById('import-status')
+const importHistoryBtn = document.getElementById('import-history')
+const importBookmarksBtn = document.getElementById('import-bookmarks')
 const reasonButtons = Array.from(document.querySelectorAll('[data-reason]'))
 
 const REASON_LABELS = {
@@ -118,6 +123,19 @@ async function refreshUi() {
 
   const state = await send('page-state')
   renderPageState(state)
+
+  const settings = await send('get-settings')
+  if (settings?.ok) {
+    autoClose.checked = Boolean(settings.autoCloseExpired)
+    if (settings.lastAutoClose?.count) {
+      autoCloseStatus.textContent = `${settings.lastAutoClose.count} onglet(s) fermé(s) lors du dernier passage.`
+    } else {
+      autoCloseStatus.textContent = ''
+    }
+    if (settings.lastImport?.imported) {
+      importStatus.textContent = `Dernier import : ${settings.lastImport.imported} page(s).`
+    }
+  }
 }
 
 document.getElementById('google-btn').addEventListener('click', async () => {
@@ -216,6 +234,47 @@ document.getElementById('capture-btn').addEventListener('click', async () => {
 })
 
 document.getElementById('refresh-btn').addEventListener('click', () => void refreshUi())
+
+autoClose.addEventListener('change', async () => {
+  const result = await send('set-auto-close', { enabled: autoClose.checked })
+  if (!result?.ok) {
+    flash('Impossible de modifier ce réglage.', true)
+    return
+  }
+  flash(
+    autoClose.checked
+      ? 'Fermeture automatique activée ✓'
+      : 'Fermeture automatique désactivée.',
+  )
+})
+
+importHistoryBtn.addEventListener('click', async () => {
+  importStatus.textContent = 'Lecture de l’historique…'
+  importHistoryBtn.disabled = true
+  try {
+    const result = await send('import-history', { days: 30 })
+    if (!result?.ok) throw new Error(result?.error || 'Import impossible.')
+    importStatus.textContent = `Historique : ${result.imported} page(s) ajoutée(s), ${result.skipped} déjà connue(s).`
+  } catch (err) {
+    importStatus.textContent = err instanceof Error ? err.message : 'Import impossible.'
+  } finally {
+    importHistoryBtn.disabled = false
+  }
+})
+
+importBookmarksBtn.addEventListener('click', async () => {
+  importStatus.textContent = 'Lecture des favoris…'
+  importBookmarksBtn.disabled = true
+  try {
+    const result = await send('import-bookmarks')
+    if (!result?.ok) throw new Error(result?.error || 'Import impossible.')
+    importStatus.textContent = `Favoris : ${result.imported} page(s) ajoutée(s), ${result.skipped} déjà connue(s).`
+  } catch (err) {
+    importStatus.textContent = err instanceof Error ? err.message : 'Import impossible.'
+  } finally {
+    importBookmarksBtn.disabled = false
+  }
+})
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await chrome.storage.local.remove('session')

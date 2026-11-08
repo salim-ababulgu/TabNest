@@ -14,6 +14,8 @@ type Stats = {
   pagesLast24h: number
   pagesExpired: number
   groupsTotal: number
+  sitesTotal: number
+  sitesLast7d: number
 }
 
 type RecentUser = { email: string; created_at: string }
@@ -129,7 +131,7 @@ export function AdminPage() {
         )}
 
         {!error && (
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Card
               label="Utilisateurs"
               value={stats ? String(stats.usersTotal) : '…'}
@@ -143,6 +145,11 @@ export function AdminPage() {
             <Card
               label="Pages sur 7 jours"
               value={stats ? String(stats.pagesLast7d) : '…'}
+            />
+            <Card
+              label="Sites (domaines)"
+              value={stats ? String(stats.sitesTotal ?? 0) : '…'}
+              sub={stats ? `+${stats.sitesLast7d ?? 0} sur 7 jours` : undefined}
             />
             <Card
               label="Projets"

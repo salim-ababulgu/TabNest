@@ -279,6 +279,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[TabNest] extension installée / mise à jour')
+  void syncAutoCloseAlarm()
 })
 
 /**
@@ -435,7 +436,191 @@ async function classify(message) {
   return { ok: true }
 }
 
+const IMPORT_LIMIT = 400
+const AUTO_CLOSE_ALARM = 'tabnest-close-expired'
+
+async function allExistingUrls(session) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/pages?select=url&limit=5000`, {
+    headers: authHeaders(session),
+  })
+  if (!res.ok) return new Set()
+  const rows = await res.json()
+  return new Set(rows.map((row) => row.url))
+}
+
+function isImportable(url) {
+  if (!url || IGNORED.test(url) || isSearchPage(url)) return false
+  try {
+    const host = new URL(url).host
+    return !APP_HOSTS.includes(host)
+  } catch {
+    return false
+  }
+}
+
+/** Enregistre une liste de pages (historique ou favoris) sans doublon. */
+async function importUrls(entries) {
+  const session = await getSession()
+  if (!session) return { ok: false, error: 'Non connecté.' }
+
+  const seen = new Set()
+  const unique = []
+  for (const entry of entries) {
+    if (!isImportable(entry.url)) continue
+    if (seen.has(entry.url)) continue
+    seen.add(entry.url)
+    unique.push(entry)
+    if (unique.length >= IMPORT_LIMIT) break
+  }
+  if (unique.length === 0) return { ok: true, imported: 0, skipped: 0 }
+
+  const existing = await allExistingUrls(session)
+  const missing = unique.filter((entry) => !existing.has(entry.url))
+  const headers = { ...authHeaders(session), Prefer: 'return=minimal' }
+
+  let imported = 0
+  for (let i = 0; i < missing.length; i += 50) {
+    const batch = missing.slice(i, i + 50).map((entry) => {
+      const visits = Math.min(Math.max(entry.visits ?? 1, 1), 20)
+      const last = entry.lastVisit ? new Date(entry.lastVisit) : new Date()
+      return {
+        user_id: session.user.id,
+        url: entry.url,
+        title: entry.title || null,
+        kind: 'normal',
+        visit_count: visits,
+        last_visited_at: last.toISOString(),
+        expires_at: computeExpiry('normal', visits, null),
+      }
+    })
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/pages`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(batch),
+    })
+    if (res.ok) imported += batch.length
+    else console.warn('[TabNest] import de pages échoué', res.status)
+  }
+
+  await chrome.storage.local.set({
+    lastImport: { at: Date.now(), imported, total: unique.length },
+  })
+  return { ok: true, imported, skipped: unique.length - missing.length }
+}
+
+async function importHistory(days = 30) {
+  if (!chrome.history?.search) return { ok: false, error: 'Historique indisponible.' }
+  const startTime = Date.now() - days * 24 * 60 * 60 * 1000
+  const items = await chrome.history.search({ text: '', startTime, maxResults: 2000 })
+  const entries = items
+    .filter((item) => item.url)
+    .map((item) => ({
+      url: item.url,
+      title: item.title || '',
+      visits: item.visitCount || 1,
+      lastVisit: item.lastVisitTime,
+    }))
+  return importUrls(entries)
+}
+
+async function importBookmarks() {
+  if (!chrome.bookmarks?.getTree) return { ok: false, error: 'Favoris indisponibles.' }
+  const tree = await chrome.bookmarks.getTree()
+  const entries = []
+  const walk = (nodes) => {
+    for (const node of nodes) {
+      if (node.url) {
+        entries.push({
+          url: node.url,
+          title: node.title || '',
+          visits: 1,
+          lastVisit: node.dateAdded ?? Date.now(),
+        })
+      }
+      if (node.children) walk(node.children)
+    }
+  }
+  walk(tree)
+  return importUrls(entries)
+}
+
+/** Ferme les onglets dont la page a expiré (jamais l'onglet actif, épinglé ou audible). */
+async function closeExpiredTabs() {
+  const session = await getSession()
+  if (!session) return { ok: false, closed: 0 }
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/pages?select=url&pinned=eq.false` +
+      `&expires_at=lt.${encodeURIComponent(new Date().toISOString())}` +
+      `&deleted_at=is.null&limit=500`,
+    { headers: authHeaders(session) },
+  )
+  if (!res.ok) return { ok: false, closed: 0 }
+  const rows = await res.json()
+  const expired = new Set(rows.map((row) => row.url))
+  if (expired.size === 0) return { ok: true, closed: 0 }
+
+  const tabs = await chrome.tabs.query({})
+  let closed = 0
+  for (const tab of tabs) {
+    if (!tab.url || !expired.has(tab.url)) continue
+    if (tab.active || tab.pinned || tab.audible) continue
+    if (tab.lastAccessed && Date.now() - tab.lastAccessed < 10 * 60 * 1000) continue
+    if (!isImportable(tab.url)) continue
+    try {
+      await chrome.tabs.remove(tab.id)
+      closed += 1
+    } catch {
+      // onglet déjà fermé
+    }
+  }
+  if (closed > 0) {
+    await chrome.storage.local.set({ lastAutoClose: { count: closed, at: Date.now() } })
+    console.log('[TabNest] onglets expirés fermés :', closed)
+  }
+  return { ok: true, closed }
+}
+
+async function syncAutoCloseAlarm() {
+  const { autoCloseExpired = false } = await chrome.storage.local.get('autoCloseExpired')
+  if (autoCloseExpired) {
+    chrome.alarms.create(AUTO_CLOSE_ALARM, { periodInMinutes: 15 })
+    void closeExpiredTabs()
+  } else {
+    chrome.alarms.clear(AUTO_CLOSE_ALARM)
+  }
+  return { ok: true, enabled: autoCloseExpired }
+}
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === AUTO_CLOSE_ALARM) void closeExpiredTabs()
+})
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === 'import-history') {
+    void importHistory(message.days ?? 30).then(sendResponse)
+    return true
+  }
+  if (message?.type === 'import-bookmarks') {
+    void importBookmarks().then(sendResponse)
+    return true
+  }
+  if (message?.type === 'get-settings') {
+    void chrome.storage.local
+      .get(['autoCloseExpired', 'lastAutoClose', 'lastImport'])
+      .then((data) => sendResponse({ ok: true, ...data }))
+    return true
+  }
+  if (message?.type === 'set-auto-close') {
+    void chrome.storage.local
+      .set({ autoCloseExpired: Boolean(message.enabled) })
+      .then(() => syncAutoCloseAlarm())
+      .then(sendResponse)
+    return true
+  }
+  if (message?.type === 'close-expired-now') {
+    void closeExpiredTabs().then(sendResponse)
+    return true
+  }
   if (message?.type === 'google-signin') {
     void googleSignIn().then(sendResponse)
     return true

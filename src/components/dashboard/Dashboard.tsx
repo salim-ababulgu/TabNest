@@ -10,6 +10,7 @@ import {
   Check,
   Clock,
   Compass,
+  Globe2,
   GripVertical,
   LayoutGrid,
   ListTodo,
@@ -80,6 +81,7 @@ import type { Group, Page } from '@/lib/pages'
 import { NestNav } from '@/components/dashboard/NestNav'
 import { DashboardFooter } from '@/components/dashboard/DashboardFooter'
 import { FeedbackPanel } from '@/components/dashboard/FeedbackPanel'
+import { SitesList } from '@/components/dashboard/SitesList'
 import { SkeletonGrid } from '@/components/dashboard/skeletons'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -121,6 +123,7 @@ type View =
   | 'explore'
   | 'remember'
   | 'all'
+  | 'sites'
   | 'resources'
   | 'ephemeral'
   | 'archives'
@@ -131,6 +134,7 @@ const VIEWS: { id: View; labelKey: string; icon: ComponentType<{ className?: str
   { id: 'explore', labelKey: 'view.explore', icon: Compass },
   { id: 'remember', labelKey: 'view.remember', icon: Bookmark },
   { id: 'all', labelKey: 'view.all', icon: LayoutGrid },
+  { id: 'sites', labelKey: 'view.sites', icon: Globe2 },
   { id: 'resources', labelKey: 'view.resources', icon: BookOpen },
   { id: 'ephemeral', labelKey: 'view.ephemeral', icon: Zap },
   { id: 'archives', labelKey: 'view.archives', icon: Archive },
@@ -142,6 +146,7 @@ const VIEW_TITLES: Record<View, string> = {
   explore: 'view.explore',
   remember: 'view.remember',
   all: 'view.all',
+  sites: 'view.sitesTitle',
   resources: 'view.resources',
   ephemeral: 'view.ephemeral',
   archives: 'view.archives',
@@ -1162,6 +1167,7 @@ export function Dashboard() {
 
   function countFor(id: View): number {
     if (id === 'all') return pages.length
+    if (id === 'sites') return new Set(pages.map((page) => domainOf(page.url))).size
     if (id === 'finish') return pages.filter((page) => page.reason === 'finish').length
     if (id === 'explore') return pages.filter((page) => page.reason === 'explore').length
     if (id === 'remember') return pages.filter((page) => page.reason === 'remember').length
@@ -1185,7 +1191,7 @@ export function Dashboard() {
     if (view !== 'archives' && !selectedGroup && !activeCollection && isExpired(page)) return false
     if (activeCollection) return matchesRule(page, activeCollection.rule)
     if (selectedGroup) return page.group_id === selectedGroup
-    if (view === 'all') return true
+    if (view === 'all' || view === 'sites') return true
     if (view === 'finish') return page.reason === 'finish'
     if (view === 'explore') return page.reason === 'explore'
     if (view === 'remember') return page.reason === 'remember'
@@ -1789,6 +1795,20 @@ export function Dashboard() {
               showSkeleton ? (
                 <SkeletonGrid count={9} />
               ) : null
+            ) : view === 'sites' ? (
+              <SitesList
+                sites={sites}
+                onOpen={(domain) => {
+                  const site = sites.find((item) => item.domain === domain)
+                  if (site) setSelectedSite(site)
+                }}
+                onPin={(domain) => {
+                  const site = sites.find((item) => item.domain === domain)
+                  if (site) void handleTogglePin(site)
+                }}
+                groupName={groupName}
+                timeAgo={(iso) => timeAgo(iso, t)}
+              />
             ) : sites.length === 0 ? (
               <div className="mt-6 rounded-xl border border-dashed bg-card px-4 py-12 text-center text-sm text-muted-foreground">
                 {query ? (
@@ -2401,6 +2421,16 @@ export function Dashboard() {
                       : t('dash.browserAlertsEnable')}
               </Button>
             </div>
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+              <div>
+                <p className="text-sm font-medium">{t('dash.autoCloseTitle')}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.autoCloseDesc')}</p>
+              </div>
+              <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground">
+                {t('dash.autoCloseWhere')}
+              </span>
+            </div>
+
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
               <div>
                 <p className="text-sm font-medium">{t('feedback.title')}</p>

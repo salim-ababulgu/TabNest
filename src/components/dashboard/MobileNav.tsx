@@ -10,7 +10,16 @@ import {
 import { NestNav } from '@/components/dashboard/NestNav'
 import { useLangValue } from '@/components/landing/i18n'
 
-type NavView = 'today' | 'all' | 'finish' | 'explore' | 'remember' | 'resources' | 'ephemeral' | 'archives'
+type NavView =
+  | 'today'
+  | 'all'
+  | 'sites'
+  | 'finish'
+  | 'explore'
+  | 'remember'
+  | 'resources'
+  | 'ephemeral'
+  | 'archives'
 
 const TABS: { id: 'today' | 'all' | 'explore' | 'archives'; labelKey: string; icon: typeof Clock }[] = [
   { id: 'today', labelKey: 'view.today', icon: Clock },

@@ -53,6 +53,27 @@
 
       <p id="feedback" class="status" hidden></p>
 
+      <div class="setting">
+        <label class="switch">
+          <input id="auto-close" type="checkbox" />
+          Fermer automatiquement les onglets expirés
+        </label>
+        <p class="hint">
+          Les pages restent dans TabNest ; seuls les onglets expirés, inactifs et non épinglés
+          sont fermés.
+        </p>
+        <p id="auto-close-status" class="last"></p>
+      </div>
+
+      <div class="import">
+        <p class="label">Ne pas démarrer à zéro</p>
+        <div class="row">
+          <button id="import-history" type="button" class="ghost">Importer mon historique</button>
+          <button id="import-bookmarks" type="button" class="ghost">Importer mes favoris</button>
+        </div>
+        <p id="import-status" class="hint"></p>
+      </div>
+
       <p id="account" class="account"></p>
       <p id="count" class="last"></p>
       <p id="last" class="last"></p>
