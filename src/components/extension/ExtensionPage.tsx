@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { useLangValue } from '@/components/landing/i18n'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { LanguageSelector } from '@/components/LanguageSelector'
 import { ExtensionIllustration } from '@/components/extension/Illustration'
 
 const STEPS = [
@@ -32,6 +33,7 @@ export function ExtensionPage() {
             <span className="font-heading text-lg font-semibold">Filnest</span>
           </a>
           <div className="flex items-center gap-3">
+            <LanguageSelector />
             <ThemeToggle />
             <a
               href="/"

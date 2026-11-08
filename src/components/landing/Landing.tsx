@@ -12,7 +12,7 @@ import { PricingSection } from '@/components/landing/Pricing'
 import { Reveal } from '@/components/landing/Reveal'
 import { LangProvider, useLang } from '@/components/landing/i18n'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import type { Lang } from '@/lib/i18n'
+import { LanguageSelector } from '@/components/LanguageSelector'
 
 type LandingProps = { onStart: (email?: string) => void }
 
@@ -24,7 +24,7 @@ const NAV = [
 ] as const
 
 function LandingContent({ onStart }: LandingProps) {
-  const { lang, setLang, t } = useLang()
+  const { t } = useLang()
 
   return (
     <div id="top" className="relative bg-background text-foreground">
@@ -48,17 +48,7 @@ function LandingContent({ onStart }: LandingProps) {
 
           <div className="flex items-center gap-2">
             <ThemeToggle onDark />
-            <select
-              value={lang}
-              onChange={(event) => setLang(event.target.value as Lang)}
-              aria-label={t('nav.langAria')}
-              className="h-9 cursor-pointer rounded-full border border-white/15 bg-white/[0.06] px-2.5 text-xs font-medium text-field-ink outline-none transition-colors hover:bg-white/[0.12]"
-            >
-              <option value="fr">FR</option>
-              <option value="en">EN</option>
-              <option value="es">ES</option>
-              <option value="zh">中文</option>
-            </select>
+            <LanguageSelector onDark />
             <a
               href="/extension"
               className="inline-flex h-10 items-center rounded-full bg-lime px-4 text-sm font-semibold text-lime-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:px-5"
