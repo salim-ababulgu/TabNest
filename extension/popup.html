@@ -6,21 +6,66 @@
     <title>TabNest Capture</title>
   </head>
   <body>
-    <div class="brand">
+    <header class="brand">
       <span class="logo">✦</span>
       <span class="name">TabNest</span>
+      <span id="account" class="chip" hidden></span>
+      <button id="refresh-btn" type="button" class="icon-btn" aria-label="Actualiser" title="Actualiser">
+        ⟳
+      </button>
+      <button id="logout-btn" type="button" class="icon-btn" aria-label="Se déconnecter" title="Se déconnecter">
+        ⏻
+      </button>
+    </header>
+
+    <!-- Chargement : squelettes pendant la lecture de la page et du compte -->
+    <div id="loading" class="skeleton-wrap" aria-busy="true" role="status">
+      <span class="sr-only">Chargement…</span>
+      <div class="sk-line sk-w70"></div>
+      <div class="sk-card"></div>
+      <div class="sk-grid">
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+      </div>
+      <div class="sk-line sk-w40"></div>
     </div>
 
-    <section id="logged-out">
+    <section id="logged-out" hidden>
       <p class="hint">Connecte-toi une seule fois : l’extension capture ensuite tes pages toute seule.</p>
       <button id="google-btn" type="button" class="google">Continuer avec Google</button>
       <p class="or">ou avec un e-mail</p>
-      <form id="login-form">
-        <label for="email">E-mail</label>
-        <input id="email" type="email" required placeholder="toi@exemple.fr" autocomplete="email" />
-        <label for="password">Mot de passe</label>
-        <input id="password" type="password" required placeholder="••••••••" autocomplete="current-password" />
-        <button type="submit" id="login-btn">Se connecter</button>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="toi@exemple.fr"
+            aria-describedby="email-error"
+          />
+          <p id="email-error" class="field-error" hidden></p>
+        </div>
+        <div class="field">
+          <div class="label-row">
+            <label for="password">Mot de passe</label>
+            <button type="button" id="toggle-pw" class="text-btn">Afficher</button>
+          </div>
+          <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="6 caractères minimum"
+            aria-describedby="password-error"
+          />
+          <p id="password-error" class="field-error" hidden></p>
+        </div>
+        <button type="submit" id="login-btn" disabled>Se connecter</button>
       </form>
       <p id="error" class="error" hidden></p>
     </section>
@@ -30,59 +75,63 @@
         <img id="page-favicon" alt="" />
         <div class="page-text">
           <p id="page-title" class="page-title"></p>
-          <p id="page-host" class="hint"></p>
+          <p id="page-host" class="hint tight"></p>
         </div>
       </div>
 
-      <p id="save-state" class="hint"></p>
+      <p id="save-state" class="hint tight"></p>
 
       <p class="label">Ranger cette page dans</p>
-      <div class="reasons" role="group" aria-label="Ranger dans une étagère">
+      <div id="reasons" class="reasons" role="group" aria-label="Ranger dans une étagère">
         <button type="button" data-reason="remember">À retenir</button>
         <button type="button" data-reason="finish">À finir</button>
         <button type="button" data-reason="explore">Piste</button>
         <button type="button" data-reason="decide">À décider</button>
       </div>
 
-      <div class="row">
+      <div id="organize-row" class="row">
         <button id="pin-btn" type="button" class="ghost">Épingler</button>
         <select id="group-select" aria-label="Projet">
           <option value="">Aucun projet</option>
         </select>
       </div>
 
-      <p id="feedback" class="status" hidden></p>
-
-      <div class="setting">
-        <label class="switch">
-          <input id="auto-close" type="checkbox" />
-          Fermer automatiquement les onglets expirés
-        </label>
-        <p class="hint">
-          Les pages restent dans TabNest ; seuls les onglets expirés, inactifs et non épinglés
-          sont fermés.
-        </p>
-        <p id="auto-close-status" class="last"></p>
+      <div class="row">
+        <button id="capture-btn" type="button" class="ghost">Capturer cette page</button>
       </div>
 
-      <div class="import">
-        <p class="label">Ne pas démarrer à zéro</p>
+      <div class="row">
+        <button id="remove-btn" type="button" class="ghost danger">Retirer de TabNest</button>
+        <button id="restore-btn" type="button" class="ghost" hidden>Restaurer dans TabNest</button>
+      </div>
+
+      <p id="feedback" class="status" hidden></p>
+
+      <details class="panel">
+        <summary>Importer l’historique ou les favoris</summary>
+        <p class="hint tight">
+          Rien n’est lu sans ton clic. Les pages déjà connues sont ignorées.
+        </p>
         <div class="row">
           <button id="import-history" type="button" class="ghost">Importer mon historique</button>
           <button id="import-bookmarks" type="button" class="ghost">Importer mes favoris</button>
         </div>
-        <p id="import-status" class="hint"></p>
-      </div>
+        <p id="import-status" class="hint tight"></p>
+      </details>
 
-      <p id="account" class="account"></p>
+      <details class="panel">
+        <summary>Fermer les onglets expirés</summary>
+        <label class="switch">
+          <input id="auto-close" type="checkbox" />
+          Fermer automatiquement les onglets expirés
+        </label>
+        <p class="hint tight">
+          Les pages restent dans TabNest ; seuls les onglets expirés, inactifs et non épinglés sont fermés.
+        </p>
+        <p id="auto-close-status" class="last"></p>
+      </details>
+
       <p id="count" class="last"></p>
-      <p id="last" class="last"></p>
-
-      <div class="row">
-        <button id="capture-btn" type="button" class="ghost">Capturer cette page</button>
-        <button id="refresh-btn" type="button" class="ghost">Actualiser</button>
-      </div>
-      <button id="logout-btn" type="button" class="ghost">Se déconnecter</button>
       <a href="https://tabnest-alb.pages.dev/" target="_blank" rel="noreferrer" class="link">Ouvrir TabNest →</a>
     </section>
 

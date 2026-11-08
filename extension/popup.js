@@ -1,25 +1,34 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
 
-const loggedOut = document.getElementById('logged-out')
-const loggedIn = document.getElementById('logged-in')
-const errorEl = document.getElementById('error')
-const feedbackEl = document.getElementById('feedback')
-const accountEl = document.getElementById('account')
-const countEl = document.getElementById('count')
-const lastEl = document.getElementById('last')
-const pageCard = document.getElementById('page-card')
-const pageTitle = document.getElementById('page-title')
-const pageHost = document.getElementById('page-host')
-const pageFavicon = document.getElementById('page-favicon')
-const saveState = document.getElementById('save-state')
-const pinBtn = document.getElementById('pin-btn')
-const groupSelect = document.getElementById('group-select')
-const autoClose = document.getElementById('auto-close')
-const autoCloseStatus = document.getElementById('auto-close-status')
-const importStatus = document.getElementById('import-status')
-const importHistoryBtn = document.getElementById('import-history')
-const importBookmarksBtn = document.getElementById('import-bookmarks')
+const $ = (id) => document.getElementById(id)
+
+const loadingEl = $('loading')
+const loggedOut = $('logged-out')
+const loggedIn = $('logged-in')
+const errorEl = $('error')
+const feedbackEl = $('feedback')
+const accountEl = $('account')
+const countEl = $('count')
+const pageCard = $('page-card')
+const pageTitle = $('page-title')
+const pageHost = $('page-host')
+const pageFavicon = $('page-favicon')
+const saveState = $('save-state')
+const pinBtn = $('pin-btn')
+const groupSelect = $('group-select')
+const autoClose = $('auto-close')
+const autoCloseStatus = $('auto-close-status')
+const importStatus = $('import-status')
+const importHistoryBtn = $('import-history')
+const importBookmarksBtn = $('import-bookmarks')
+const captureBtn = $('capture-btn')
+const refreshBtn = $('refresh-btn')
+const logoutBtn = $('logout-btn')
 const reasonButtons = Array.from(document.querySelectorAll('[data-reason]'))
+const reasonsEl = $('reasons')
+const organizeRow = $('organize-row')
+const removeBtn = $('remove-btn')
+const restoreBtn = $('restore-btn')
 
 const REASON_LABELS = {
   remember: 'À retenir',
@@ -28,8 +37,63 @@ const REASON_LABELS = {
   decide: 'À décider',
 }
 
+// Même expression que le site : partie locale + domaine en étiquettes.
+const EMAIL_RE =
+  /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i
+
+const emailInput = $('email')
+const passwordInput = $('password')
+const emailError = $('email-error')
+const passwordError = $('password-error')
+const loginBtn = $('login-btn')
+const togglePw = $('toggle-pw')
+let emailTouched = false
+let passwordTouched = false
+
+function validateLogin() {
+  const email = emailInput.value.trim()
+  const emailValid = EMAIL_RE.test(email)
+  const passwordValid = passwordInput.value.length >= 6
+  const showEmailError = emailTouched && email.length > 0 && !emailValid
+  const showPasswordError = passwordTouched && passwordInput.value.length > 0 && !passwordValid
+
+  emailError.textContent = showEmailError ? 'Cette adresse e-mail ne semble pas valide.' : ''
+  emailError.hidden = !showEmailError
+  emailInput.setAttribute('aria-invalid', String(showEmailError))
+  emailInput.classList.toggle('invalid', showEmailError)
+
+  passwordError.textContent = showPasswordError ? '6 caractères minimum.' : ''
+  passwordError.hidden = !showPasswordError
+  passwordInput.setAttribute('aria-invalid', String(showPasswordError))
+  passwordInput.classList.toggle('invalid', showPasswordError)
+
+  loginBtn.disabled = !(emailValid && passwordValid)
+  return emailValid && passwordValid
+}
+
+emailInput.addEventListener('input', validateLogin)
+emailInput.addEventListener('blur', () => {
+  emailTouched = true
+  validateLogin()
+})
+passwordInput.addEventListener('input', validateLogin)
+passwordInput.addEventListener('blur', () => {
+  passwordTouched = true
+  validateLogin()
+})
+
+togglePw.addEventListener('click', () => {
+  const show = passwordInput.type === 'password'
+  passwordInput.type = show ? 'text' : 'password'
+  togglePw.textContent = show ? 'Masquer' : 'Afficher'
+  togglePw.setAttribute('aria-pressed', String(show))
+})
+
+validateLogin()
+
 let currentPage = null
 let currentPinned = false
+let busy = false
 
 async function getSession() {
   const { session } = await chrome.storage.local.get('session')
@@ -44,9 +108,18 @@ function flash(message, isError = false) {
   feedbackEl.textContent = message
   feedbackEl.classList.toggle('error', isError)
   feedbackEl.hidden = false
-  window.setTimeout(() => {
+  window.clearTimeout(flash.timer)
+  flash.timer = window.setTimeout(() => {
     feedbackEl.hidden = true
   }, 2600)
+}
+
+function setBusy(value) {
+  busy = value
+  reasonButtons.forEach((button) => (button.disabled = value))
+  pinBtn.disabled = value
+  groupSelect.disabled = value
+  captureBtn.disabled = value
 }
 
 function setReasonActive(reason) {
@@ -57,14 +130,23 @@ function setReasonActive(reason) {
   })
 }
 
+function showConnectedUi(connected) {
+  loggedOut.hidden = connected
+  loggedIn.hidden = !connected
+  refreshBtn.hidden = !connected
+  logoutBtn.hidden = !connected
+  accountEl.hidden = !connected
+}
+
 function renderPageState(state) {
   if (!state?.connected) {
-    loggedOut.hidden = false
-    loggedIn.hidden = true
+    loadingEl.hidden = true
+    showConnectedUi(false)
     return
   }
-  loggedOut.hidden = true
-  loggedIn.hidden = false
+  loadingEl.hidden = true
+  showConnectedUi(true)
+  accountEl.textContent = state.email ?? ''
 
   if (state.tab) {
     pageCard.hidden = false
@@ -80,10 +162,24 @@ function renderPageState(state) {
     } else {
       pageFavicon.hidden = true
     }
+  } else {
+    pageCard.hidden = true
   }
 
   currentPage = state.page ?? null
   currentPinned = Boolean(state.page?.pinned)
+  const archived = Boolean(state.archived)
+
+  reasonsEl.hidden = archived
+  organizeRow.hidden = archived
+  removeBtn.hidden = archived || !currentPage
+  restoreBtn.hidden = !archived
+
+  if (archived) {
+    saveState.textContent = 'Cette page a été retirée de TabNest.'
+    setReasonActive(null)
+    return
+  }
 
   if (currentPage) {
     setReasonActive(currentPage.reason ?? 'decide')
@@ -93,7 +189,7 @@ function renderPageState(state) {
   } else {
     setReasonActive(null)
     saveState.textContent =
-      'Page pas encore capturée. Reste dessus une seconde, puis « Capturer cette page ».'
+      'Page pas encore capturée : elle le sera automatiquement au premier rangement.'
     pinBtn.textContent = 'Épingler'
     pinBtn.setAttribute('aria-pressed', 'false')
   }
@@ -109,44 +205,45 @@ function renderPageState(state) {
   if (!state.page?.group_id) groupSelect.value = ''
 }
 
-async function refreshUi() {
+async function refreshUi(showSkeleton = false) {
+  if (showSkeleton) {
+    loadingEl.hidden = false
+    loggedOut.hidden = true
+    loggedIn.hidden = true
+  }
   const session = await getSession()
-  const connected = Boolean(session)
-  loggedOut.hidden = connected
-  loggedIn.hidden = !connected
-  if (!connected) return
-
-  accountEl.textContent = session.user?.email ?? ''
-  const { captures = 0, lastCapture } = await chrome.storage.local.get(['captures', 'lastCapture'])
-  countEl.textContent = `${captures} page(s) capturée(s)`
-  lastEl.textContent = lastCapture?.url ? `Dernière : ${lastCapture.url}` : 'Aucune capture encore.'
-
+  if (!session) {
+    loadingEl.hidden = true
+    showConnectedUi(false)
+    return
+  }
   const state = await send('page-state')
   renderPageState(state)
 
   const settings = await send('get-settings')
   if (settings?.ok) {
     autoClose.checked = Boolean(settings.autoCloseExpired)
-    if (settings.lastAutoClose?.count) {
-      autoCloseStatus.textContent = `${settings.lastAutoClose.count} onglet(s) fermé(s) lors du dernier passage.`
-    } else {
-      autoCloseStatus.textContent = ''
-    }
+    autoCloseStatus.textContent = settings.lastAutoClose?.count
+      ? `${settings.lastAutoClose.count} onglet(s) fermé(s) lors du dernier passage.`
+      : ''
     if (settings.lastImport?.imported) {
       importStatus.textContent = `Dernier import : ${settings.lastImport.imported} page(s).`
     }
   }
+
+  const { captures = 0 } = await chrome.storage.local.get('captures')
+  countEl.textContent = `${captures} page(s) capturée(s) au total.`
 }
 
-document.getElementById('google-btn').addEventListener('click', async () => {
+$('google-btn').addEventListener('click', async () => {
   errorEl.hidden = true
-  const btn = document.getElementById('google-btn')
+  const btn = $('google-btn')
   btn.disabled = true
   btn.textContent = 'Connexion Google…'
   try {
     const result = await send('google-signin')
     if (!result?.ok) throw new Error(result?.error || 'Connexion Google impossible.')
-    await refreshUi()
+    await refreshUi(true)
   } catch (err) {
     errorEl.textContent = err instanceof Error ? err.message : 'Erreur de connexion'
     errorEl.hidden = false
@@ -156,12 +253,12 @@ document.getElementById('google-btn').addEventListener('click', async () => {
   }
 })
 
-document.getElementById('login-form').addEventListener('submit', async (event) => {
+$('login-form').addEventListener('submit', async (event) => {
   event.preventDefault()
   errorEl.hidden = true
-  const email = document.getElementById('email').value.trim()
-  const password = document.getElementById('password').value
-  const btn = document.getElementById('login-btn')
+  const email = $('email').value.trim()
+  const password = $('password').value
+  const btn = $('login-btn')
   btn.disabled = true
   btn.textContent = 'Connexion…'
 
@@ -181,7 +278,7 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
       expires_at: Math.floor(Date.now() / 1000) + (data.expires_in ?? 3600),
     }
     await chrome.storage.local.set({ session })
-    await refreshUi()
+    await refreshUi(true)
   } catch (err) {
     errorEl.textContent = err instanceof Error ? err.message : 'Erreur de connexion'
     errorEl.hidden = false
@@ -193,29 +290,43 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
 
 reasonButtons.forEach((button) => {
   button.addEventListener('click', async () => {
+    if (busy) return
     const reason = button.dataset.reason
-    const result = await send('classify', { reason })
-    if (!result?.ok) {
-      flash(result?.error || 'Impossible de ranger cette page.', true)
-      return
+    setBusy(true)
+    button.classList.add('saving')
+    try {
+      const result = await send('classify', { reason })
+      if (!result?.ok) {
+        flash(result?.error || 'Impossible de ranger cette page.', true)
+        return
+      }
+      currentPage = { ...(currentPage ?? {}), reason }
+      setReasonActive(reason)
+      flash(`Rangée dans « ${REASON_LABELS[reason]} » ✓`)
+    } finally {
+      button.classList.remove('saving')
+      setBusy(false)
     }
-    currentPage = { ...(currentPage ?? {}), reason }
-    setReasonActive(reason)
-    flash(`Rangée dans « ${REASON_LABELS[reason]} » ✓`)
   })
 })
 
 pinBtn.addEventListener('click', async () => {
+  if (busy) return
   const next = !currentPinned
-  const result = await send('classify', { pinned: next })
-  if (!result?.ok) {
-    flash(result?.error || 'Impossible d’épingler.', true)
-    return
+  setBusy(true)
+  try {
+    const result = await send('classify', { pinned: next })
+    if (!result?.ok) {
+      flash(result?.error || 'Impossible d’épingler.', true)
+      return
+    }
+    currentPinned = next
+    pinBtn.textContent = next ? 'Désépingler' : 'Épingler'
+    pinBtn.setAttribute('aria-pressed', String(next))
+    flash(next ? 'Page épinglée : conservée sans limite ✓' : 'Page désépinglée ✓')
+  } finally {
+    setBusy(false)
   }
-  currentPinned = next
-  pinBtn.textContent = next ? 'Désépingler' : 'Épingler'
-  pinBtn.setAttribute('aria-pressed', String(next))
-  flash(next ? 'Page épinglée : conservée sans limite ✓' : 'Page désépinglée ✓')
 })
 
 groupSelect.addEventListener('change', async () => {
@@ -227,13 +338,15 @@ groupSelect.addEventListener('change', async () => {
   flash(groupSelect.value ? 'Rangée dans le projet ✓' : 'Retirée du projet ✓')
 })
 
-document.getElementById('capture-btn').addEventListener('click', async () => {
+captureBtn.addEventListener('click', async () => {
+  captureBtn.disabled = true
   await send('capture-current')
-  window.setTimeout(() => void refreshUi(), 900)
+  window.setTimeout(() => {
+    captureBtn.disabled = false
+    void refreshUi(true)
+  }, 900)
   flash('Page capturée ✓')
 })
-
-document.getElementById('refresh-btn').addEventListener('click', () => void refreshUi())
 
 autoClose.addEventListener('change', async () => {
   const result = await send('set-auto-close', { enabled: autoClose.checked })
@@ -241,11 +354,7 @@ autoClose.addEventListener('change', async () => {
     flash('Impossible de modifier ce réglage.', true)
     return
   }
-  flash(
-    autoClose.checked
-      ? 'Fermeture automatique activée ✓'
-      : 'Fermeture automatique désactivée.',
-  )
+  flash(autoClose.checked ? 'Fermeture automatique activée ✓' : 'Fermeture automatique désactivée.')
 })
 
 importHistoryBtn.addEventListener('click', async () => {
@@ -254,7 +363,7 @@ importHistoryBtn.addEventListener('click', async () => {
   try {
     const result = await send('import-history', { days: 30 })
     if (!result?.ok) throw new Error(result?.error || 'Import impossible.')
-    importStatus.textContent = `Historique : ${result.imported} page(s) ajoutée(s), ${result.skipped} déjà connue(s).`
+    importStatus.textContent = `Historique : ${result.imported} ajoutée(s), ${result.skipped} déjà connue(s).`
   } catch (err) {
     importStatus.textContent = err instanceof Error ? err.message : 'Import impossible.'
   } finally {
@@ -268,7 +377,7 @@ importBookmarksBtn.addEventListener('click', async () => {
   try {
     const result = await send('import-bookmarks')
     if (!result?.ok) throw new Error(result?.error || 'Import impossible.')
-    importStatus.textContent = `Favoris : ${result.imported} page(s) ajoutée(s), ${result.skipped} déjà connue(s).`
+    importStatus.textContent = `Favoris : ${result.imported} ajoutée(s), ${result.skipped} déjà connue(s).`
   } catch (err) {
     importStatus.textContent = err instanceof Error ? err.message : 'Import impossible.'
   } finally {
@@ -276,9 +385,44 @@ importBookmarksBtn.addEventListener('click', async () => {
   }
 })
 
-document.getElementById('logout-btn').addEventListener('click', async () => {
-  await chrome.storage.local.remove('session')
-  await refreshUi()
+removeBtn.addEventListener('click', async () => {
+    if (!window.confirm('Retirer cette page de TabNest ? Elle sera conservée dans les archives.')) {
+      return
+    }
+    setBusy(true)
+    try {
+      const result = await send('remove-page')
+      if (!result?.ok) {
+        flash(result?.error || 'Suppression impossible.', true)
+        return
+      }
+      flash('Page retirée de TabNest (archivée).')
+      await refreshUi(true)
+    } finally {
+      setBusy(false)
+    }
+  })
+
+restoreBtn.addEventListener('click', async () => {
+  setBusy(true)
+  try {
+    const result = await send('restore-page')
+    if (!result?.ok) {
+      flash(result?.error || 'Restauration impossible.', true)
+      return
+    }
+    flash('Page restaurée dans TabNest ✓')
+    await refreshUi(true)
+  } finally {
+    setBusy(false)
+  }
 })
 
-void refreshUi()
+refreshBtn.addEventListener('click', () => void refreshUi(true))
+
+logoutBtn.addEventListener('click', async () => {
+  await chrome.storage.local.remove('session')
+  await refreshUi(false)
+})
+
+void refreshUi(true)

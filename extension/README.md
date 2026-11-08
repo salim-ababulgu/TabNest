@@ -40,6 +40,15 @@ L'identifiant s'affiche sur `chrome://extensions` (ou dans l'erreur renvoyée pa
 
 `config.js` contient l'adresse Supabase et la clé publique (`anon`). Ce fichier est local et ignoré par Git.
 
+## CRUD dans l'extension
+
+- **Créer** : capture automatique, « Capturer cette page », import historique/favoris.
+- **Lire** : titre + domaine de l'onglet, état de la page, projets, compteur.
+- **Mettre à jour** : étagère (À retenir / À finir / Piste / À décider), épingle, projet.
+- **Supprimer / restaurer** : « Retirer de TabNest » (archivage doux, la page reste dans les archives du site) et « Restaurer dans TabNest » pour une page archivée.
+
+Le formulaire de connexion valide l'e-mail par expression régulière et impose 6 caractères minimum ; le bouton reste désactivé tant que tout n'est pas valide. Le popup suit le mode clair/sombre du système et affiche des squelettes pendant le chargement.
+
 ## Fichiers
 
 - `manifest.json` : manifeste MV3 (permissions `tabs`, `storage`, `identity`).

@@ -353,13 +353,54 @@ const authHeaders = (session) => ({
 
 async function fetchPageRow(session, url) {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/pages?select=id,reason,pinned,group_id,title,visit_count,kind` +
-      `&url=eq.${encodeURIComponent(url)}&deleted_at=is.null`,
+    `${SUPABASE_URL}/rest/v1/pages?select=id,reason,pinned,group_id,title,visit_count,kind,deleted_at` +
+      `&url=eq.${encodeURIComponent(url)}`,
     { headers: authHeaders(session) },
   )
   if (!res.ok) return null
   const rows = await res.json()
   return Array.isArray(rows) && rows.length > 0 ? rows[0] : null
+}
+
+/** Retire la page de TabNest (archivage doux, réversible). */
+async function removePageByUrl() {
+  const session = await getSession()
+  if (!session) return { ok: false, error: 'Non connecté.' }
+  const tab = await currentTab()
+  if (!tab?.url) return { ok: false, error: 'Aucune page active.' }
+  const row = await fetchPageRow(session, tab.url)
+  if (!row) return { ok: false, error: 'Cette page n’est pas enregistrée.' }
+  if (row.deleted_at) return { ok: true, alreadyRemoved: true }
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/pages?id=eq.${row.id}`, {
+    method: 'PATCH',
+    headers: { ...authHeaders(session), Prefer: 'return=minimal' },
+    body: JSON.stringify({ deleted_at: new Date().toISOString() }),
+  })
+  if (!res.ok) return { ok: false, error: `Suppression impossible (${res.status})` }
+  return { ok: true }
+}
+
+/** Remet en service une page archivée depuis l'extension. */
+async function restorePageByUrl() {
+  const session = await getSession()
+  if (!session) return { ok: false, error: 'Non connecté.' }
+  const tab = await currentTab()
+  if (!tab?.url) return { ok: false, error: 'Aucune page active.' }
+  const row = await fetchPageRow(session, tab.url)
+  if (!row) return { ok: false, error: 'Cette page n’est pas enregistrée.' }
+  if (!row.deleted_at) return { ok: true, alreadyActive: true }
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/pages?id=eq.${row.id}`, {
+    method: 'PATCH',
+    headers: { ...authHeaders(session), Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      deleted_at: null,
+      expires_at: computeExpiry(row.kind ?? 'normal', row.visit_count ?? 0, row.reason),
+    }),
+  })
+  if (!res.ok) return { ok: false, error: `Restauration impossible (${res.status})` }
+  return { ok: true }
 }
 
 async function fetchGroups(session) {
@@ -384,7 +425,8 @@ async function pageState() {
   return {
     connected: true,
     email: session.user?.email ?? null,
-    page: row,
+    page: row && !row.deleted_at ? row : null,
+    archived: Boolean(row?.deleted_at),
     groups,
     tab: { url: tab.url, title: tab.title ?? '', favicon: tab.favIconUrl ?? '' },
   }
@@ -398,6 +440,9 @@ async function classify(message) {
   if (!tab?.url) return { ok: false, error: 'Aucune page active.' }
 
   let row = await fetchPageRow(session, tab.url)
+  if (row?.deleted_at) {
+    return { ok: false, error: 'Page retirée de TabNest : restaure-la d’abord.' }
+  }
   if (!row) {
     // Deux clics : on capture la page à la volée, puis on la range.
     await capture(tab.url, tab.title ?? '', tab.favIconUrl ?? '', true)
@@ -631,6 +676,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
   if (message?.type === 'classify') {
     void classify(message).then(sendResponse)
+    return true
+  }
+  if (message?.type === 'remove-page') {
+    void removePageByUrl().then(sendResponse)
+    return true
+  }
+  if (message?.type === 'restore-page') {
+    void restorePageByUrl().then(sendResponse)
     return true
   }
   if (message?.type === 'capture-current') {

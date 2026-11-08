@@ -41,8 +41,35 @@ async function main() {
   if (await page.locator('#login-form').isVisible()) ok('formulaire e-mail visible')
   else fail('formulaire e-mail absent')
 
+  // Validation regex : bouton bloqué tant que les champs sont invalides
+  const initiallyDisabled = await page.locator('#login-btn').isDisabled()
+  if (initiallyDisabled) ok('bouton de connexion désactivé au départ')
+  else fail('bouton de connexion actif sans contenu')
+
+  await page.locator('#email').fill('pas-un-email')
+  await page.locator('#email').blur()
+  await page.waitForTimeout(200)
+  const emailErrorVisible = await page.locator('#email-error').isVisible().catch(() => false)
+  if (emailErrorVisible) ok('erreur d’e-mail invalide affichée')
+  else fail('aucune erreur pour un e-mail invalide')
+
   await page.locator('#email').fill('demo@tabnest.demo')
+  await page.locator('#password').fill('123')
+  await page.locator('#password').blur()
+  await page.waitForTimeout(200)
+  const shortPwError = await page.locator('#password-error').isVisible().catch(() => false)
+  if (shortPwError) ok('mot de passe trop court signalé')
+  else fail('mot de passe court non signalé')
+  const stillDisabled = await page.locator('#login-btn').isDisabled()
+  if (stillDisabled) ok('bouton toujours bloqué avec un mot de passe court')
+  else fail('bouton actif malgré un mot de passe court')
+
   await page.locator('#password').fill('DemoCapture-2025!')
+  await page.waitForTimeout(200)
+  const enabled = await page.locator('#login-btn').isEnabled()
+  if (enabled) ok('bouton activé quand tout est valide')
+  else fail('bouton resté bloqué alors que valide')
+
   await page.locator('#login-btn').click()
 
   const loggedIn = await page
@@ -52,6 +79,18 @@ async function main() {
     .catch(() => false)
   if (loggedIn) ok('connexion e-mail/mot de passe réussie dans l’extension')
   else fail('connexion impossible dans l’extension')
+
+  const skeletonGone = await page
+    .locator('#loading')
+    .isHidden()
+    .catch(() => false)
+  if (skeletonGone) ok('squelette de chargement remplacé par le contenu')
+  else fail('le squelette de chargement reste affiché')
+
+  // Panneaux repliés : on les ouvre pour vérifier leur contenu
+  await page.locator('details summary', { hasText: 'Importer' }).click()
+  await page.locator('details summary', { hasText: 'Fermer les onglets' }).click()
+  await page.waitForTimeout(200)
 
   if (loggedIn) {
     const account = await page.locator('#account').textContent()
@@ -67,6 +106,14 @@ async function main() {
 
     if (await page.locator('#group-select').isVisible()) ok('sélecteur de projet présent')
     else fail('sélecteur de projet absent')
+
+    const removeExists = await page.locator('#remove-btn').count()
+    const restoreExists = await page.locator('#restore-btn').count()
+    if (removeExists === 1 && restoreExists === 1) {
+      ok('actions CRUD présentes (retirer / restaurer)')
+    } else {
+      fail('actions CRUD absentes du popup')
+    }
   }
 
   // Import historique / favoris + fermeture automatique
@@ -117,6 +164,17 @@ async function main() {
   })
   if (messageTypes.includes('classify')) ok('les actions envoient bien « classify » au service worker')
   else fail('aucun message « classify » envoyé')
+
+  // Mode sombre du popup
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.waitForTimeout(300)
+  const darkBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor)
+  const darkParts = darkBg.match(/\d+/g)?.map(Number) ?? [255, 255, 255]
+  if (darkParts[0] + darkParts[1] + darkParts[2] < 200) {
+    ok(`mode sombre appliqué (fond ${darkBg})`)
+  } else {
+    fail(`mode sombre non appliqué (fond ${darkBg})`)
+  }
 
   if (errors.length === 0) ok('aucune erreur JavaScript dans le popup')
   else fail(`erreurs JS : ${errors.join(' | ')}`)
