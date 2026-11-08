@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import gsap from 'gsap'
 import { Check } from 'lucide-react'
 import { useLangValue } from '@/components/landing/i18n'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import type { Lang } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
@@ -50,7 +51,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
   // Fond vivant : trame de points qui dérive lentement (transform only).
   return (
     <div className="relative min-h-screen bg-background lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-      <aside className="relative hidden flex-col justify-between overflow-hidden bg-ink px-10 py-8 text-cream lg:flex">
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-brand-ink px-10 py-8 text-brand-cream lg:flex">
         <div aria-hidden="true" className="auth-dots" />
 
         <div className="relative flex items-center gap-2.5">
@@ -64,14 +65,14 @@ export function AuthShell({ children }: { children: ReactNode }) {
           <h1 className="font-heading text-[2.1rem] leading-[1.15] font-semibold">
             {t('auth.sideTitle')}
           </h1>
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-cream/65">{t('auth.sideText')}</p>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-brand-cream/65">{t('auth.sideText')}</p>
 
-          <div ref={previewRef} className="mt-7 overflow-hidden rounded-xl border border-cream/15">
-            <div className="flex items-center gap-1.5 border-b border-cream/10 bg-black/20 px-3 py-2">
-              <span className="size-1.5 rounded-full bg-cream/25" />
-              <span className="size-1.5 rounded-full bg-cream/25" />
-              <span className="size-1.5 rounded-full bg-cream/25" />
-              <span className="ml-2 text-[10px] text-cream/40">tabnest-alb.pages.dev</span>
+          <div ref={previewRef} className="mt-7 overflow-hidden rounded-xl border border-brand-cream/15">
+            <div className="flex items-center gap-1.5 border-b border-brand-cream/10 bg-black/20 px-3 py-2">
+              <span className="size-1.5 rounded-full bg-background/25" />
+              <span className="size-1.5 rounded-full bg-background/25" />
+              <span className="size-1.5 rounded-full bg-background/25" />
+              <span className="ml-2 text-[10px] text-brand-cream/40">tabnest-alb.pages.dev</span>
             </div>
             <img
               src="/screenshots/dashboard-overview.png"
@@ -81,7 +82,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
             />
           </div>
 
-          <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-cream/70">
+          <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-brand-cream/70">
             {[t('auth.side1'), t('auth.side2'), t('auth.side3')].map((item) => (
               <li key={item} className="flex items-center gap-2">
                 <Check className="size-3.5 text-lime" aria-hidden="true" />
@@ -91,7 +92,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
           </ul>
         </div>
 
-        <p className="relative text-[11px] text-cream/40">{t('auth.sideFooter')}</p>
+        <p className="relative text-[11px] text-brand-cream/40">{t('auth.sideFooter')}</p>
       </aside>
 
       <main className="flex min-h-screen flex-col px-4 py-6 sm:px-8">
@@ -103,7 +104,8 @@ export function AuthShell({ children }: { children: ReactNode }) {
             <span className="font-heading text-base font-semibold">TabNest</span>
           </span>
 
-          <div className="ml-auto flex items-center gap-1" role="group" aria-label="Langue">
+          <div className="ml-auto flex items-center gap-2" role="group" aria-label="Langue">
+            <ThemeToggle />
             {LANGS.map((item) => (
               <button
                 key={item.id}
@@ -113,7 +115,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
                 className={cn(
                   'rounded-md px-2 py-1 text-[11px] transition-colors',
                   lang === item.id
-                    ? 'bg-ink text-cream'
+                    ? 'bg-brand-ink text-brand-cream'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >

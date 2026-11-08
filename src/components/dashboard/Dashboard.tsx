@@ -220,7 +220,7 @@ function SiteAvatar({ site, className }: { site: Site; className?: string }) {
   return (
     <span className={cn('grid place-items-center overflow-hidden bg-card p-1.5', className)}>
       {failed ? (
-        <span className="font-heading text-lg font-semibold uppercase text-ink/40">
+        <span className="font-heading text-lg font-semibold uppercase text-foreground/40">
           {site.domain.charAt(0)}
         </span>
       ) : (
@@ -1807,7 +1807,7 @@ export function Dashboard() {
                               />
                             )}
                             <div className="grid h-full place-items-center">
-                              <span className="font-heading text-2xl font-semibold uppercase text-ink/20 sm:text-6xl">
+                              <span className="font-heading text-2xl font-semibold uppercase text-foreground/20 sm:text-6xl">
                                 {site.domain.charAt(0)}
                               </span>
                             </div>

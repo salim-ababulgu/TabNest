@@ -1,4 +1,5 @@
 import { Sparkles } from 'lucide-react'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { LEGAL_DOCS, type LegalSlug } from '@/components/legal/legal-content'
 
 const NAV: { slug: LegalSlug; label: string }[] = [
@@ -21,12 +22,15 @@ export function LegalPage({ slug }: { slug: LegalSlug }) {
             </span>
             <span className="font-heading text-lg font-semibold">TabNest</span>
           </a>
-          <a
-            href="/"
-            className="text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-          >
-            Retour au site
-          </a>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <a
+              href="/"
+              className="text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+            >
+              Retour au site
+            </a>
+          </div>
         </div>
       </header>
 

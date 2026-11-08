@@ -40,7 +40,7 @@ export function ScreenshotFrame({
           className={cn(
             'ml-2 flex-1 truncate rounded-full border px-3 py-1 text-[10px]',
             dark
-              ? 'border-white/10 bg-white/[0.05] text-cream/50'
+              ? 'border-white/10 bg-white/[0.05] text-brand-cream/50'
               : 'border-border bg-background text-muted-foreground',
           )}
         >

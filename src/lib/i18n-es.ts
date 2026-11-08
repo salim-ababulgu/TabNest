@@ -315,6 +315,8 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.deleteTitle': '¿Quitar esta página?',
   'dash.deleteDesc': '«{t}» se quitará de su lista.',
   'dash.cancel': 'Cancelar',
+  'theme.toLight': 'Cambiar a claro',
+  'theme.toDark': 'Cambiar a oscuro',
   'nest.title': 'Estantes',
   'nest.intro': 'Las páginas se ordenan aquí solas.',
   'nest.auto': 'Las páginas se ordenarán aquí solas.',

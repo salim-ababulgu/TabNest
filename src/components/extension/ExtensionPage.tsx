@@ -1,5 +1,6 @@
 import { ArrowRight, EyeOff, Puzzle, ShieldCheck, Sparkles } from 'lucide-react'
 import { useLangValue } from '@/components/landing/i18n'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 const STEP_KEYS = [
   { titleKey: 'ext.s1.title', textKey: 'ext.s1.text' },
@@ -20,12 +21,15 @@ export function ExtensionPage() {
             </span>
             <span className="font-heading text-lg font-semibold">TabNest</span>
           </a>
-          <a
-            href="/"
-            className="text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-          >
-            {t('ext.back')}
-          </a>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <a
+              href="/"
+              className="text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+            >
+              {t('ext.back')}
+            </a>
+          </div>
         </div>
       </header>
 

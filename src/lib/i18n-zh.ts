@@ -302,6 +302,8 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.deleteTitle': '移除此页面？',
   'dash.deleteDesc': '「{t}」将从你的列表中移除。',
   'dash.cancel': '取消',
+  'theme.toLight': '切换到浅色',
+  'theme.toDark': '切换到深色',
   'nest.title': '架子',
   'nest.intro': '页面会自动归到架子上。',
   'nest.auto': '页面会自动归到这里。',

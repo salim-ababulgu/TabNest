@@ -82,7 +82,7 @@ export function PinnedSteps() {
   }, [])
 
   return (
-    <div ref={wrapperRef} className="relative h-[240vh] bg-cream">
+    <div ref={wrapperRef} className="relative h-[240vh] bg-background">
       <div className="sticky top-0 flex min-h-screen items-center overflow-hidden">
         <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
           <div>

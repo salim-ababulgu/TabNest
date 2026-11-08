@@ -23,21 +23,21 @@ const TONES: Record<
     card: 'bg-[#2c3d33]',
     bar: 'border-white/15 bg-white/[0.05]',
     line: 'bg-white/20',
-    title: 'text-cream/70',
+    title: 'text-brand-cream/70',
     border: 'border-white/15',
   },
   light: {
     card: 'bg-[#f4efe1]',
     bar: 'border-black/10 bg-black/[0.04]',
     line: 'bg-black/15',
-    title: 'text-ink/60',
+    title: 'text-[#26312a]/60',
     border: 'border-black/10',
   },
   paper: {
     card: 'bg-[#efe8d5]',
     bar: 'border-black/10 bg-black/[0.04]',
     line: 'bg-black/15',
-    title: 'text-ink/60',
+    title: 'text-[#26312a]/60',
     border: 'border-black/10',
   },
 }
@@ -78,13 +78,13 @@ function WindowCard({ title, tone }: { title: string; tone: Tone }) {
 export function Hero({ onStart }: { onStart: () => void }) {
   const { t } = useLang()
   return (
-    <section className="relative flex min-h-screen flex-col bg-ink text-cream">
+    <section className="relative flex min-h-screen flex-col bg-brand-ink text-brand-cream">
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pt-28 pb-10">
         <h1 className="max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
           <span className="block">{t('hero.h1a')}</span>
           <span className="block">{t('hero.h1b')}</span>
         </h1>
-        <p className="mt-6 max-w-xl text-sm leading-relaxed text-cream/60">{t('hero.sub')}</p>
+        <p className="mt-6 max-w-xl text-sm leading-relaxed text-brand-cream/60">{t('hero.sub')}</p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <button
             type="button"
@@ -95,13 +95,13 @@ export function Hero({ onStart }: { onStart: () => void }) {
           </button>
           <a
             href="/extension"
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-ink/60 px-6 text-sm font-medium text-cream/85 transition-colors hover:border-white/40 hover:text-cream"
+            className="inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-brand-ink/60 px-6 text-sm font-medium text-brand-cream/85 transition-colors hover:border-white/40 hover:text-brand-cream"
           >
             {t('hero.install')}
           </a>
         </div>
-        <p className="mt-4 text-xs text-cream/45">
-          <a href="#comment" className="underline-offset-2 hover:text-cream/80 hover:underline">
+        <p className="mt-4 text-xs text-brand-cream/45">
+          <a href="#comment" className="underline-offset-2 hover:text-brand-cream/80 hover:underline">
             {t('hero.how')}
           </a>
         </p>

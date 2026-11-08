@@ -7,6 +7,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-cream: var(--brand-cream);
     --font-heading: 'Fraunces Variable', Georgia, serif;
     --font-sans: 'Geist Variable', sans-serif;
     --color-lime: var(--lime);
@@ -87,6 +89,8 @@
     --sidebar-border: #2e3e34;
     --sidebar-ring: #e8a13c;
     --lime: #e8a13c;
+  --brand-ink: #1f2c25;
+  --brand-cream: #f6f1e4;
     --lime-foreground: #241a08;
     --ink: #1f2c25;
     --cream: #f6f1e4;
@@ -133,21 +137,7 @@
 /* La landing garde son identité papier (clair + sections sombres) quel que soit
    le thème choisi : comme les pages marketing de Notion ou Linear, l'art
    direction de la page publique ne bascule pas. */
-[data-landing] {
-    --background: #f6f1e4;
-    --foreground: #26312a;
-    --card: #fcf9f0;
-    --card-foreground: #26312a;
-    --popover: #fcf9f0;
-    --popover-foreground: #26312a;
-    --secondary: #ece5d2;
-    --secondary-foreground: #26312a;
-    --muted-foreground: #62675a;
-    --border: #e4dcc6;
-    --input: #8e8770;
-    --ink: #1f2c25;
-    --cream: #f6f1e4;
-}
+
 
 @layer base {
   * {
