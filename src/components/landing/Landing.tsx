@@ -29,7 +29,7 @@ function LandingContent({ onStart }: LandingProps) {
   return (
     <div id="top" className="relative bg-background text-foreground">
       <header className="sticky top-0 z-50 bg-field text-field-ink">
-        <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between gap-4 px-6 md:h-[4.5rem] md:px-10">
+        <div className="mx-auto flex h-20 w-full max-w-[1320px] items-center justify-between gap-4 px-6 md:h-[5rem] md:px-10">
           <a
             href="#top"
             className="font-heading text-[1.35rem] leading-none tracking-[-0.02em]"
@@ -80,7 +80,7 @@ function LandingContent({ onStart }: LandingProps) {
 
         {/* CTA final */}
         <section className="bg-field text-field-ink">
-          <div className="mx-auto w-full max-w-[1240px] px-6 py-24 md:px-10 md:py-36">
+          <div className="mx-auto w-full max-w-[1320px] px-6 py-32 md:px-10 md:py-52">
             <Reveal>
               <h2 className="mx-auto max-w-[18ch] text-center font-heading text-[clamp(2.4rem,5.6vw,4.75rem)] leading-[0.98] tracking-[-0.03em]">
                 <span className="block">{t('cta.titlea')}</span>
@@ -111,7 +111,7 @@ function LandingContent({ onStart }: LandingProps) {
       </main>
 
       <footer className="bg-background px-6 py-16 md:px-10 md:py-20">
-        <div className="mx-auto grid w-full max-w-[1240px] gap-12 text-sm sm:grid-cols-2 md:grid-cols-4">
+        <div className="mx-auto grid w-full max-w-[1320px] gap-12 text-sm sm:grid-cols-2 md:grid-cols-4">
           <div className="sm:col-span-2 md:col-span-1">
             <p className="font-heading text-[1.35rem] leading-none tracking-[-0.02em]">Filnest</p>
             <p className="mt-4 max-w-[22ch] text-foreground/65">{t('footer.tagline')}</p>

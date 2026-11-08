@@ -10,13 +10,17 @@ export function Hero({ onStart }: { onStart: () => void }) {
 
   return (
     <section className="relative overflow-hidden bg-field text-field-ink">
-      <div className="mx-auto w-full max-w-[1240px] px-6 pt-24 md:px-10 md:pt-32">
-        <h1 className="max-w-[15ch] font-heading text-[clamp(3rem,7.4vw,6.5rem)] leading-[0.92] tracking-[-0.035em]">
+      <div className="mx-auto w-full max-w-[1320px] px-6 pt-28 md:px-10 md:pt-40">
+        <p className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs text-field-muted">
+          <span className="size-1.5 rounded-full bg-lime" aria-hidden="true" />
+          {t('hero.eyebrow')}
+        </p>
+        <h1 className="mt-6 max-w-[15ch] font-heading text-[clamp(3rem,7.4vw,6.5rem)] leading-[0.92] tracking-[-0.035em]">
           <span className="block">{t('hero.h1a')}</span>
           <span className="block">{t('hero.h1b')}</span>
         </h1>
 
-        <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-12 md:items-end md:gap-8">
+        <div className="mt-16 grid gap-10 md:mt-24 md:grid-cols-12 md:items-end md:gap-8">
           <p className="max-w-[46ch] text-[1.0625rem] leading-[1.65] text-field-muted md:col-span-6">
             {t('hero.sub')}
           </p>
@@ -42,7 +46,7 @@ export function Hero({ onStart }: { onStart: () => void }) {
         </div>
       </div>
 
-      <div className="mx-auto mt-16 w-full max-w-[1240px] px-6 pb-16 md:mt-24 md:px-10 md:pb-24">
+      <div className="mx-auto mt-20 w-full max-w-[1320px] px-6 pb-20 md:mt-32 md:px-10 md:pb-32">
         <BeforeAfter />
       </div>
     </section>

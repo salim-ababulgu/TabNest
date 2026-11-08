@@ -27,7 +27,7 @@ export function PageTypeMarquee() {
   return (
     <section
       aria-label={t('marquee.label')}
-      className="overflow-hidden bg-background py-10 md:py-14"
+      className="overflow-hidden bg-background py-16 md:py-24"
     >
       <div ref={trackRef} className="flex w-max items-center gap-12 px-6">
         {[...items, ...items].map((label, index) => (
@@ -57,7 +57,7 @@ export function StepsSection() {
   return (
     <section
       id="comment"
-      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+      className="mx-auto w-full max-w-[1320px] scroll-mt-24 px-6 py-32 md:px-10 md:py-52"
     >
       <Reveal>
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
@@ -183,7 +183,7 @@ export function LifetimeSection() {
 
   return (
     <section id="principe" className="scroll-mt-24 bg-field text-field-ink">
-      <div className="mx-auto w-full max-w-[1240px] px-6 py-24 md:px-10 md:py-40">
+      <div className="mx-auto w-full max-w-[1320px] px-6 py-32 md:px-10 md:py-52">
         <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
           <Reveal className="md:col-span-5">
             <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
@@ -212,7 +212,7 @@ export function ProjectsSection() {
   return (
     <section
       id="projets"
-      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+      className="mx-auto w-full max-w-[1320px] scroll-mt-24 px-6 py-32 md:px-10 md:py-52"
     >
       <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
         <Reveal className="md:col-span-5">
@@ -243,7 +243,7 @@ export function ExtensionSection() {
 
   return (
     <section id="extension" className="scroll-mt-24 bg-secondary">
-      <div className="mx-auto w-full max-w-[1240px] px-6 py-24 md:px-10 md:py-32">
+      <div className="mx-auto w-full max-w-[1320px] px-6 py-32 md:px-10 md:py-48">
         <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
           <Reveal className="md:col-span-6">
             <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
@@ -277,7 +277,7 @@ export function ExtensionSection() {
           </Reveal>
 
           <Reveal delay={120} className="md:col-span-6">
-            <div className="mx-auto w-full max-w-[440px] rounded-[1.5rem] bg-card p-6 sm:p-10">
+            <div className="mx-auto w-full max-w-[560px] rounded-[1.5rem] bg-card p-8 sm:p-12">
               <img
                 src="/screenshots/popup-connected.png"
                 alt={t('extension.alt')}
@@ -285,7 +285,7 @@ export function ExtensionSection() {
                 height={720}
                 loading="lazy"
                 decoding="async"
-                className="mx-auto block w-full max-w-[300px] rounded-[1.25rem]"
+                className="mx-auto block w-full max-w-[360px] rounded-[1.25rem]"
               />
             </div>
             <p className="mt-4 text-center text-sm text-foreground/65">{t('extension.caption')}</p>
@@ -314,7 +314,7 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+      className="mx-auto w-full max-w-[1320px] scroll-mt-24 px-6 py-32 md:px-10 md:py-52"
     >
       <div className="grid gap-10 md:grid-cols-12">
         <h2 className="font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em] md:col-span-4">

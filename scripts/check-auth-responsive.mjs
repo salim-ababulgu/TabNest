@@ -15,7 +15,7 @@ const VIEWPORTS = [
 
 async function openAuth(page) {
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 })
-  await page.getByRole('button', { name: 'Commencer', exact: true }).click()
+  await page.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
   await page.waitForTimeout(800)
 }
 

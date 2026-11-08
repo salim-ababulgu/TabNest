@@ -2,6 +2,7 @@ import type { Entry } from '@/lib/i18n'
 
 // Dictionnaire espagnol (landing + produit). Clés identiques aux dictionnaires FR/EN.
 export const ES_ALL: Record<string, Entry> = {
+  'hero.eyebrow': 'La extensión que guarda tus pestañas',
   'hero.h1a': 'Cierre sus pestañas.',
   'hero.h1b': 'Nada se pierde.',
   'hero.sub':

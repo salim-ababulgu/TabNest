@@ -14,9 +14,9 @@ async function main() {
   })
 
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 })
-  await page.getByLabel('Votre adresse e-mail').fill(EMAIL)
-  await page.getByRole('button', { name: 'Commencer', exact: true }).click()
+    await page.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
   await page.getByRole('button', { name: 'Connexion', exact: true }).click()
+  await page.locator('#email').fill(EMAIL)
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: 'Se connecter', exact: true }).click()
 

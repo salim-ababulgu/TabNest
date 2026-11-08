@@ -8,6 +8,7 @@ export type Entry = string | string[]
 type Dict = Record<string, Entry>
 
 const FR: Dict = {
+  'hero.eyebrow': "L'extension qui garde vos onglets",
   'hero.h1a': 'Fermez vos onglets.',
   'hero.h1b': 'Rien ne se perd.',
   'hero.sub':

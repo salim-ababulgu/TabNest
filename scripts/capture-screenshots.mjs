@@ -79,8 +79,7 @@ function storedUser(page) {
 
 async function signInOrUp(page) {
   await page.goto(APP_URL, { waitUntil: 'networkidle' })
-  await page.getByLabel('Votre adresse e-mail').fill(EMAIL)
-  await page.getByRole('button', { name: 'Commencer', exact: true }).click()
+    await page.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
 
   const exists = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
     method: 'POST',
@@ -90,7 +89,8 @@ async function signInOrUp(page) {
 
   if (exists) {
     await page.getByRole('tab', { name: 'Connexion', exact: true }).click()
-    await page.locator('#password').fill(PASSWORD)
+    await page.locator('#email').fill(EMAIL)
+  await page.locator('#password').fill(PASSWORD)
     await page.getByRole('button', { name: 'Se connecter', exact: true }).click()
   } else {
     await page.locator('#password').fill(PASSWORD)

@@ -38,11 +38,11 @@ async function main() {
 
   // 3. Connexion d'un compte existant
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 })
-  await page.getByLabel('Votre adresse e-mail').fill(EMAIL)
-  await page.getByRole('button', { name: 'Commencer', exact: true }).click()
+    await page.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
   await page.waitForTimeout(800)
   await page.getByRole('tab', { name: 'Connexion', exact: true }).click()
   await page.waitForTimeout(400)
+  await page.locator('#email').fill(EMAIL)
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: 'Se connecter', exact: true }).click()
   await page.waitForTimeout(5000)

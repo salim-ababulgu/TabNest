@@ -2,6 +2,7 @@ import type { Entry } from '@/lib/i18n'
 
 // 简体中文词典（落地页 + 产品）。键与 FR/EN 词典完全一致。
 export const ZH_ALL: Record<string, Entry> = {
+  'hero.eyebrow': '保存你标签页的扩展',
   'hero.h1a': '关闭你的标签页。',
   'hero.h1b': '什么都不会丢。',
   'hero.sub':

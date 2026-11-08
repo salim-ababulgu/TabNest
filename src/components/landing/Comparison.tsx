@@ -11,7 +11,7 @@ export function ComparisonSection() {
   const { t } = useLang()
 
   return (
-    <section className="mx-auto w-full max-w-[1240px] px-6 py-24 md:px-10 md:py-40">
+    <section className="mx-auto w-full max-w-[1320px] px-6 py-32 md:px-10 md:py-52">
       <Reveal>
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
           <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em] md:col-span-7">

@@ -1439,13 +1439,14 @@ export function Dashboard() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b bg-background px-4 py-3 md:gap-4 md:px-6 md:py-4">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-field bg-field text-field-ink px-4 py-3 md:gap-4 md:px-6 md:py-4">
           <div className="flex items-center gap-2 md:hidden">
             <Button
               variant="outline"
               size="icon-sm"
               onClick={() => setMobileMenuOpen(true)}
               aria-label={t('dash.openMenu')}
+              className="border-white/15 text-field-ink hover:bg-white/10 hover:text-field-ink"
             >
               <Menu className="size-4" aria-hidden="true" />
             </Button>
@@ -1454,7 +1455,7 @@ export function Dashboard() {
             </span>
             <span className="font-heading text-lg font-semibold">Filnest</span>
           </div>
-          <p className="hidden text-sm text-muted-foreground md:block">{formatToday()}</p>
+          <p className="hidden text-sm text-field-muted md:block">{formatToday()}</p>
           <div className="flex items-center gap-1.5 md:gap-2">
             <Button
               variant="outline"
@@ -1462,6 +1463,7 @@ export function Dashboard() {
               onClick={() => void handleRefresh()}
               title={t('dash.refresh')}
               aria-label={t('dash.refresh')}
+              className="border-white/15 text-field-ink hover:bg-white/10 hover:text-field-ink"
             >
               <RefreshCw className={cn('size-3.5', refreshing && 'animate-spin')} />
             </Button>
@@ -1482,7 +1484,7 @@ export function Dashboard() {
                       ? fmt(t('dash.alertsUnread'), { n: unreadAlerts.length })
                       : t('dash.alerts')
                   }
-                  className="relative"
+                  className="relative border-white/15 text-field-ink hover:bg-white/10 hover:text-field-ink"
                 >
                   <Bell className="size-3.5" />
                   {unreadAlerts.length > 0 && (
@@ -1552,7 +1554,7 @@ export function Dashboard() {
                 </div>
               </PopoverContent>
             </Popover>
-            <span className="hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground md:inline-flex">
+            <span className="hidden items-center gap-1.5 rounded-full border border-white/15 px-2.5 py-1 text-xs text-field-muted md:inline-flex">
               <span
                 className={
                   'size-1.5 rounded-full ' +
@@ -1564,7 +1566,7 @@ export function Dashboard() {
             {extensionStatus !== 'linked' && (
               <a
                 href="/extension"
-                className="hidden text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline md:inline"
+                className="hidden text-xs text-field-muted underline-offset-2 hover:text-field-ink hover:underline md:inline"
               >
                 {t(extensionStatus === 'absent' ? 'dash.installLink' : 'dash.connectLink')}
               </a>
@@ -1595,13 +1597,13 @@ export function Dashboard() {
             <span>{t('dash.mobileReadOnly')}</span>
           </div>
 
-          <section data-dash-anim className="relative overflow-hidden rounded-2xl border bg-card px-5 py-8 md:px-8 md:py-10">
+          <section data-dash-anim className="relative overflow-hidden rounded-2xl bg-field text-field-ink px-5 py-8 md:px-8 md:py-10">
             <div className="relative">
               <h1 className="mt-3 max-w-xl font-heading text-4xl leading-[1.05] font-medium tracking-tight md:text-5xl">
                 {t('dash.hero.title')}
               </h1>
-              <p className="mt-4 max-w-lg text-sm text-muted-foreground">{t('dash.hero.sub')}</p>
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-xs">
+              <p className="mt-4 max-w-lg text-sm text-field-muted">{t('dash.hero.sub')}</p>
+              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs text-field-ink">
                 <span className="size-1.5 rounded-full bg-lime" />
                 {fmt(t('dash.pagesKept'), { n: pages.length })}
               </div>

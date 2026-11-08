@@ -1,4 +1,4 @@
-﻿import { chromium } from "playwright"
+import { chromium } from "playwright"
 const b = await chromium.launch()
 async function shot(name, width, height, steps) {
   const p = await b.newPage({ viewport: { width, height } })
@@ -18,9 +18,9 @@ async function shot(name, width, height, steps) {
 }
 await shot("dark-landing-1280", 1280, 900)
 await shot("dark-auth-1280", 1280, 900, async (p) => {
-  await p.getByRole("button", { name: "Commencer", exact: true }).click()
+  await p.getByRole("button", { name: /Créer un compte gratuit|Create a free account/ }).first().click()
 })
 await shot("dark-auth-390", 390, 844, async (p) => {
-  await p.getByRole("button", { name: "Commencer", exact: true }).click()
+  await p.getByRole("button", { name: /Créer un compte gratuit|Create a free account/ }).first().click()
 })
 await b.close()

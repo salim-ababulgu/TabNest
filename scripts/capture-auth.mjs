@@ -12,7 +12,7 @@ async function main() {
 
   const desktop = await browser.newPage({ viewport: { width: 1280, height: 900 } })
   await desktop.goto(BASE + '/', { waitUntil: 'networkidle' })
-  await desktop.getByRole('button', { name: 'Commencer', exact: true }).click()
+  await desktop.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
   await desktop.waitForTimeout(900)
   await desktop.screenshot({ path: out('auth-signup-desktop.png') })
   await desktop.getByRole('tab', { name: 'Connexion' }).click()
@@ -22,7 +22,7 @@ async function main() {
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } })
   await mobile.goto(BASE + '/', { waitUntil: 'networkidle' })
-  await mobile.getByRole('button', { name: 'Commencer', exact: true }).click()
+  await mobile.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
   await mobile.waitForTimeout(900)
   await mobile.screenshot({ path: out('auth-signup-mobile.png') })
   await mobile.close()

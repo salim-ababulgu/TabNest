@@ -59,7 +59,7 @@ async function main() {
     else fail(`${label} : contraste insuffisant (${ratio.toFixed(1)}:1)`)
 
     // 2. Persistance jusqu'à la page de connexion
-    await page.getByRole('button', { name: /Commencer|Get started/ }).first().click()
+    await page.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
     await page.waitForTimeout(700)
     const auth = await page.evaluate(() => {
       const card = document.querySelector('.rounded-2xl.border.bg-card')

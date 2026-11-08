@@ -12,7 +12,7 @@ export function PricingSection() {
   return (
     <section
       id="tarifs"
-      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+      className="mx-auto w-full max-w-[1320px] scroll-mt-24 px-6 py-32 md:px-10 md:py-52"
     >
       <Reveal>
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
