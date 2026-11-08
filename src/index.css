@@ -239,3 +239,28 @@
     opacity: 0.3;
   }
 }
+/* Trame de points très discrète qui dérive lentement (panneau d'authentification). */
+.auth-dots {
+  position: absolute;
+  inset: -18px;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgb(243 238 224 / 0.09) 1px, transparent 1px);
+  background-size: 18px 18px;
+  contain: paint;
+  animation: auth-dots-drift 36s linear infinite;
+}
+
+@keyframes auth-dots-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -18px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-dots {
+    animation: none;
+  }
+}
