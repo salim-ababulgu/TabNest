@@ -1,0 +1,13 @@
+﻿import { chromium } from 'playwright'
+const browser = await chromium.launch()
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' })
+await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto' })
+const target = page.locator('main > section:last-child')
+await target.scrollIntoViewIfNeeded()
+await page.waitForTimeout(900)
+await page.evaluate(() => window.scrollBy(0, -520))
+await page.waitForTimeout(500)
+await page.screenshot({ path: '.shots/cta-gap.png' })
+await browser.close()
+console.log('ok')

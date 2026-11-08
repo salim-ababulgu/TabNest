@@ -1,12 +1,22 @@
-import { ArrowRight, EyeOff, Puzzle, ShieldCheck, Sparkles } from 'lucide-react'
+import {
+  ArrowRight,
+  Download,
+  EyeOff,
+  FolderOpen,
+  Link2,
+  MousePointerClick,
+  Puzzle,
+  ShieldCheck,
+} from 'lucide-react'
 import { useLangValue } from '@/components/landing/i18n'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { ExtensionIllustration } from '@/components/extension/Illustration'
 
-const STEP_KEYS = [
-  { titleKey: 'ext.s1.title', textKey: 'ext.s1.text' },
-  { titleKey: 'ext.s2.title', textKey: 'ext.s2.text' },
-  { titleKey: 'ext.s3.title', textKey: 'ext.s3.text' },
-  { titleKey: 'ext.s4.title', textKey: 'ext.s4.text' },
+const STEPS = [
+  { titleKey: 'ext.s1.title', textKey: 'ext.s1.text', icon: Download },
+  { titleKey: 'ext.s2.title', textKey: 'ext.s2.text', icon: FolderOpen },
+  { titleKey: 'ext.s3.title', textKey: 'ext.s3.text', icon: Link2 },
+  { titleKey: 'ext.s4.title', textKey: 'ext.s4.text', icon: MousePointerClick },
 ] as const
 
 export function ExtensionPage() {
@@ -14,10 +24,10 @@ export function ExtensionPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 py-4">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
           <a href="/" className="flex items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
-              <Sparkles className="size-4" />
+            <span className="grid size-7 place-items-center rounded-md bg-lime text-xs font-semibold text-lime-foreground">
+              F
             </span>
             <span className="font-heading text-lg font-semibold">Filnest</span>
           </a>
@@ -33,18 +43,26 @@ export function ExtensionPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-14">
-        <p className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
-          <Puzzle className="size-3.5" aria-hidden="true" />
-          {t('ext.pill')}
-        </p>
+      <main className="mx-auto max-w-5xl px-6 py-14">
+        <div className="grid items-center gap-10 md:grid-cols-[1fr_320px]">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+              <Puzzle className="size-3.5" aria-hidden="true" />
+              {t('ext.pill')}
+            </p>
 
-        <h1 className="mt-5 font-heading text-3xl leading-tight font-medium tracking-tight sm:text-4xl">
-          {t('ext.title')}
-        </h1>
-        <p className="mt-4 text-sm leading-relaxed text-foreground/75">{t('ext.sub')}</p>
+            <h1 className="mt-5 font-heading text-3xl leading-tight font-medium tracking-tight sm:text-4xl">
+              {t('ext.title')}
+            </h1>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground/75">
+              {t('ext.sub')}
+            </p>
+          </div>
 
-        <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+          <ExtensionIllustration className="mx-auto w-full max-w-[320px]" />
+        </div>
+
+        <div className="mt-10 flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <h2 className="font-heading text-lg font-medium">{t('ext.download.title')}</h2>
             <p className="mt-1 text-sm leading-relaxed text-foreground/70">
@@ -54,7 +72,7 @@ export function ExtensionPage() {
           </div>
           <a
             href="/downloads/tabnest-extension.zip"
-            download="tabnest-extension.zip"
+            download="filnest-extension.zip"
             className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-lime px-5 text-sm font-semibold text-lime-foreground hover:bg-lime/90"
           >
             {t('ext.download.button')}
@@ -62,19 +80,30 @@ export function ExtensionPage() {
           </a>
         </div>
 
-        <ol className="mt-10 space-y-6">
-          {STEP_KEYS.map((step) => (
-            <li key={step.titleKey} className="flex gap-4">
-              <span
-                aria-hidden="true"
-                className="mt-2 size-2.5 shrink-0 rounded-full bg-lime"
-              />
-              <div>
-                <h2 className="font-heading text-lg font-medium">{t(step.titleKey)}</h2>
-                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t(step.textKey)}</p>
-              </div>
-            </li>
-          ))}
+        <ol className="mt-12 grid gap-6 sm:grid-cols-2">
+          {STEPS.map((step, index) => {
+            const Icon = step.icon
+            return (
+              <li
+                key={step.titleKey}
+                className="relative rounded-2xl border border-border bg-background p-5"
+              >
+                <span
+                  aria-hidden="true"
+                  className="grid size-9 place-items-center rounded-full bg-lime text-sm font-semibold text-lime-foreground"
+                >
+                  <Icon className="size-4" />
+                </span>
+                <h2 className="mt-3 font-heading text-base font-medium">
+                  <span className="text-muted-foreground">{index + 1}.</span>{' '}
+                  {t(step.titleKey)}
+                </h2>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">
+                  {t(step.textKey)}
+                </p>
+              </li>
+            )
+          })}
         </ol>
 
         <div className="mt-10 rounded-2xl border border-border bg-card p-5">

@@ -217,10 +217,6 @@ export const ZH_ALL: Record<string, Entry> = {
   'cta.button': '开始使用',
   'cta.note': '免费，无需银行卡。你想删什么就删什么，随时都可以。',
 
-  'privacy.title': '你的页面始终属于你。',
-  'privacy.text':
-    'Filnest 只保存页面的网址、标题和公开图片。不截图、不保存私密内容、不转卖数据。你想删什么就删什么，随时都可以。',
-
   'footer.tagline': '一个标签页，留住线索。',
   'footer.legalNotice': '法律声明',
   'footer.editedBy': '由 ABA（个人）发布。',

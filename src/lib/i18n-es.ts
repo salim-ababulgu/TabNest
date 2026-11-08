@@ -234,10 +234,6 @@ export const ES_ALL: Record<string, Entry> = {
   'cta.note':
     'Gratis, sin tarjeta bancaria. Elimine lo que quiera, cuando quiera.',
 
-  'privacy.title': 'Sus páginas siguen siendo suyas.',
-  'privacy.text':
-    'Filnest guarda la dirección, el título y la imagen pública de sus páginas. Sin capturas de pantalla, sin contenido privado, sin reventa. Usted elimina lo que quiera, cuando quiera.',
-
   'footer.tagline': 'Una pestaña para no perder el hilo.',
   'footer.legalNotice': 'Aviso legal',
   'footer.editedBy': 'editado por ABA, persona física.',

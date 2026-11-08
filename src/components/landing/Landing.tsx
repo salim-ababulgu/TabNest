@@ -88,22 +88,8 @@ function LandingContent({ onStart }: LandingProps) {
 
         <FaqSection />
 
-        {/* Confidentialité */}
-        <section id="confidentialite" className="mx-auto w-full max-w-[1240px] px-6 pb-8 md:px-10">
-          <Reveal>
-            <div className="mx-auto max-w-[62ch] text-center">
-              <h2 className="font-heading text-[clamp(1.6rem,2.6vw,2.4rem)] leading-[1.1] tracking-[-0.02em]">
-                {t('privacy.title')}
-              </h2>
-              <p className="mt-5 text-[0.9375rem] leading-[1.7] text-foreground/70">
-                {t('privacy.text')}
-              </p>
-            </div>
-          </Reveal>
-        </section>
-
         {/* CTA final */}
-        <section className="mt-16 bg-field text-field-ink md:mt-24">
+        <section className="bg-field text-field-ink">
           <div className="mx-auto w-full max-w-[1240px] px-6 py-24 md:px-10 md:py-36">
             <Reveal>
               <h2 className="mx-auto max-w-[18ch] text-center font-heading text-[clamp(2.4rem,5.6vw,4.75rem)] leading-[0.98] tracking-[-0.03em]">

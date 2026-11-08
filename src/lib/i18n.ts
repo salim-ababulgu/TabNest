@@ -238,10 +238,6 @@ const FR: Dict = {
   'cta.button': 'Commencer',
   'cta.note': 'Gratuit, sans carte bancaire. Vous supprimez ce que vous voulez, quand vous voulez.',
 
-  'privacy.title': 'Vos pages restent les vôtres.',
-  'privacy.text':
-    "Filnest stocke l'adresse, le titre et l'image publique de vos pages. Pas de capture d'écran, pas de contenu privé, pas de revente. Vous supprimez ce que vous voulez, quand vous voulez.",
-
   'footer.tagline': 'Un onglet pour garder le fil.',
   'footer.legalNotice': 'Mentions légales',
   'footer.editedBy': 'édité par ABA, personne physique.',
@@ -505,10 +501,6 @@ const EN: Dict = {
   'cta.emailPlaceholder': 'you@example.com',
   'cta.button': 'Start',
   'cta.note': 'Free, no card. Delete whatever you want, whenever you want.',
-
-  'privacy.title': 'Your pages stay yours.',
-  'privacy.text':
-    "Filnest stores the address, title and public image of your pages. No screenshots, no private content, no resale. You delete whatever you want, whenever you want.",
 
   'footer.tagline': 'One tab to keep the thread.',
   'footer.legalNotice': 'Legal notice',
