@@ -363,6 +363,7 @@ const FR: Record<string, Entry> = {
     'Sur demande explicite, elle peut aussi lire votre historique ou vos favoris pour les importer : rien n’est lu sans votre clic, et seules les adresses et titres sont envoyés.',
   'ext.sees.3':
     'Elle ne lit jamais le contenu des pages, ne prend aucune capture d’écran, n’enregistre aucun mot de passe et ne lit pas vos autres onglets. Vous pouvez la mettre en pause d’un clic, sans la désinstaller.',
+  'ext.mobileNote': 'Sur mobile, l’extension ne s’installe pas : ouvrez l’application Filnest (lecture seule).',
   'ext.note':
     'Cette installation manuelle demande le mode développeur de Chrome. La publication sur le Chrome Web Store est en préparation ; en attendant, c’est la seule façon d’installer l’extension.',
   'ext.openApp': 'Ouvrir l’application',

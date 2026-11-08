@@ -88,6 +88,7 @@ const FR: Dict = {
   'extension.f2': 'Pause en un clic, sans désinstaller.',
   'extension.f3': 'Une session, tous vos appareils.',
   'extension.cta': "Installer l'extension",
+  'extension.mobileNote': 'Installable sur ordinateur uniquement (Chrome, Edge). Sur mobile, utilisez l’application en lecture seule.',
   'extension.note': 'Chrome, Edge ou Brave. Deux minutes.',
   'extension.alt': 'La fenêtre de l’extension Filnest, une fois connectée au compte',
   'extension.caption': 'L’extension, une fois connectée.',

@@ -78,6 +78,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'extension.f2': '一键暂停，不用卸载。',
   'extension.f3': '一次登录，所有设备通用。',
   'extension.cta': '安装扩展',
+  'extension.mobileNote': '仅可在电脑上安装（Chrome、Edge）。手机端请使用只读版网页应用。',
   'extension.note': 'Chrome、Edge 或 Brave。两分钟就好。',
   'extension.alt': '已经连接账号的 Filnest 扩展窗口',
   'extension.caption': '扩展连接账号之后的样子。',
@@ -561,6 +562,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'ext.sees.1': '它读取网址、标题、网站图标、公开分享图片和页面的主色调。',
   'ext.sees.2': '它从不读取页面内容、从不截图，也不会记录你的密码。',
   'ext.sees.3': '点击一下即可停用，无需卸载。',
+  'ext.mobileNote': '手机上无法安装扩展：请打开 Filnest 应用（只读）。',
   'ext.note':
     '扩展的正式版本将发布到 Chrome 网上应用店。在此之前，手动安装仅供测试：需要开启 Chrome 开发者模式。',
   'ext.openApp': '打开应用',

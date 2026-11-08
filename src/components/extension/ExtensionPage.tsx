@@ -64,6 +64,13 @@ export function ExtensionPage() {
           <ExtensionIllustration className="mx-auto w-full max-w-[320px]" />
         </div>
 
+        <p className="mb-6 rounded-xl border border-border bg-card p-3 text-sm text-foreground/75 sm:hidden">
+          {t('ext.mobileNote')}{' '}
+          <a href="/" className="underline underline-offset-2 hover:text-foreground">
+            {t('ext.openApp')}
+          </a>
+        </p>
+
         <div className="mt-10 flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <h2 className="font-heading text-lg font-medium">{t('ext.download.title')}</h2>
@@ -75,7 +82,7 @@ export function ExtensionPage() {
           <a
             href="/downloads/tabnest-extension.zip"
             download="filnest-extension.zip"
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-lime px-5 text-sm font-semibold text-lime-foreground hover:bg-lime/90"
+            className="hidden h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-lime px-5 text-sm font-semibold text-lime-foreground hover:bg-lime/90 sm:inline-flex"
           >
             {t('ext.download.button')}
             <ArrowRight className="size-4" aria-hidden="true" />

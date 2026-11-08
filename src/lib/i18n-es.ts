@@ -83,6 +83,7 @@ export const ES_ALL: Record<string, Entry> = {
   'extension.f2': 'Pausa en un clic, sin desinstalar.',
   'extension.f3': 'Una sesión, todos sus dispositivos.',
   'extension.cta': 'Instalar la extensión',
+  'extension.mobileNote': 'Instalable solo en ordenador (Chrome, Edge). En móvil, usa la aplicación en modo lectura.',
   'extension.note': 'Chrome, Edge o Brave. Dos minutos.',
   'extension.alt': 'La ventana de la extensión Filnest, ya conectada a la cuenta',
   'extension.caption': 'La extensión, una vez conectada.',
@@ -595,6 +596,7 @@ export const ES_ALL: Record<string, Entry> = {
   'ext.sees.2':
     'Nunca lee el contenido de la página, no hace capturas de pantalla y no guarda sus contraseñas.',
   'ext.sees.3': 'Puede desactivarla con un clic, sin desinstalarla.',
+  'ext.mobileNote': 'En móvil la extensión no se instala: abre la aplicación Filnest (solo lectura).',
   'ext.note':
     'La versión pública de la extensión se publicará en Chrome Web Store. Mientras tanto, esta instalación manual es solo para pruebas: requiere el modo de desarrollador de Chrome.',
   'ext.openApp': 'Abrir la aplicación',
