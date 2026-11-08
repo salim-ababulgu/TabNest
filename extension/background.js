@@ -284,54 +284,93 @@ chrome.runtime.onInstalled.addListener(() => {
  * Connexion Google directement dans l'extension (sans passer par le site).
  * Prérequis Supabase : fournisseur Google activé et URL de redirection
  * `https://<extension-id>.chromiumapp.org/` autorisée dans Authentication → URL Configuration.
+ *
+ * Le flux « implicit » est refusé par Google depuis 2025 : on utilise PKCE
+ * (code + vérificateur), le flux recommandé pour les extensions.
  */
+function base64UrlEncode(bytes) {
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+async function generateCodeChallenge() {
+  const verifierBytes = crypto.getRandomValues(new Uint8Array(48))
+  const verifier = base64UrlEncode(verifierBytes)
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))
+  return { verifier, challenge: base64UrlEncode(new Uint8Array(digest)) }
+}
+
 async function googleSignIn() {
   const redirectUri = chrome.identity.getRedirectURL()
+  const { verifier, challenge } = await generateCodeChallenge()
   const authorizeUrl =
     `${SUPABASE_URL}/auth/v1/authorize?provider=google` +
     `&redirect_to=${encodeURIComponent(redirectUri)}` +
-    `&flow_type=implicit`
+    `&code_challenge=${encodeURIComponent(challenge)}` +
+    `&code_challenge_method=S256`
 
   return new Promise((resolve) => {
     chrome.identity.launchWebAuthFlow({ url: authorizeUrl, interactive: true }, async (redirected) => {
+      const runtimeError = chrome.runtime.lastError?.message
+      if (runtimeError) {
+        resolve({ ok: false, error: runtimeError })
+        return
+      }
       if (!redirected) {
         resolve({ ok: false, error: 'Connexion annulée.' })
         return
       }
       try {
         const parsed = new URL(redirected)
-        const hash = new URLSearchParams(parsed.hash.replace(/^#/, ''))
-        const query = parsed.searchParams
-        const pick = (key) => hash.get(key) || query.get(key)
-        const errorDescription = pick('error_description')
+        const errorDescription = parsed.searchParams.get('error_description')
         if (errorDescription) {
-          resolve({ ok: false, error: errorDescription.replace(/\+/g, ' ') })
-          return
-        }
-        const accessToken = pick('access_token')
-        const refreshToken = pick('refresh_token')
-        if (!accessToken) {
           resolve({
             ok: false,
-            error: 'Réponse inattendue de Google (code sans jeton). Utilise l’e-mail et le mot de passe.',
+            error: decodeURIComponent(errorDescription).replace(/\+/g, ' '),
           })
           return
         }
-        const expiresIn = Number(pick('expires_in')) || 3600
+        const code = parsed.searchParams.get('code')
+        if (!code) {
+          resolve({
+            ok: false,
+            error: 'Réponse inattendue de Google (aucun code reçu). Réessaie, ou utilise l’e-mail et le mot de passe.',
+          })
+          return
+        }
+        const tokenResponse = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=pkce`, {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ auth_code: code, code_verifier: verifier }),
+        })
+        if (!tokenResponse.ok) {
+          const data = await tokenResponse.json().catch(() => ({}))
+          resolve({
+            ok: false,
+            error: data.error_description || data.msg || `Échange refusé (${tokenResponse.status}).`,
+          })
+          return
+        }
+        const tokens = await tokenResponse.json()
         let user = null
         try {
           const me = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-            headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${accessToken}` },
+            headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${tokens.access_token}` },
           })
           if (me.ok) user = await me.json()
         } catch {
           // profil non critique
         }
         const session = {
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          access_token: tokens.access_token,
+          refresh_token: tokens.refresh_token ?? null,
           token_type: 'bearer',
-          expires_at: Math.floor(Date.now() / 1000) + expiresIn,
+          expires_at:
+            tokens.expires_at ?? Math.floor(Date.now() / 1000) + (tokens.expires_in ?? 3600),
           user,
         }
         await chrome.storage.local.set({ session })

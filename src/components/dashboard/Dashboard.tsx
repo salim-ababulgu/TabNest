@@ -1763,7 +1763,7 @@ export function Dashboard() {
             <div data-dash-anim className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="font-heading text-2xl font-medium tracking-tight">{currentTitle}</h2>
-                <p className="mt-1 min-h-5 text-sm text-muted-foreground">
+                <div className="mt-1 min-h-5 text-sm text-muted-foreground">
                   {loading && !loadedOnce ? (
                     <Skeleton className="h-4 w-44" />
                   ) : (
@@ -1772,7 +1772,7 @@ export function Dashboard() {
                       {view === 'today' && !selectedGroup ? ` ${t('dash.todayHint')}` : ''}
                     </>
                   )}
-                </p>
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative">
