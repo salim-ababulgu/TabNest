@@ -150,6 +150,11 @@ const FR: Record<string, Entry> = {
   'dash.retry': 'Réessayer',
   'dash.mobileReadOnly':
     'Sur mobile, TabNest est en lecture seule : la capture automatique fonctionne depuis l’extension sur ordinateur.',
+  'pocket.title': 'Importer depuis Pocket',
+  'pocket.desc': 'Pocket a fermé : récupère tes liens via son export HTML. Les étiquettes « à finir », « piste », etc. deviennent des étagères.',
+  'pocket.button': 'Choisir un fichier',
+  'pocket.empty': 'Aucun lien trouvé dans ce fichier.',
+  'pocket.imported': '{n} lien(s) importé(s), {s} déjà présent(s).',
   'dash.cancel': 'Annuler',
   'dash.toast.projectRenamed': 'Projet renommé.',
   'dash.toast.projectDeleted': 'Projet supprimé (les pages sont conservées).',
@@ -506,6 +511,11 @@ const EN: Record<string, Entry> = {
   'dash.retry': 'Try again',
   'dash.mobileReadOnly':
     'On mobile, TabNest is read-only: automatic capture runs from the extension on your computer.',
+  'pocket.title': 'Import from Pocket',
+  'pocket.desc': 'Pocket shut down: recover your links via its HTML export. Tags like “to finish”, “lead”, etc. become shelves.',
+  'pocket.button': 'Choose a file',
+  'pocket.empty': 'No link found in this file.',
+  'pocket.imported': '{n} link(s) imported, {s} already present.',
   'dash.cancel': 'Cancel',
   'dash.toast.projectRenamed': 'Project renamed.',
   'dash.toast.projectDeleted': 'Project deleted (pages are kept).',

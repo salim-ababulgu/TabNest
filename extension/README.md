@@ -61,7 +61,7 @@ Le formulaire de connexion valide l'e-mail par expression régulière et impose 
 
 - `tabs`, `storage` : lire l'adresse/titre de l'onglet actif et stocker la session.
 - `identity` : connexion Google dans l'extension.
-- `history`, `bookmarks` : **uniquement** pour l'import que vous déclenchez.
+- `history`, `bookmarks` : **permissions optionnelles**, demandées uniquement au moment de l'import (vous pouvez refuser).
 - `alarms` : fermeture automatique des onglets expirés (désactivable, mode Pause).
 - Script de contenu : lit les métadonnées de la page (titre, icône, image de partage), **jamais son contenu**.
 

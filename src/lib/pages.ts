@@ -137,6 +137,40 @@ export async function setReason(page: Page, reason: string | null): Promise<void
   if (error) throw error
 }
 
+export async function importPagesBulk(
+  entries: { url: string; title: string; reason: string | null }[],
+  userId: string,
+): Promise<{ imported: number; skipped: number }> {
+  const existing = await supabase.from('pages').select('url').is('deleted_at', null).limit(5000)
+  const known = new Set((existing.data ?? []).map((row) => row.url))
+  const now = new Date()
+
+  const rows = []
+  for (const entry of entries) {
+    if (!/^https?:\/\//i.test(entry.url) || known.has(entry.url)) continue
+    known.add(entry.url)
+    rows.push({
+      url: entry.url,
+      title: entry.title || null,
+      user_id: userId,
+      kind: 'normal',
+      reason: entry.reason,
+      visit_count: 1,
+      last_visited_at: now.toISOString(),
+      expires_at: computeExpiry('normal', 0, now, entry.reason),
+    })
+  }
+
+  let imported = 0
+  for (let index = 0; index < rows.length; index += 50) {
+    const batch = rows.slice(index, index + 50)
+    const { error } = await supabase.from('pages').insert(batch)
+    if (error) throw error
+    imported += batch.length
+  }
+  return { imported, skipped: entries.length - imported }
+}
+
 export async function restorePage(page: Page): Promise<Page> {
   const now = new Date()
   const expires_at = computeExpiry(page.kind, page.visit_count, now, page.reason)

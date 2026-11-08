@@ -553,7 +553,17 @@ async function importUrls(entries) {
   return { ok: true, imported, skipped: unique.length - missing.length }
 }
 
+async function ensurePermission(name) {
+  if (!chrome.permissions) return true
+  return new Promise((resolve) => {
+    chrome.permissions.request({ permissions: [name] }, (granted) => resolve(granted))
+  })
+}
+
 async function importHistory(days = 30) {
+  if (!(await ensurePermission('history'))) {
+    return { ok: false, error: 'Import de l’historique refusé.' }
+  }
   if (!chrome.history?.search) return { ok: false, error: 'Historique indisponible.' }
   const startTime = Date.now() - days * 24 * 60 * 60 * 1000
   const items = await chrome.history.search({ text: '', startTime, maxResults: 2000 })
@@ -569,6 +579,9 @@ async function importHistory(days = 30) {
 }
 
 async function importBookmarks() {
+  if (!(await ensurePermission('bookmarks'))) {
+    return { ok: false, error: 'Import des favoris refusé.' }
+  }
   if (!chrome.bookmarks?.getTree) return { ok: false, error: 'Favoris indisponibles.' }
   const tree = await chrome.bookmarks.getTree()
   const entries = []

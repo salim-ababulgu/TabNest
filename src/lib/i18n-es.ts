@@ -344,6 +344,11 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.retry': 'Reintentar',
   'dash.mobileReadOnly':
     'En móvil, TabNest es de solo lectura: la captura automática funciona con la extensión en el ordenador.',
+  'pocket.title': 'Importar desde Pocket',
+  'pocket.desc': 'Pocket cerró: recupera tus enlaces con su exportación HTML. Las etiquetas «terminar», «pista», etc. se convierten en estantes.',
+  'pocket.button': 'Elegir un archivo',
+  'pocket.empty': 'No se encontró ningún enlace en este archivo.',
+  'pocket.imported': '{n} enlace(s) importado(s), {s} ya presente(s).',
   'dash.cancel': 'Cancelar',
   'dash.toast.projectRenamed': 'Proyecto renombrado.',
   'dash.toast.projectDeleted': 'Proyecto eliminado (las páginas se conservan).',

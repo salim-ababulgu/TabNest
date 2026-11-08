@@ -77,6 +77,7 @@ import {
   setGroupForPages,
   setPinned,
   setReason,
+  importPagesBulk,
   visitPage,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
@@ -114,6 +115,7 @@ import { fmt } from '@/lib/i18n-dash'
 import { useTheme } from '@/lib/theme'
 import { trackEvent } from '@/lib/analytics'
 import { buildExport, buildMarkdownList, downloadExport } from '@/lib/export'
+import { parsePocketHtml, reasonFromTags } from '@/lib/pocket'
 import { Toasts } from '@/components/dashboard/Toasts'
 import type { ToastItem, ToastLevel } from '@/components/dashboard/Toasts'
 
@@ -1148,6 +1150,30 @@ export function Dashboard() {
       if (error) throw error
       notify('success', t('dash.toast.accountDeleted'))
       await signOut()
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
+  async function handlePocketImport(file: File) {
+    if (!user) return
+    try {
+      const text = await file.text()
+      const entries = parsePocketHtml(text)
+      if (entries.length === 0) {
+        notify('info', t('pocket.empty'))
+        return
+      }
+      const result = await importPagesBulk(
+        entries.map((entry) => ({
+          url: entry.url,
+          title: entry.title,
+          reason: reasonFromTags(entry.tags),
+        })),
+        user.id,
+      )
+      await load()
+      notify('success', fmt(t('pocket.imported'), { n: result.imported, s: result.skipped }))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
     }
@@ -2517,6 +2543,26 @@ export function Dashboard() {
               >
                 {t('dash.deleteAccountAction')}
               </Button>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+              <div>
+                <p className="text-sm font-medium">{t('pocket.title')}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t('pocket.desc')}</p>
+              </div>
+              <label className="inline-flex h-9 shrink-0 cursor-pointer items-center rounded-full border border-border px-4 text-xs font-medium hover:bg-accent">
+                <input
+                  type="file"
+                  accept=".html,.htm,text/html"
+                  className="sr-only"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0]
+                    if (file) void handlePocketImport(file)
+                    event.target.value = ''
+                  }}
+                />
+                {t('pocket.button')}
+              </label>
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-xl border p-4">

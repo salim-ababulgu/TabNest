@@ -1,14 +1,12 @@
 {
   "manifest_version": 3,
   "name": "TabNest Capture",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Capture automatiquement les pages que vous visitez pour TabNest.",
   "permissions": [
     "tabs",
     "storage",
     "identity",
-    "history",
-    "bookmarks",
     "alarms"
   ],
   "host_permissions": [
@@ -55,5 +53,9 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  }
+  },
+  "optional_permissions": [
+    "history",
+    "bookmarks"
+  ]
 }
