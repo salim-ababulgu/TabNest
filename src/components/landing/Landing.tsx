@@ -52,7 +52,7 @@ function LandingContent({ onStart }: LandingProps) {
               value={lang}
               onChange={(event) => setLang(event.target.value as Lang)}
               aria-label={t('nav.langAria')}
-              className="h-9 cursor-pointer rounded-full bg-white/[0.06] px-2 text-xs font-medium text-field-muted outline-none transition-colors hover:text-field-ink"
+              className="h-9 cursor-pointer rounded-full border border-white/15 bg-white/[0.06] px-2.5 text-xs font-medium text-field-ink outline-none transition-colors hover:bg-white/[0.12]"
             >
               <option value="fr">FR</option>
               <option value="en">EN</option>

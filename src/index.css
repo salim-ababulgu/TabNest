@@ -271,3 +271,9 @@
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+
+/* Le menu déroulant d'un select reste lisible même quand le select est clair sur fond sombre. */
+select option {
+  color: #1f2c25;
+  background-color: #f6f1e4;
+}
