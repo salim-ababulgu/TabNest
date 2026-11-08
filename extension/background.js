@@ -314,6 +314,14 @@ async function googleSignIn() {
     chrome.identity.launchWebAuthFlow({ url: authorizeUrl, interactive: true }, async (redirected) => {
       const runtimeError = chrome.runtime.lastError?.message
       if (runtimeError) {
+        if (/could not be loaded/i.test(runtimeError)) {
+          resolve({
+            ok: false,
+            error:
+              `La page de connexion n'a pas pu aboutir. Vérifie dans Supabase → Authentication → URL Configuration que cette adresse est autorisée, avec la barre oblique finale : ${redirectUri} — puis recharge l'extension et réessaie.`,
+          })
+          return
+        }
         resolve({ ok: false, error: runtimeError })
         return
       }

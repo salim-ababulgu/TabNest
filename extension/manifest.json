@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Filnest Capture",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Capture automatiquement les pages que vous visitez pour Filnest.",
   "permissions": [
     "tabs",
