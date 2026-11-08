@@ -31,6 +31,7 @@ const FR: Dict = {
   'nav.automation': "L'automatisation",
   'nav.projects': 'Les projets',
   'nav.try': 'Essayer',
+  'faq.eyebrow': 'Questions fréquentes',
   'nav.faq': 'Questions fréquentes',
   'nav.install': "Installer l'extension",
   'nav.installShort': 'Installer',
@@ -39,6 +40,14 @@ const FR: Dict = {
   'nav.langAria': 'Changer de langue',
 
   'marquee.label': 'Types de pages que Filnest conserve',
+  'facts.v1': '3',
+  'facts.l1': 'gestes suffisent : installer, se connecter, naviguer',
+  'facts.v2': '90 j',
+  'facts.l2': 'durée de vie maximale, allongée à chaque visite',
+  'facts.v3': '0',
+  'facts.l3': 'capture d’écran, aucun contenu de page lu',
+  'facts.v4': 'Illimité',
+  'facts.l4': 'pages conservées, sur tous vos appareils',
   'marquee.items': [
     'Documentation',
     "Offre d'emploi",
@@ -53,6 +62,7 @@ const FR: Dict = {
   ],
 
   'steps.nav': 'Comment ça marche',
+  'steps.eyebrow': 'Comment ça marche',
   'steps.title': 'Installez, naviguez, retrouvez.',
   'steps.sub':
     'Trois gestes au début, puis plus rien à faire. Filnest travaille pendant que vous naviguez.',
@@ -68,6 +78,7 @@ const FR: Dict = {
   'steps.alt2': 'Les sites enregistrés, empilés par visites',
   'steps.alt3': "Le détail d'une page : sa raison et sa durée de vie",
 
+  'lifetime.eyebrow': 'Le principe',
   'lifetime.title': 'Chaque page a une durée de vie.',
   'lifetime.text':
     'Une documentation et une offre d’emploi ne méritent pas la même attention. Vous dites pourquoi vous gardez une page ; Filnest en déduit combien de temps la garder.',
@@ -82,6 +93,7 @@ const FR: Dict = {
   'lifetime.r.explore': 'Je ne veux pas perdre cette possibilité.',
   'lifetime.r.remember': 'Je ne veux pas oublier que ça existe.',
 
+  'extension.eyebrow': 'L’extension',
   'extension.title': 'L’extension fait le travail.',
   'extension.text':
     'Chaque page visitée est enregistrée en une seconde : adresse, titre, icône. Vous n’avez rien à cliquer, rien à classer.',
@@ -111,6 +123,7 @@ const FR: Dict = {
   'bento.b6.title': 'Cloisonné par compte',
   'bento.b6.text': 'Vos pages ne sont visibles que par vous, jamais par un autre utilisateur.',
 
+  'comparison.eyebrow': 'La différence',
   'comparison.title': "Un gestionnaire d'onglets range. Filnest se souvient.",
   'comparison.sub':
     'Les extensions classiques gardent des sessions ou des favoris, sur un seul navigateur. Filnest garde la page avec son intention et sa durée de vie, et la retrouve partout.',
@@ -137,6 +150,7 @@ const FR: Dict = {
   'pricing.beta':
     'La bêta est gratuite : toutes les fonctions actuelles sont ouvertes à tous. Les offres payantes seront activées plus tard, quand tout sera prêt et vérifiable.',
   'pricing.waitlist': 'Être prévenu à l’ouverture des offres',
+  'pricing.eyebrow': 'Les tarifs',
   'pricing.title': 'Gratuit pour commencer.',
   'pricing.nav': 'Tarifs',
   'pricing.sub':
@@ -217,6 +231,7 @@ const FR: Dict = {
   'split.auto.text':
     "Une documentation visitée quatre fois n'a pas la même valeur qu'une offre expirée ouverte une seule fois.",
   'split.detail.alt': "Le détail d'une page dans Filnest : raison, durée de vie et visites",
+  'split.projects.eyebrow': 'Les projets',
   'split.projects.title': 'Vos pages, rangées par projets.',
   'split.projects.text':
     "Une offre, un comparatif et une documentation n'ont de sens que reliés à ce que vous essayez de faire. Filnest crée ce lien, puis archive le tout quand le projet est terminé.",
@@ -302,6 +317,7 @@ const EN: Dict = {
   'nav.automation': 'Automation',
   'nav.projects': 'Projects',
   'nav.try': 'Try it',
+  'faq.eyebrow': 'Frequently asked questions',
   'nav.faq': 'FAQ',
   'nav.install': 'Install the extension',
   'nav.installShort': 'Install',
@@ -310,6 +326,14 @@ const EN: Dict = {
   'nav.langAria': 'Switch language',
 
   'marquee.label': 'Kinds of pages Filnest keeps',
+  'facts.v1': '3',
+  'facts.l1': 'steps only: install, sign in, browse',
+  'facts.v2': '90 d',
+  'facts.l2': 'maximum lifetime, extended by every visit',
+  'facts.v3': '0',
+  'facts.l3': 'screenshots, no page content ever read',
+  'facts.v4': 'Unlimited',
+  'facts.l4': 'pages kept, on all your devices',
   'marquee.items': [
     'Documentation',
     'Job posting',
@@ -324,6 +348,7 @@ const EN: Dict = {
   ],
 
   'steps.nav': 'How it works',
+  'steps.eyebrow': 'How it works',
   'steps.title': 'Install, browse, find back.',
   'steps.sub': 'Three gestures at the start, then nothing to do. Filnest works while you browse.',
   'steps.s1.title': 'Install the extension',
@@ -338,6 +363,7 @@ const EN: Dict = {
   'steps.alt2': 'Saved sites, stacked by visits',
   'steps.alt3': "A page's detail: its reason and its lifetime",
 
+  'lifetime.eyebrow': 'The principle',
   'lifetime.title': 'Every page has a lifetime.',
   'lifetime.text':
     'A doc and a job posting do not deserve the same attention. You say why you keep a page; Filnest works out how long to keep it.',
@@ -352,6 +378,7 @@ const EN: Dict = {
   'lifetime.r.explore': 'I don’t want to lose this possibility.',
   'lifetime.r.remember': 'I don’t want to forget this exists.',
 
+  'extension.eyebrow': 'The extension',
   'extension.title': 'The extension does the work.',
   'extension.text':
     'Every page you visit is saved in a second: address, title, icon. Nothing to click, nothing to sort.',
@@ -378,6 +405,7 @@ const EN: Dict = {
   'bento.b6.title': 'Private per account',
   'bento.b6.text': 'Only you can see your pages, never another user.',
 
+  'comparison.eyebrow': 'The difference',
   'comparison.title': 'A tab manager tidies up. Filnest remembers.',
   'comparison.sub':
     'Classic extensions keep sessions or bookmarks in a single browser. Filnest keeps the page with its intent and its lifetime, and finds it back everywhere.',
@@ -401,6 +429,7 @@ const EN: Dict = {
   'comparison.note':
     "A description of a product category, not of a specific competitor: most tab and bookmark managers store your data locally, without an account.",
 
+  'pricing.eyebrow': 'Pricing',
   'pricing.title': 'Free to start.',
   'pricing.nav': 'Pricing',
   'pricing.sub':
@@ -481,6 +510,7 @@ const EN: Dict = {
   'split.auto.text':
     "A documentation visited four times is not worth the same as an expired offer opened once.",
   'split.detail.alt': "A page's detail in Filnest: reason, lifetime and visits",
+  'split.projects.eyebrow': 'Projects',
   'split.projects.title': 'Your pages, filed by project.',
   'split.projects.text':
     "An offer, a comparison and a documentation only make sense tied to what you are trying to do. Filnest creates that link, then archives it all when the project is done.",

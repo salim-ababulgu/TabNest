@@ -9,6 +9,7 @@ import {
 } from '@/components/landing/Sections'
 import { ComparisonSection } from '@/components/landing/Comparison'
 import { PricingSection } from '@/components/landing/Pricing'
+import { FactBand } from '@/components/landing/FactBand'
 import { Reveal } from '@/components/landing/Reveal'
 import { LangProvider, useLang } from '@/components/landing/i18n'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -63,6 +64,8 @@ function LandingContent({ onStart }: LandingProps) {
         <Hero onStart={() => onStart()} />
 
         <PageTypeMarquee />
+
+        <FactBand />
 
         <StepsSection />
 

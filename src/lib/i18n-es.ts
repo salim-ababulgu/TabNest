@@ -25,6 +25,7 @@ export const ES_ALL: Record<string, Entry> = {
   'nav.automation': 'La automatización',
   'nav.projects': 'Los proyectos',
   'nav.try': 'Probar',
+  'faq.eyebrow': 'Preguntas frecuentes',
   'nav.faq': 'Preguntas frecuentes',
   'nav.install': 'Instalar la extensión',
   'nav.installShort': 'Instalar',
@@ -33,6 +34,14 @@ export const ES_ALL: Record<string, Entry> = {
   'nav.langAria': 'Cambiar de idioma',
 
   'marquee.label': 'Tipos de páginas que Filnest conserva',
+  'facts.v1': '3',
+  'facts.l1': 'gestos bastan: instalar, entrar, navegar',
+  'facts.v2': '90 d',
+  'facts.l2': 'vida máxima, ampliada con cada visita',
+  'facts.v3': '0',
+  'facts.l3': 'capturas de pantalla, ningún contenido leído',
+  'facts.v4': 'Ilimitadas',
+  'facts.l4': 'páginas guardadas, en todos tus dispositivos',
   'marquee.items': [
     'Documentación',
     'Oferta de empleo',
@@ -47,6 +56,7 @@ export const ES_ALL: Record<string, Entry> = {
   ],
 
   'steps.nav': 'Cómo funciona',
+  'steps.eyebrow': 'Cómo funciona',
   'steps.title': 'Instale, navegue, recupere.',
   'steps.sub':
     'Tres gestos al principio y después nada que hacer. Filnest trabaja mientras usted navega.',
@@ -63,6 +73,7 @@ export const ES_ALL: Record<string, Entry> = {
   'steps.alt2': 'Los sitios guardados, apilados por visitas',
   'steps.alt3': 'El detalle de una página: su motivo y su vida útil',
 
+  'lifetime.eyebrow': 'El principio',
   'lifetime.title': 'Cada página tiene una vida útil.',
   'lifetime.text':
     'Una documentación y una oferta de empleo no merecen la misma atención. Usted dice por qué guarda una página; Filnest calcula cuánto tiempo conservarla.',
@@ -77,6 +88,7 @@ export const ES_ALL: Record<string, Entry> = {
   'lifetime.r.explore': 'No quiero perder esta posibilidad.',
   'lifetime.r.remember': 'No quiero olvidar que esto existe.',
 
+  'extension.eyebrow': 'La extensión',
   'extension.title': 'La extensión hace el trabajo.',
   'extension.text':
     'Cada página que visita se guarda en un segundo: dirección, título, icono. No hay que hacer clic ni ordenar nada.',
@@ -106,6 +118,7 @@ export const ES_ALL: Record<string, Entry> = {
   'bento.b6.title': 'Separado por cuenta',
   'bento.b6.text': 'Sus páginas solo son visibles para usted, nunca para otro usuario.',
 
+  'comparison.eyebrow': 'La diferencia',
   'comparison.title': 'Un gestor de pestañas ordena. Filnest recuerda.',
   'comparison.sub':
     'Las extensiones clásicas guardan sesiones o marcadores en un solo navegador. Filnest guarda la página con su intención y su vida útil, y la recupera en todas partes.',
@@ -132,6 +145,7 @@ export const ES_ALL: Record<string, Entry> = {
   'pricing.beta':
     'La beta es gratuita: todas las funciones actuales están abiertas a todos. Las ofertas de pago se activarán más adelante, cuando todo esté listo y verificable.',
   'pricing.waitlist': 'Avísame cuando abran las ofertas',
+  'pricing.eyebrow': 'Precios',
   'pricing.title': 'Gratis para empezar.',
   'pricing.nav': 'Precios',
   'pricing.sub':
@@ -212,6 +226,7 @@ export const ES_ALL: Record<string, Entry> = {
   'split.auto.text':
     'Una documentación visitada cuatro veces no vale lo mismo que una oferta expirada abierta una sola vez.',
   'split.detail.alt': 'El detalle de una página en Filnest: motivo, vida útil y visitas',
+  'split.projects.eyebrow': 'Los proyectos',
   'split.projects.title': 'Sus páginas, ordenadas por proyectos.',
   'split.projects.text':
     'Una oferta, una comparativa y una documentación solo tienen sentido si se relacionan con lo que usted intenta hacer. Filnest crea ese vínculo y lo archiva todo cuando el proyecto termina.',

@@ -24,6 +24,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'nav.automation': '自动化',
   'nav.projects': '项目',
   'nav.try': '试一试',
+  'faq.eyebrow': '常见问题',
   'nav.faq': '常见问题',
   'nav.install': '安装扩展',
   'nav.installShort': '安装',
@@ -32,6 +33,14 @@ export const ZH_ALL: Record<string, Entry> = {
   'nav.langAria': '切换语言',
 
   'marquee.label': 'Filnest 保存的页面类型',
+  'facts.v1': '3',
+  'facts.l1': '个步骤：安装、登录、浏览',
+  'facts.v2': '90 天',
+  'facts.l2': '最长保存期，每次访问都会延长',
+  'facts.v3': '0',
+  'facts.l3': '张截图，从不读取页面内容',
+  'facts.v4': '无限',
+  'facts.l4': '保存页面，在所有设备可用',
   'marquee.items': [
     '文档',
     '招聘信息',
@@ -46,6 +55,7 @@ export const ZH_ALL: Record<string, Entry> = {
   ],
 
   'steps.nav': '如何运作',
+  'steps.eyebrow': '使用方式',
   'steps.title': '安装，浏览，找回。',
   'steps.sub': '开始时三步，之后什么都不用做。你浏览的时候，Filnest 一直在工作。',
   'steps.s1.title': '安装扩展',
@@ -58,6 +68,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'steps.alt2': '已保存的网站，按访问次数堆叠排列',
   'steps.alt3': '页面详情：保存理由与存活期限',
 
+  'lifetime.eyebrow': '核心理念',
   'lifetime.title': '每个页面都有自己的有效期。',
   'lifetime.text':
     '一份文档和一条招聘信息，不值得同样的关注。你说出为什么留着某一页，Filnest 就据此决定留多久。',
@@ -72,6 +83,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'lifetime.r.explore': '我不想错过这个机会。',
   'lifetime.r.remember': '我不想忘记它存在。',
 
+  'extension.eyebrow': '扩展',
   'extension.title': '扩展替你干活。',
   'extension.text':
     '你访问的每个页面都会在一秒内记录：网址、标题、图标。不用点任何东西，也不用整理。',
@@ -99,6 +111,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'bento.b6.title': '账号之间完全隔离',
   'bento.b6.text': '你的页面只有你自己能看见，其他用户永远无法访问。',
 
+  'comparison.eyebrow': '区别',
   'comparison.title': '标签管理器只会整理。Filnest 替你记住。',
   'comparison.sub':
     '传统扩展只在一个浏览器里保存会话或书签。Filnest 连同页面的意图和存活期限一起保存，并在任何地方都能找回。',
@@ -124,6 +137,7 @@ export const ZH_ALL: Record<string, Entry> = {
 
   'pricing.beta': '测试期免费：当前所有功能对所有人开放。付费方案将在一切就绪并可验证后开放。',
   'pricing.waitlist': '开放付费时通知我',
+  'pricing.eyebrow': '定价',
   'pricing.title': '免费开始。',
   'pricing.nav': '价格',
   'pricing.sub': '保存页面，Filnest 永远免费。付费方案只增加便利，核心功能从不收费。',
@@ -197,6 +211,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'split.auto.title': 'Filnest 理解页面。',
   'split.auto.text': '访问过四次的文档，与只打开过一次的过期招聘信息，价值并不相同。',
   'split.detail.alt': 'Filnest 中的页面详情：理由、期限与访问次数',
+  'split.projects.eyebrow': '项目',
   'split.projects.title': '你的页面，按项目整理。',
   'split.projects.text':
     '招聘信息、对比评测和文档，只有与你正在做的事联系起来才有意义。Filnest 建立这种联系，并在项目结束后统一归档。',

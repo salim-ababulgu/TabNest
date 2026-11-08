@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { Check } from 'lucide-react'
 import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
+import { Eyebrow } from '@/components/landing/Eyebrow'
 import { Reveal } from '@/components/landing/Reveal'
 import { useLang } from '@/components/landing/i18n'
 import { computeExpiry } from '@/lib/lifetime'
@@ -61,9 +62,12 @@ export function StepsSection() {
     >
       <Reveal>
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
-          <h2 className="font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em] md:col-span-7">
-            {t('steps.title')}
-          </h2>
+          <div className="md:col-span-7">
+            <Eyebrow>{t('steps.eyebrow')}</Eyebrow>
+            <h2 className="mt-4 font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em]">
+              {t('steps.title')}
+            </h2>
+          </div>
           <p className="max-w-[44ch] text-[1.0625rem] leading-[1.65] text-foreground/70 md:col-span-5">
             {t('steps.sub')}
           </p>
@@ -186,7 +190,8 @@ export function LifetimeSection() {
       <div className="mx-auto w-full max-w-[1320px] px-6 py-32 md:px-10 md:py-52">
         <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
           <Reveal className="md:col-span-5">
-            <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
+            <Eyebrow onDark>{t('lifetime.eyebrow')}</Eyebrow>
+            <h2 className="mt-4 font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
               {t('lifetime.title')}
             </h2>
             <p className="mt-8 max-w-[42ch] text-[1.0625rem] leading-[1.65] text-field-muted">
@@ -216,7 +221,8 @@ export function ProjectsSection() {
     >
       <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
         <Reveal className="md:col-span-5">
-          <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
+          <Eyebrow>{t('split.projects.eyebrow')}</Eyebrow>
+          <h2 className="mt-4 font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
             {t('split.projects.title')}
           </h2>
           <p className="mt-8 max-w-[42ch] text-[1.0625rem] leading-[1.65] text-foreground/70">
@@ -246,7 +252,8 @@ export function ExtensionSection() {
       <div className="mx-auto w-full max-w-[1320px] px-6 py-32 md:px-10 md:py-48">
         <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
           <Reveal className="md:col-span-6">
-            <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
+            <Eyebrow>{t('extension.eyebrow')}</Eyebrow>
+            <h2 className="mt-4 font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
               {t('extension.title')}
             </h2>
             <p className="mt-8 max-w-[42ch] text-[1.0625rem] leading-[1.65] text-foreground/75">
@@ -317,9 +324,12 @@ export function FaqSection() {
       className="mx-auto w-full max-w-[1320px] scroll-mt-24 px-6 py-32 md:px-10 md:py-52"
     >
       <div className="grid gap-10 md:grid-cols-12">
-        <h2 className="font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em] md:col-span-4">
-          {t('nav.faq')}
-        </h2>
+        <div className="md:col-span-4">
+          <Eyebrow>{t('faq.eyebrow')}</Eyebrow>
+          <h2 className="mt-4 font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em]">
+            {t('nav.faq')}
+          </h2>
+        </div>
 
         <div className="md:col-span-8">
           {FAQ.map((item) => (

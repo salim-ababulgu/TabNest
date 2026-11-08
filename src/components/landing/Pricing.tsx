@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react'
 import { BILLING_READY, PLANS } from '@/lib/billing'
 import { useLang } from '@/components/landing/i18n'
+import { Eyebrow } from '@/components/landing/Eyebrow'
 import { Reveal } from '@/components/landing/Reveal'
 
 export function PricingSection() {
@@ -16,9 +17,12 @@ export function PricingSection() {
     >
       <Reveal>
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
-          <h2 className="font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em] md:col-span-7">
-            {t('pricing.title')}
-          </h2>
+          <div className="md:col-span-7">
+            <Eyebrow>{t('pricing.eyebrow')}</Eyebrow>
+            <h2 className="mt-4 font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em]">
+              {t('pricing.title')}
+            </h2>
+          </div>
           <p className="max-w-[46ch] text-[1.0625rem] leading-[1.65] text-foreground/70 md:col-span-5">
             {t('pricing.sub')}
           </p>
@@ -65,7 +69,7 @@ export function PricingSection() {
               <div key={plan.id} className="rounded-[1.25rem] bg-secondary p-6">
                 <div className="flex items-baseline justify-between gap-4">
                   <h3 className="font-heading text-lg">{t(`plans.${plan.id}.name`)}</h3>
-                  <span className="text-sm text-foreground/70">{plan.price}</span>
+                  {BILLING_READY && <span className="text-sm text-foreground/70">{plan.price}</span>}
                 </div>
                 <p className="mt-1 text-sm text-foreground/65">{t(`plans.${plan.id}.desc`)}</p>
                 <p className="mt-3 text-sm text-muted-foreground">
