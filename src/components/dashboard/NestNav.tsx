@@ -51,6 +51,8 @@ export function NestNav({
   onRenameCollection,
   onHideBuiltin,
   onRestoreDefaults,
+  onRenameProject,
+  onDeleteProject,
   onToggleEdit,
   onAddProject,
   dropViews = [],
@@ -76,6 +78,8 @@ export function NestNav({
   onRenameCollection: (id: string, name: string) => void
   onHideBuiltin: (id: string) => void
   onRestoreDefaults: () => void
+  onRenameProject?: (id: string, name: string) => void
+  onDeleteProject?: (id: string) => void
   onToggleEdit: () => void
   onAddProject?: () => void
   dropViews?: string[]
@@ -91,6 +95,8 @@ export function NestNav({
   const [error, setError] = useState<string | null>(null)
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState('')
+  const [renamingProjectId, setRenamingProjectId] = useState<string | null>(null)
+  const [projectRenameValue, setProjectRenameValue] = useState('')
   const panelRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
 
@@ -474,27 +480,86 @@ export function NestNav({
             )}
           </div>
           {projects.map((project) => (
-            <button
-              key={project.id}
-              type="button"
-              data-drop-target={`project:${project.id}`}
-              onClick={() => onSelectGroup(project.id)}
-              title={collapsed ? project.name : undefined}
-              aria-label={collapsed ? project.name : undefined}
-              className={cn(
-                rowClass(selectedGroup === project.id),
-                dragOver === `project:${project.id}` &&
-                  'bg-lime text-lime-foreground ring-2 ring-lime',
+            <div key={project.id} className="relative">
+              {renamingProjectId === project.id ? (
+                <div className="flex items-center gap-1 px-2 py-1">
+                  <Input
+                    value={projectRenameValue}
+                    onChange={(event) => setProjectRenameValue(event.target.value)}
+                    aria-label={t('nest.rename')}
+                    className="h-7 min-w-0 flex-1 text-xs"
+                    autoFocus
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        const trimmed = projectRenameValue.trim()
+                        if (trimmed) onRenameProject?.(project.id, trimmed)
+                        setRenamingProjectId(null)
+                      }
+                      if (event.key === 'Escape') setRenamingProjectId(null)
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const trimmed = projectRenameValue.trim()
+                      if (trimmed) onRenameProject?.(project.id, trimmed)
+                      setRenamingProjectId(null)
+                    }}
+                    className={cn('rounded p-1', iconClass)}
+                    aria-label={t('nest.save')}
+                    title={t('nest.save')}
+                  >
+                    <Check className="size-3.5" aria-hidden="true" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  data-drop-target={`project:${project.id}`}
+                  onClick={() => onSelectGroup(project.id)}
+                  title={collapsed ? project.name : undefined}
+                  aria-label={collapsed ? project.name : undefined}
+                  className={cn(
+                    rowClass(selectedGroup === project.id),
+                    dragOver === `project:${project.id}` &&
+                      'bg-lime text-lime-foreground ring-2 ring-lime',
+                  )}
+                >
+                  <span className="size-2 shrink-0 rounded-full bg-lime" aria-hidden="true" />
+                  {!collapsed && (
+                    <span className="min-w-0 flex-1 truncate text-left">{project.name}</span>
+                  )}
+                  {!collapsed && project.count > 0 && (
+                    <span className="text-xs tabular-nums opacity-70">{project.count}</span>
+                  )}
+                </button>
               )}
-            >
-              <span className="size-2 shrink-0 rounded-full bg-lime" aria-hidden="true" />
-              {!collapsed && (
-                <span className="min-w-0 flex-1 truncate text-left">{project.name}</span>
+              {editMode && !collapsed && renamingProjectId !== project.id && (
+                <div className="absolute top-1/2 right-1 flex -translate-y-1/2 items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRenamingProjectId(project.id)
+                      setProjectRenameValue(project.name)
+                    }}
+                    className={cn('rounded p-1', smallIconClass)}
+                    aria-label={`${t('nest.rename')} ${project.name}`}
+                    title={t('nest.rename')}
+                  >
+                    <Pencil className="size-3" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDeleteProject?.(project.id)}
+                    className={cn('rounded p-1', smallIconClass)}
+                    aria-label={`${t('nest.remove')} ${project.name}`}
+                    title={t('nest.remove')}
+                  >
+                    <X className="size-3.5" aria-hidden="true" />
+                  </button>
+                </div>
               )}
-              {!collapsed && project.count > 0 && (
-                <span className="text-xs tabular-nums opacity-70">{project.count}</span>
-              )}
-            </button>
+            </div>
           ))}
         </>
       )}

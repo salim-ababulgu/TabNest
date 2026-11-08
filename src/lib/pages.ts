@@ -43,6 +43,19 @@ export async function createGroup(name: string, userId: string): Promise<Group> 
   return data as Group
 }
 
+export async function renameGroup(id: string, name: string): Promise<void> {
+  const { error } = await supabase.from('groups').update({ name }).eq('id', id)
+  if (error) throw error
+}
+
+export async function deleteGroup(id: string): Promise<void> {
+  // Les pages du projet sont conservées : elles redeviennent simplement non classées.
+  const detach = await supabase.from('pages').update({ group_id: null }).eq('group_id', id)
+  if (detach.error) throw detach.error
+  const { error } = await supabase.from('groups').delete().eq('id', id)
+  if (error) throw error
+}
+
 export async function fetchPages(): Promise<Page[]> {
   const { data, error } = await supabase
     .from('pages')
@@ -122,6 +135,19 @@ export async function setReason(page: Page, reason: string | null): Promise<void
     })
     .eq('id', page.id)
   if (error) throw error
+}
+
+export async function restorePage(page: Page): Promise<Page> {
+  const now = new Date()
+  const expires_at = computeExpiry(page.kind, page.visit_count, now, page.reason)
+  const { data, error } = await supabase
+    .from('pages')
+    .update({ expires_at })
+    .eq('id', page.id)
+    .select()
+    .single()
+  if (error) throw error
+  return data as Page
 }
 
 export async function setGroupForPages(ids: string[], groupId: string | null): Promise<void> {

@@ -20,6 +20,7 @@ import {
   Pin,
   Plus,
   RefreshCw,
+  RotateCcw,
   Search,
   Settings,
   Sparkles,
@@ -65,8 +66,11 @@ import {
   archivePage,
   createGroup,
   createPage,
+  deleteGroup,
   fetchGroups,
   fetchPages,
+  renameGroup,
+  restorePage,
   setGroupForPages,
   setPinned,
   setReason,
@@ -75,6 +79,7 @@ import {
 import type { Group, Page } from '@/lib/pages'
 import { NestNav } from '@/components/dashboard/NestNav'
 import { DashboardFooter } from '@/components/dashboard/DashboardFooter'
+import { FeedbackPanel } from '@/components/dashboard/FeedbackPanel'
 import { SkeletonGrid } from '@/components/dashboard/skeletons'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -374,8 +379,10 @@ export function Dashboard() {
   const [refreshing, setRefreshing] = useState(false)
 
   const [showSettings, setShowSettings] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
   const [showAddPage, setShowAddPage] = useState(false)
   const [showAddProject, setShowAddProject] = useState(false)
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
   const [showNotifications, setShowNotifications] = useState(false)
   const [selectedSite, setSelectedSite] = useState<Site | null>(null)
   const [pageToDelete, setPageToDelete] = useState<Page | null>(null)
@@ -1079,8 +1086,44 @@ export function Dashboard() {
     }
   }
 
-  async function handleRefresh() {
-    setRefreshing(true)
+  async function handleRenameProject(id: string, name: string) {
+    try {
+      await renameGroup(id, name)
+      await load()
+      notify('success', t('dash.toast.projectRenamed'))
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
+  async function confirmDeleteProject() {
+    if (!projectToDelete) return
+    const id = projectToDelete
+    try {
+      await deleteGroup(id)
+      setProjectToDelete(null)
+      if (selectedGroup === id) setSelectedGroup(null)
+      await load()
+      notify('success', t('dash.toast.projectDeleted'))
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
+  /** Restaure toutes les pages expirées d'un site (nouvelle durée de vie). */
+  async function handleRestoreSite(site: Site) {
+    try {
+      const expired = pagesOfSite(site.domain).filter(isExpired)
+      if (expired.length === 0) return
+      await Promise.all(expired.map((page) => restorePage(page)))
+      await load()
+      notify('success', fmt(t('dash.restored'), { n: expired.length }))
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
+  async function handleRefresh() {    setRefreshing(true)
     try {
       await load(true)
     } finally {
@@ -1132,11 +1175,14 @@ export function Dashboard() {
 
   const normalizedQuery = query.trim().toLowerCase()
   const activeCollection = nest.collections.find((item) => item.id === activeCollectionId) ?? null
+  const expiredCount = pages.filter(isExpired).length
   const visiblePages = pages.filter((page) => {
     if (normalizedQuery) {
       const haystack = `${page.title ?? ''} ${page.url} ${domainOf(page.url)}`.toLowerCase()
       if (!haystack.includes(normalizedQuery)) return false
     }
+    // Les pages expirées sont masquées partout, sauf dans les archives.
+    if (view !== 'archives' && !selectedGroup && !activeCollection && isExpired(page)) return false
     if (activeCollection) return matchesRule(page, activeCollection.rule)
     if (selectedGroup) return page.group_id === selectedGroup
     if (view === 'all') return true
@@ -1223,6 +1269,8 @@ export function Dashboard() {
     onRenameCollection: renameCollection,
     onHideBuiltin: hideBuiltin,
     onRestoreDefaults: restoreDefaults,
+    onRenameProject: handleRenameProject,
+    onDeleteProject: (id: string) => setProjectToDelete(id),
     onToggleEdit: () => setEditMode((current) => !current),
     onAddProject: () => {
       setShowAddProject(true)
@@ -1720,6 +1768,23 @@ export function Dashboard() {
               </div>
             )}
 
+            {!loading && !showSkeleton && expiredCount > 0 && view !== 'archives' && (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs">
+                <span>{fmt(t('dash.expiredHidden'), { n: expiredCount })}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setView('archives')
+                    setSelectedGroup(null)
+                    setActiveCollectionId(null)
+                  }}
+                >
+                  {t('dash.seeArchives')}
+                </Button>
+              </div>
+            )}
+
             {loading ? (
               showSkeleton ? (
                 <SkeletonGrid count={9} />
@@ -1896,6 +1961,17 @@ export function Dashboard() {
                               ))}
                             </div>
                             <div className="flex items-center gap-1">
+                              {view === 'archives' && site.pages.some(isExpired) && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => void handleRestoreSite(site)}
+                                  title={t('dash.restore')}
+                                >
+                                  <RotateCcw className="size-3.5" />
+                                  <span className="max-sm:hidden">{t('dash.restore')}</span>
+                                </Button>
+                              )}
                               <Button
                                 size="icon-sm"
                                 variant={site.pinned ? 'default' : 'outline'}
@@ -2039,6 +2115,30 @@ export function Dashboard() {
                 if (pageToDelete) void confirmDelete(pageToDelete)
               }}
             >
+              {t('dash.remove')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={Boolean(projectToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setProjectToDelete(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dash.deleteProjectTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {fmt(t('dash.deleteProjectDesc'), {
+                p: groupName(projectToDelete) ?? '',
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('dash.cancel')}</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={() => void confirmDeleteProject()}>
               {t('dash.remove')}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2301,9 +2401,25 @@ export function Dashboard() {
                       : t('dash.browserAlertsEnable')}
               </Button>
             </div>
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+              <div>
+                <p className="text-sm font-medium">{t('feedback.title')}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t('feedback.settingsHint')}</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => setShowFeedback(true)}>
+                {t('feedback.open')}
+              </Button>
+            </div>
           </div>
         </Modal>
       )}
+
+      {showFeedback && (
+        <Modal title={t('feedback.title')} onClose={() => setShowFeedback(false)}>
+          <FeedbackPanel onDone={() => setShowFeedback(false)} />
+        </Modal>
+      )}
+
       {dragPos && draggingSite && (
         <div
           className="pointer-events-none fixed z-[60] -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium"
