@@ -1,5 +1,5 @@
-// Vérifie l'écran d'inscription / connexion : bascule, force du mot de passe,
-// affichage du mot de passe, message d'erreur, absence de débordement.
+// Vérifie l'écran d'inscription / connexion : validation temps réel, rôle des
+// onglets, règles de mot de passe, erreurs traduites, langue, débordement.
 import { chromium } from 'playwright'
 
 const BASE = 'http://localhost:5173'
@@ -17,6 +17,7 @@ async function main() {
     failures += 1
     console.log('   FAIL', message)
   }
+  const ok = (message) => console.log(`   OK ${message}`)
 
   for (const [label, viewport] of [
     ['desktop 1280', { width: 1280, height: 900 }],
@@ -28,45 +29,62 @@ async function main() {
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
     )
-    if (overflow) fail(`${label} : la page déborde horizontalement`)
-    else console.log(`${label} : OK pas de débordement`)
+    if (overflow) fail(`${label} : débordement horizontal`)
+    else ok(`${label} : pas de débordement`)
 
-    // Bascule Connexion / Inscription
+    // Onglets accessibles
     await page.getByRole('tab', { name: 'Connexion' }).click()
     await page.waitForTimeout(250)
-    const loginTitle = await page.getByRole('heading', { name: /Content de te revoir/ }).isVisible()
-    if (loginTitle) console.log(`${label} : OK titre connexion`)
-    else fail(`${label} : titre connexion absent`)
+    if (await page.getByRole('heading', { name: /Content de te revoir/ }).isVisible()) {
+      ok(`${label} : titre connexion`)
+    } else fail(`${label} : titre connexion absent`)
 
+    // Validation e-mail : bouton désactivé tant que l'e-mail est invalide
+    await page.locator('#email').fill('pas-un-email')
+    await page.locator('#password').fill('MotDePasse2026!')
+    const submit = page.getByRole('button', { name: /^Se connecter$/ })
+    if (await submit.isDisabled()) ok(`${label} : bouton bloqué avec e-mail invalide`)
+    else fail(`${label} : bouton actif avec e-mail invalide`)
+
+    // Message d'erreur e-mail après sortie du champ
+    await page.locator('#email').blur()
+    await page.waitForTimeout(200)
+    const emailError = await page
+      .getByText(/adresse e-mail ne semble pas valide/)
+      .isVisible()
+      .catch(() => false)
+    if (emailError) ok(`${label} : message e-mail invalide`)
+    else fail(`${label} : pas de message e-mail invalide`)
+
+    // Règles de mot de passe (inscription)
     await page.getByRole('tab', { name: 'Inscription' }).click()
     await page.waitForTimeout(250)
-    const signupTitle = await page.getByRole('heading', { name: /Crée ton nid/ }).isVisible()
-    if (signupTitle) console.log(`${label} : OK titre inscription`)
-    else fail(`${label} : titre inscription absent`)
+    const ruleText = await page.getByText(/8 caractères minimum/).isVisible().catch(() => false)
+    if (ruleText) ok(`${label} : règles de mot de passe affichées`)
+    else fail(`${label} : règles absentes`)
 
-    // Force du mot de passe (inscription, sans envoyer le formulaire)
     await page.locator('#password').fill('abc')
-    await page.waitForTimeout(200)
-    const weak = await page.getByText(/Mot de passe faible/).isVisible().catch(() => false)
-    if (weak) console.log(`${label} : OK indicateur de mot de passe faible`)
-    else fail(`${label} : indicateur de force absent`)
+    await page.waitForTimeout(250)
+    if (await page.getByRole('button', { name: /^Créer un compte$/ }).isDisabled()) {
+      ok(`${label} : bouton bloqué avec mot de passe faible`)
+    } else fail(`${label} : bouton actif avec mot de passe faible`)
+
+    // E-mail valide + mot de passe complet → bouton actif
+    await page.locator('#email').fill('demo@tabnest.demo')
     await page.locator('#password').fill('MotDePasse2026!')
-    await page.waitForTimeout(200)
-    const strong = await page.getByText(/Mot de passe solide/).isVisible().catch(() => false)
-    if (strong) console.log(`${label} : OK indicateur de mot de passe solide`)
-    else fail(`${label} : indicateur « solide » absent`)
+    await page.waitForTimeout(300)
+    const enabled = await page.getByRole('button', { name: /^Créer un compte$/ }).isEnabled()
+    if (enabled) ok(`${label} : bouton actif quand tout est valide`)
+    else fail(`${label} : bouton toujours bloqué alors que valide`)
 
-    // Afficher / masquer le mot de passe
-    const pwTypeBefore = await page.locator('#password').getAttribute('type')
+    // Afficher / masquer
+    const before = await page.locator('#password').getAttribute('type')
     await page.getByRole('button', { name: /Afficher le mot de passe/ }).click()
-    const pwTypeAfter = await page.locator('#password').getAttribute('type')
-    if (pwTypeBefore === 'password' && pwTypeAfter === 'text') {
-      console.log(`${label} : OK bouton afficher/masquer`)
-    } else {
-      fail(`${label} : bouton afficher/masquer inopérant`)
-    }
+    const after = await page.locator('#password').getAttribute('type')
+    if (before === 'password' && after === 'text') ok(`${label} : afficher/masquer`)
+    else fail(`${label} : afficher/masquer inopérant`)
 
-    // Erreur propre en mode connexion (mauvais mot de passe)
+    // Erreur Supabase traduite (mauvais mot de passe, compte existant)
     await page.getByRole('tab', { name: 'Connexion' }).click()
     await page.locator('#email').fill('demo@tabnest.demo')
     await page.locator('#password').fill('MauvaisMotDePasse!123')
@@ -76,14 +94,25 @@ async function main() {
       .first()
       .textContent({ timeout: 15000 })
       .catch(() => null)
-    if (errorBox) console.log(`${label} : OK message d'erreur affiché (« ${errorBox.trim().slice(0, 60)} »)`)
-    else fail(`${label} : aucun message d'erreur`)
+    if (errorBox && /E-mail ou mot de passe incorrect/.test(errorBox)) {
+      ok(`${label} : erreur d'authentification traduite`)
+    } else fail(`${label} : erreur non traduite (${errorBox ?? 'aucune'})`)
+
+    // Changement de langue (desktop seulement pour rester rapide)
+    if (viewport.width >= 1024) {
+      await page.getByRole('button', { name: 'EN', exact: true }).click()
+      await page.waitForTimeout(300)
+      if (await page.getByRole('heading', { name: /Welcome back/ }).isVisible()) {
+        ok(`${label} : bascule de langue FR → EN`)
+      } else fail(`${label} : bascule de langue inopérante`)
+      await page.getByRole('button', { name: 'FR', exact: true }).click()
+    }
 
     await page.close()
   }
 
   await browser.close()
-  console.log(failures === 0 ? '\nInscription / connexion : OK.' : `\n${failures} problème(s).`)
+  console.log(failures === 0 ? '\nAuthentification : OK.' : `\n${failures} problème(s).`)
   process.exit(failures > 0 ? 1 : 0)
 }
 
