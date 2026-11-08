@@ -2,10 +2,14 @@ import type { Entry } from '@/lib/i18n'
 
 // Dictionnaire espagnol (landing + produit). Clés identiques aux dictionnaires FR/EN.
 export const ES_ALL: Record<string, Entry> = {
-  'hero.h1a': 'Filnest guarda las páginas',
-  'hero.h1b': 'que usted visita.',
+  'hero.h1a': 'Cierre sus pestañas.',
+  'hero.h1b': 'Nada se pierde.',
   'hero.sub':
-    'Cierra tus pestañas, tus páginas se quedan. Una extensión que guarda tus páginas automáticamente, las organiza por proyectos y les da una vida útil. Las que caducan pasan a los archivos, donde puedes restaurarlas. Se acabaron las 50 pestañas abiertas por miedo a perder el hilo.',
+    'Filnest guarda cada página que visita, la ordena por proyectos y le da una vida útil. Cierre la pestaña: la página le espera.',
+  'hero.ctaInstall': 'Instalar la extensión',
+  'hero.ctaSignup': 'Crear una cuenta gratis',
+  'hero.note': 'Gratis, sin tarjeta. Chrome, Edge o Brave.',
+  'hero.alt': 'El panel de Filnest: las páginas guardadas, ordenadas por sitios y visitas',
   'hero.cta': 'Empezar gratis',
   'hero.install': 'Instalar la extensión',
   'hero.how': 'Cómo funciona',
@@ -17,6 +21,7 @@ export const ES_ALL: Record<string, Entry> = {
   'nav.try': 'Probar',
   'nav.faq': 'Preguntas frecuentes',
   'nav.install': 'Instalar la extensión',
+  'nav.installShort': 'Instalar',
   'nav.lang': 'ES',
   'nav.langTitle': 'Cambiar a español',
   'nav.langAria': 'Cambiar de idioma',
@@ -35,16 +40,47 @@ export const ES_ALL: Record<string, Entry> = {
     'Serie para ver',
   ],
 
-  'steps.title': 'Bastan tres pasos.',
+  'steps.nav': 'Cómo funciona',
+  'steps.title': 'Instale, navegue, recupere.',
+  'steps.sub':
+    'Tres gestos al principio y después nada que hacer. Filnest trabaja mientras usted navega.',
   'steps.s1.title': 'Instale la extensión',
-  'steps.s1.text': 'Chrome o Edge. Una carpeta, dos clics y la captura está activa.',
+  'steps.s1.text':
+    'Chrome, Edge o Brave. Dos minutos, una conexión y la captura está activa.',
   'steps.s2.title': 'Navegue con normalidad',
-  'steps.s2.text': 'Cada página que visita se guarda sin hacer nada. El ruido se queda fuera.',
+  'steps.s2.text':
+    'Cada página que visita se guarda sin hacer nada, y su vida útil se alarga cada vez que vuelve.',
   'steps.s3.title': 'Recupérelo todo',
-  'steps.s3.text': 'Sus páginas se organizan por sitios y proyectos, con una vida útil.',
+  'steps.s3.text':
+    'Busque, ordene en un proyecto o déjelo en el archivo. Ninguna página útil se pierde.',
   'steps.alt1': 'El panel de Filnest en el primer inicio de sesión',
   'steps.alt2': 'Los sitios guardados, apilados por visitas',
   'steps.alt3': 'El detalle de una página: su motivo y su vida útil',
+
+  'lifetime.title': 'Cada página tiene una vida útil.',
+  'lifetime.text':
+    'Una documentación y una oferta de empleo no merecen la misma atención. Usted dice por qué guarda una página; Filnest calcula cuánto tiempo conservarla.',
+  'lifetime.note':
+    'Sin motivo elegido, una página se queda tres días. Después pasa a los archivos, desde donde puede restaurarla.',
+  'lifetime.choose': 'El motivo para guardarla',
+  'lifetime.unit': 'días',
+  'lifetime.expires': 'Caduca el',
+  'lifetime.visits': '+50 % en cada visita',
+  'lifetime.r.decide': 'No consigo decidir.',
+  'lifetime.r.finish': 'No he terminado.',
+  'lifetime.r.explore': 'No quiero perder esta posibilidad.',
+  'lifetime.r.remember': 'No quiero olvidar que esto existe.',
+
+  'extension.title': 'La extensión hace el trabajo.',
+  'extension.text':
+    'Cada página que visita se guarda en un segundo: dirección, título, icono. No hay que hacer clic ni ordenar nada.',
+  'extension.f1': 'Captura automática, sin hacer clic.',
+  'extension.f2': 'Pausa en un clic, sin desinstalar.',
+  'extension.f3': 'Una sesión, todos sus dispositivos.',
+  'extension.cta': 'Instalar la extensión',
+  'extension.note': 'Chrome, Edge o Brave. Dos minutos.',
+  'extension.alt': 'La ventana de la extensión Filnest, ya conectada a la cuenta',
+  'extension.caption': 'La extensión, una vez conectada.',
 
   'bento.title': 'Lo que Filnest hace de verdad.',
   'bento.sub':
@@ -90,6 +126,7 @@ export const ES_ALL: Record<string, Entry> = {
     'La beta es gratuita: todas las funciones actuales están abiertas a todos. Las ofertas de pago se activarán más adelante, cuando todo esté listo y verificable.',
   'pricing.waitlist': 'Avísame cuando abran las ofertas',
   'pricing.title': 'Gratis para empezar.',
+  'pricing.nav': 'Precios',
   'pricing.sub':
     'Filnest seguirá siendo gratis para guardar sus páginas. Los planes de pago añadirán comodidad, nunca lo esencial.',
   'pricing.rec': 'Recomendado',
@@ -168,7 +205,7 @@ export const ES_ALL: Record<string, Entry> = {
   'split.auto.text':
     'Una documentación visitada cuatro veces no vale lo mismo que una oferta expirada abierta una sola vez.',
   'split.detail.alt': 'El detalle de una página en Filnest: motivo, vida útil y visitas',
-  'split.projects.title': 'Las páginas no viven solas. Pertenecen a sus proyectos.',
+  'split.projects.title': 'Sus páginas, ordenadas por proyectos.',
   'split.projects.text':
     'Una oferta, una comparativa y una documentación solo tienen sentido si se relacionan con lo que usted intenta hacer. Filnest crea ese vínculo y lo archiva todo cuando el proyecto termina.',
   'split.grid.alt': 'Los sitios apilados en Filnest, con los proyectos en el menú',
@@ -180,10 +217,17 @@ export const ES_ALL: Record<string, Entry> = {
   'split.focus.number': '1',
 
   'cta.title': 'Cierre todas las demás. Quédese con Filnest.',
+  'cta.titlea': 'Cierre sus pestañas.',
+  'cta.titleb': 'Filnest se acuerda.',
+  'cta.sub':
+    'Dos minutos para instalar la extensión y su navegador deja de costarle páginas perdidas.',
+  'cta.install': 'Instalar la extensión',
+  'cta.signup': 'Crear una cuenta gratis',
   'cta.email': 'Su dirección de correo electrónico',
   'cta.emailPlaceholder': 'usted@ejemplo.es',
   'cta.button': 'Empezar',
-  'cta.note': 'Gratis para empezar. Sin spam.',
+  'cta.note':
+    'Gratis, sin tarjeta bancaria. Elimine lo que quiera, cuando quiera.',
 
   'privacy.title': 'Sus páginas siguen siendo suyas.',
   'privacy.text':

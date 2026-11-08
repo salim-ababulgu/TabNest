@@ -1,118 +1,92 @@
 import { Check } from 'lucide-react'
 import { BILLING_READY, PLANS } from '@/lib/billing'
 import { useLang } from '@/components/landing/i18n'
+import { Reveal } from '@/components/landing/Reveal'
 
 export function PricingSection() {
   const { t, list } = useLang()
+  const free = PLANS.find((plan) => plan.id === 'free')
+  const paid = PLANS.filter((plan) => plan.id !== 'free')
+  const freeFeatures = list('plans.free.features')
+
   return (
-    <section id="tarifs" className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
-      <div className="mx-auto w-full max-w-6xl">
-        <h2 className="max-w-2xl font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-          {t('pricing.title')}
-        </h2>
-        <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground/70">
-          {t('pricing.sub')}
-        </p>
-
-        <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-lime/40 bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="max-w-2xl text-sm leading-relaxed text-foreground/80">{t('pricing.beta')}</p>
-          <a
-            href="mailto:salimababulgu@gmail.com?subject=Filnest%20-%20offres%20payantes"
-            className="inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-border px-4 text-xs font-medium hover:bg-accent"
-          >
-            {t('pricing.waitlist')}
-          </a>
+    <section
+      id="tarifs"
+      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+    >
+      <Reveal>
+        <div className="grid gap-8 md:grid-cols-12 md:items-end">
+          <h2 className="font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em] md:col-span-7">
+            {t('pricing.title')}
+          </h2>
+          <p className="max-w-[46ch] text-[1.0625rem] leading-[1.65] text-foreground/70 md:col-span-5">
+            {t('pricing.sub')}
+          </p>
         </div>
+      </Reveal>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-[1fr_1.35fr_1fr] md:items-start">
-          {PLANS.map((plan) => {
-            const features = list(`plans.${plan.id}.features`)
-            return (
-              <div
-                key={plan.id}
-                className={`flex flex-col rounded-2xl border ${
-                  plan.highlight ? 'border-lime bg-card p-7' : 'border-border bg-background p-6'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <h3
-                    className={`font-heading font-medium ${
-                      plan.highlight ? 'text-xl' : 'text-lg'
-                    }`}
-                  >
-                    {t(`plans.${plan.id}.name`)}
-                  </h3>
-                  {plan.highlight && (
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-                      <span className="size-1.5 rounded-full bg-lime" aria-hidden="true" />
-                      {t('pricing.rec')}
-                    </span>
-                  )}
+      <Reveal className="mt-16 md:mt-24">
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* La formule disponible aujourd'hui, la seule qui compte pour l'instant. */}
+          <div className="rounded-[1.5rem] bg-card p-8 text-card-foreground sm:p-10 lg:col-span-7">
+            <h3 className="font-heading text-2xl tracking-[-0.01em]">{t('plans.free.name')}</h3>
+            <p className="mt-2 text-[0.9375rem] text-foreground/70">{t('plans.free.desc')}</p>
+
+            <p className="mt-8 flex items-baseline gap-2">
+              <span className="font-heading text-5xl leading-none tracking-[-0.03em]">
+                {free?.price}
+              </span>
+              <span className="text-sm text-muted-foreground">{t('plans.free.period')}</span>
+            </p>
+
+            <ul className="mt-8 space-y-3 text-[0.9375rem]">
+              {freeFeatures.map((feature) => (
+                <li key={feature} className="flex items-start gap-3">
+                  <Check className="mt-0.5 size-4 shrink-0 text-lime" aria-hidden="true" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href="/"
+              className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-[0.9375rem] font-semibold text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
+            >
+              {t('pricing.cta.free')}
+            </a>
+          </div>
+
+          <div className="flex flex-col gap-6 lg:col-span-5">
+            <p className="max-w-[46ch] text-[0.9375rem] leading-[1.7] text-foreground/70">
+              {t('pricing.beta')}
+            </p>
+
+            {paid.map((plan) => (
+              <div key={plan.id} className="rounded-[1.25rem] bg-secondary p-6">
+                <div className="flex items-baseline justify-between gap-4">
+                  <h3 className="font-heading text-lg">{t(`plans.${plan.id}.name`)}</h3>
+                  <span className="text-sm text-foreground/70">{plan.price}</span>
                 </div>
-                <p className="mt-1 text-sm text-foreground/70">{t(`plans.${plan.id}.desc`)}</p>
-
-                <p className="mt-5">
-                  {plan.id === 'free' || plan.checkoutUrl ? (
-                    <>
-                      <span
-                        className={`font-heading font-medium ${
-                          plan.highlight ? 'text-4xl' : 'text-3xl'
-                        }`}
-                      >
-                        {plan.price}
-                      </span>{' '}
-                      <span className="text-xs text-muted-foreground">
-                        {t(`plans.${plan.id}.period`)}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="font-heading text-2xl font-medium text-muted-foreground">
-                      {t('pricing.coming')}
-                    </span>
-                  )}
+                <p className="mt-1 text-sm text-foreground/65">{t(`plans.${plan.id}.desc`)}</p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {BILLING_READY ? t('pricing.cta.choose') : t('pricing.coming')}
                 </p>
-
-                <ul className="mt-5 space-y-2 text-sm text-foreground/75">
-                  {features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2">
-                      <Check className="mt-0.5 size-4 shrink-0 text-lime" aria-hidden="true" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-auto pt-6">
-                  {plan.id === 'free' ? (
-                    <a
-                      href="/"
-                      className="inline-flex h-10 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground"
-                    >
-                      {t('pricing.cta.free')}
-                    </a>
-                  ) : plan.checkoutUrl ? (
-                    <a
-                      href={plan.checkoutUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex h-10 w-full items-center justify-center rounded-full bg-lime text-sm font-semibold text-lime-foreground transition-colors hover:bg-lime/90"
-                    >
-                      {t('pricing.cta.choose')}
-                    </a>
-                  ) : (
-                    <span className="flex h-10 w-full items-center justify-center rounded-full border border-dashed border-border text-xs text-muted-foreground">
-                      {t('pricing.coming')}
-                    </span>
-                  )}
-                </div>
               </div>
-            )
-          })}
+            ))}
+
+            <a
+              href="mailto:salimababulgu@gmail.com?subject=Filnest%20-%20offres%20payantes"
+              className="text-[0.9375rem] font-medium text-foreground underline decoration-foreground/30 underline-offset-[6px] transition-colors hover:decoration-foreground"
+            >
+              {t('pricing.waitlist')}
+            </a>
+          </div>
         </div>
 
-        <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
+        <p className="mt-12 max-w-[80ch] text-xs leading-relaxed text-muted-foreground">
           {BILLING_READY ? t('pricing.noteReady') : t('pricing.note')}
         </p>
-      </div>
+      </Reveal>
     </section>
   )
 }

@@ -1,129 +1,57 @@
+import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
 import { useLang } from '@/components/landing/i18n'
 
-type Tone = 'dark' | 'light' | 'paper'
-
-type WindowItem = { title: string; tone: Tone }
-
-const WINDOWS: WindowItem[] = [
-  { title: 'Netflix', tone: 'dark' },
-  { title: '2020 Product Strategy', tone: 'dark' },
-  { title: 'Write a note…', tone: 'paper' },
-  { title: 'Search Tags…', tone: 'dark' },
-  { title: 'Figma Receipt', tone: 'dark' },
-  { title: 'Browser C…', tone: 'light' },
-  { title: 'YouTube', tone: 'dark' },
-  { title: 'Gmail', tone: 'light' },
-]
-
-const TONES: Record<
-  Tone,
-  { card: string; bar: string; line: string; title: string; border: string }
-> = {
-  dark: {
-    card: 'bg-[#2c3d33]',
-    bar: 'border-white/15 bg-white/[0.05]',
-    line: 'bg-white/20',
-    title: 'text-brand-cream/70',
-    border: 'border-white/15',
-  },
-  light: {
-    card: 'bg-[#f4efe1]',
-    bar: 'border-black/10 bg-black/[0.04]',
-    line: 'bg-black/15',
-    title: 'text-[#26312a]/60',
-    border: 'border-black/10',
-  },
-  paper: {
-    card: 'bg-[#efe8d5]',
-    bar: 'border-black/10 bg-black/[0.04]',
-    line: 'bg-black/15',
-    title: 'text-[#26312a]/60',
-    border: 'border-black/10',
-  },
-}
-
-// Éventail statique, en bas de la section (coupé par le bord).
-const FAN = [
-  { left: '-4%', top: '22px', rotate: -9 },
-  { left: '9%', top: '52px', rotate: -6 },
-  { left: '22%', top: '16px', rotate: -3 },
-  { left: '35%', top: '46px', rotate: 0 },
-  { left: '48%', top: '12px', rotate: 2 },
-  { left: '61%', top: '50px', rotate: 4 },
-  { left: '74%', top: '18px', rotate: 6 },
-  { left: '87%', top: '54px', rotate: 8 },
-]
-
-function WindowCard({ title, tone }: { title: string; tone: Tone }) {
-  const t = TONES[tone]
-  return (
-    <div className={`overflow-hidden rounded-xl border ${t.card} ${t.border}`}>
-      <div className={`flex items-center gap-1.5 border-b px-3 py-2 ${t.bar}`}>
-        <span className="size-2 rounded-full bg-[#ff5f57]" />
-        <span className="size-2 rounded-full bg-[#febc2e]" />
-        <span className="size-2 rounded-full bg-[#28c840]" />
-        <span className={`ml-2 truncate text-[10px] ${t.title}`}>{title}</span>
-      </div>
-      <div className="space-y-1.5 p-3">
-        <div className={`h-1.5 w-3/4 rounded ${t.line}`} />
-        <div className={`h-1.5 w-1/2 rounded ${t.line}`} />
-        <div className={`h-1.5 w-2/3 rounded ${t.line}`} />
-        <div className={`h-1.5 w-2/5 rounded ${t.line}`} />
-      </div>
-    </div>
-  )
-}
-
-/** Hero statique : le texte et les boutons au-dessus, les fenêtres en éventail en bas. */
+/**
+ * Premier écran : l'accroche, les deux actions demandées (installer
+ * l'extension, créer un compte) et la preuve, une vraie capture du produit.
+ */
 export function Hero({ onStart }: { onStart: () => void }) {
   const { t } = useLang()
+
   return (
-    <section className="relative flex min-h-screen flex-col bg-brand-ink text-brand-cream">
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pt-28 pb-10">
-        <h1 className="max-w-3xl font-heading text-4xl leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
+    <section className="relative overflow-hidden bg-field text-field-ink">
+      <div className="mx-auto w-full max-w-[1240px] px-6 pt-24 md:px-10 md:pt-32">
+        <h1 className="max-w-[15ch] font-heading text-[clamp(3rem,7.4vw,6.5rem)] leading-[0.92] tracking-[-0.035em]">
           <span className="block">{t('hero.h1a')}</span>
           <span className="block">{t('hero.h1b')}</span>
         </h1>
-        <p className="mt-6 max-w-xl text-sm leading-relaxed text-brand-cream/70">{t('hero.sub')}</p>
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={onStart}
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-lime px-6 text-sm font-semibold text-lime-foreground transition-colors hover:bg-lime/90"
-          >
-            {t('hero.cta')}
-          </button>
-          <a
-            href="/extension"
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-brand-ink/60 px-6 text-sm font-medium text-brand-cream/85 transition-colors hover:border-white/40 hover:text-brand-cream"
-          >
-            {t('hero.install')}
-          </a>
+
+        <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-12 md:items-end md:gap-8">
+          <p className="max-w-[46ch] text-[1.0625rem] leading-[1.65] text-field-muted md:col-span-6">
+            {t('hero.sub')}
+          </p>
+
+          <div className="flex flex-col items-start gap-5 md:col-span-6 md:items-end">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <a
+                href="/extension"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-lime px-7 text-[0.9375rem] font-semibold text-lime-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
+              >
+                {t('hero.ctaInstall')}
+              </a>
+              <button
+                type="button"
+                onClick={onStart}
+                className="inline-flex h-12 items-center justify-center rounded-full px-6 text-[0.9375rem] font-medium text-field-ink underline decoration-field-ink/30 decoration-1 underline-offset-[6px] transition-colors hover:decoration-field-ink"
+              >
+                {t('hero.ctaSignup')}
+              </button>
+            </div>
+            <p className="text-sm text-field-muted">{t('hero.note')}</p>
+          </div>
         </div>
-        <p className="mt-4 text-xs text-brand-cream/65">
-          <a href="#comment" className="underline-offset-2 hover:text-brand-cream/80 hover:underline">
-            {t('hero.how')}
-          </a>
-        </p>
       </div>
 
-      <div aria-hidden="true" className="relative h-[190px] w-full overflow-hidden sm:h-[220px]">
-        {WINDOWS.map((item, index) => {
-          const position = FAN[index]
-          return (
-            <div
-              key={item.title}
-              className="absolute w-[180px] sm:w-[220px]"
-              style={{
-                left: position.left,
-                top: position.top,
-                transform: `rotate(${position.rotate}deg)`,
-              }}
-            >
-              <WindowCard title={item.title} tone={item.tone} />
-            </div>
-          )
-        })}
+      <div className="mx-auto mt-16 w-full max-w-[1240px] px-6 md:mt-24 md:px-10">
+        <div className="overflow-hidden rounded-t-[1.5rem]">
+          <ScreenshotFrame
+            src="/screenshots/dashboard-overview.png"
+            alt={t('hero.alt')}
+            tone="light"
+            eager
+            className="rounded-none"
+          />
+        </div>
       </div>
     </section>
   )

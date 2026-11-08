@@ -2,10 +2,14 @@ import type { Entry } from '@/lib/i18n'
 
 // 简体中文词典（落地页 + 产品）。键与 FR/EN 词典完全一致。
 export const ZH_ALL: Record<string, Entry> = {
-  'hero.h1a': 'Filnest 保存你访问的',
-  'hero.h1b': '每一个页面。',
+  'hero.h1a': '关闭你的标签页。',
+  'hero.h1b': '什么都不会丢。',
   'hero.sub':
-    '关闭标签页，页面会留下。一款自动保存页面、按项目整理、并为每页设定有效期的扩展。过期页面会进入归档，可随时恢复。再也不用因为怕丢线索而开着 50 个标签页。',
+    'Filnest 会记录你访问的每个页面，按项目整理，并为每一页设定有效期。关闭标签页：页面会等你回来。',
+  'hero.ctaInstall': '安装扩展',
+  'hero.ctaSignup': '免费创建账号',
+  'hero.note': '免费，无需银行卡。Chrome、Edge 或 Brave。',
+  'hero.alt': 'Filnest 仪表盘：已保存的页面，按网站和访问次数排好',
   'hero.cta': '免费开始使用',
   'hero.install': '安装扩展',
   'hero.how': '如何运作',
@@ -17,6 +21,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'nav.try': '试一试',
   'nav.faq': '常见问题',
   'nav.install': '安装扩展',
+  'nav.installShort': '安装',
   'nav.lang': 'ZH',
   'nav.langTitle': '切换到中文',
   'nav.langAria': '切换语言',
@@ -35,16 +40,43 @@ export const ZH_ALL: Record<string, Entry> = {
     '待看剧集',
   ],
 
-  'steps.title': '只需三步。',
+  'steps.nav': '如何运作',
+  'steps.title': '安装，浏览，找回。',
+  'steps.sub': '开始时三步，之后什么都不用做。你浏览的时候，Filnest 一直在工作。',
   'steps.s1.title': '安装扩展',
-  'steps.s1.text': 'Chrome 或 Edge。一个文件夹、两下点击，自动保存即刻开启。',
+  'steps.s1.text': 'Chrome、Edge 或 Brave。两分钟，一次登录，自动保存就开启了。',
   'steps.s2.title': '照常浏览',
-  'steps.s2.text': '你访问的每个页面都会被自动保存，无需任何操作。噪音被挡在门外。',
+  'steps.s2.text': '你访问的每个页面都会自动保存，不用做任何事；每次再访问，它的有效期都会延长。',
   'steps.s3.title': '全部找回',
-  'steps.s3.text': '页面按网站和项目整理，每一页都有自己的存活期限。',
+  'steps.s3.text': '搜一搜、放进项目，或者交给归档。没有一页有用的页面会白白消失。',
   'steps.alt1': '首次登录时的 Filnest 仪表盘',
   'steps.alt2': '已保存的网站，按访问次数堆叠排列',
   'steps.alt3': '页面详情：保存理由与存活期限',
+
+  'lifetime.title': '每个页面都有自己的有效期。',
+  'lifetime.text':
+    '一份文档和一条招聘信息，不值得同样的关注。你说出为什么留着某一页，Filnest 就据此决定留多久。',
+  'lifetime.note':
+    '没有选择理由时，页面会保留三天。之后它进入归档，你可以从那里把它恢复。',
+  'lifetime.choose': '保存它的理由',
+  'lifetime.unit': '天',
+  'lifetime.expires': '过期时间：',
+  'lifetime.visits': '每次访问 +50%',
+  'lifetime.r.decide': '我还没决定。',
+  'lifetime.r.finish': '我还没做完。',
+  'lifetime.r.explore': '我不想错过这个机会。',
+  'lifetime.r.remember': '我不想忘记它存在。',
+
+  'extension.title': '扩展替你干活。',
+  'extension.text':
+    '你访问的每个页面都会在一秒内记录：网址、标题、图标。不用点任何东西，也不用整理。',
+  'extension.f1': '自动保存，不用点任何东西。',
+  'extension.f2': '一键暂停，不用卸载。',
+  'extension.f3': '一次登录，所有设备通用。',
+  'extension.cta': '安装扩展',
+  'extension.note': 'Chrome、Edge 或 Brave。两分钟就好。',
+  'extension.alt': '已经连接账号的 Filnest 扩展窗口',
+  'extension.caption': '扩展连接账号之后的样子。',
 
   'bento.title': 'Filnest 真正做的事。',
   'bento.sub': '不是又一个书签管理器，而是一个与你共同决策、替你遗忘的系统。',
@@ -87,6 +119,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'pricing.beta': '测试期免费：当前所有功能对所有人开放。付费方案将在一切就绪并可验证后开放。',
   'pricing.waitlist': '开放付费时通知我',
   'pricing.title': '免费开始。',
+  'pricing.nav': '价格',
   'pricing.sub': '保存页面，Filnest 永远免费。付费方案只增加便利，核心功能从不收费。',
   'pricing.rec': '推荐',
   'pricing.cta.free': '免费开始使用',
@@ -158,7 +191,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'split.auto.title': 'Filnest 理解页面。',
   'split.auto.text': '访问过四次的文档，与只打开过一次的过期招聘信息，价值并不相同。',
   'split.detail.alt': 'Filnest 中的页面详情：理由、期限与访问次数',
-  'split.projects.title': '页面不是孤立的，它们属于你的项目。',
+  'split.projects.title': '你的页面，按项目整理。',
   'split.projects.text':
     '招聘信息、对比评测和文档，只有与你正在做的事联系起来才有意义。Filnest 建立这种联系，并在项目结束后统一归档。',
   'split.grid.alt': 'Filnest 中按网站堆叠的页面，菜单中是项目',
@@ -170,10 +203,15 @@ export const ZH_ALL: Record<string, Entry> = {
   'split.focus.number': '1',
 
   'cta.title': '关掉其他所有标签页，留下 Filnest。',
+  'cta.titlea': '关闭你的标签页。',
+  'cta.titleb': 'Filnest 替你记住。',
+  'cta.sub': '两分钟装好扩展，你的浏览器就不会再让你白白丢掉页面。',
+  'cta.install': '安装扩展',
+  'cta.signup': '免费创建账号',
   'cta.email': '你的电子邮件地址',
   'cta.emailPlaceholder': 'you@example.com',
   'cta.button': '开始使用',
-  'cta.note': '免费开始，绝无垃圾邮件。',
+  'cta.note': '免费，无需银行卡。你想删什么就删什么，随时都可以。',
 
   'privacy.title': '你的页面始终属于你。',
   'privacy.text':

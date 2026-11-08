@@ -9,6 +9,9 @@
 @theme inline {
   --color-brand-ink: var(--brand-ink);
   --color-brand-cream: var(--brand-cream);
+  --color-field: var(--field);
+  --color-field-ink: var(--field-ink);
+  --color-field-muted: var(--field-muted);
     --font-heading: 'Fraunces Variable', Georgia, serif;
     --font-sans: 'Geist Variable', sans-serif;
     --color-lime: var(--lime);
@@ -94,6 +97,11 @@
     --lime-foreground: #241a08;
     --ink: #1f2c25;
     --cream: #f6f1e4;
+    /* Champ sombre de la landing : identité fixe en clair, ton carte en sombre
+       pour rester distinct du fond de page. */
+    --field: #1f2c25;
+    --field-ink: #f6f1e4;
+    --field-muted: #a9b3a6;
 }
 
 .dark {
@@ -132,6 +140,9 @@
     --lime-foreground: #241a08;
     --ink: #f3eee0;
     --cream: #1c251f;
+    --field: #243028;
+    --field-ink: #f3eee0;
+    --field-muted: #a9b3a6;
 }
 
 /* La landing garde son identité papier (clair + sections sombres) quel que soit

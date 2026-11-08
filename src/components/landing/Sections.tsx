@@ -1,11 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { EyeOff, Pin, Bookmark, Clock, FolderOpen, ShieldCheck } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
+import { Reveal } from '@/components/landing/Reveal'
 import { useLang } from '@/components/landing/i18n'
-
-gsap.registerPlugin(ScrollTrigger)
+import { computeExpiry } from '@/lib/lifetime'
+import { REASON_HOURS, REASON_ORDER } from '@/lib/reason'
+import type { Reason } from '@/lib/reason'
 
 /** Bandeau défilant des types de pages conservées. */
 export function PageTypeMarquee() {
@@ -17,7 +18,7 @@ export function PageTypeMarquee() {
     const track = trackRef.current
     if (!track) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const tween = gsap.to(track, { xPercent: -50, duration: 32, ease: 'none', repeat: -1 })
+    const tween = gsap.to(track, { xPercent: -50, duration: 46, ease: 'none', repeat: -1 })
     return () => {
       tween.kill()
     }
@@ -26,14 +27,14 @@ export function PageTypeMarquee() {
   return (
     <section
       aria-label={t('marquee.label')}
-      className="overflow-hidden border-y border-border bg-card py-5"
+      className="overflow-hidden bg-background py-10 md:py-14"
     >
-      <div ref={trackRef} className="flex w-max items-center gap-10 px-6">
+      <div ref={trackRef} className="flex w-max items-center gap-12 px-6">
         {[...items, ...items].map((label, index) => (
           <span
             key={`${label}-${index}`}
             aria-hidden={index >= items.length}
-            className="font-heading text-lg whitespace-nowrap text-muted-foreground/80"
+            className="font-heading text-xl whitespace-nowrap text-foreground/45 md:text-2xl"
           >
             {label}
           </span>
@@ -49,171 +50,241 @@ const STEPS = [
   { titleKey: 'steps.s3.title', textKey: 'steps.s3.text' },
 ] as const
 
-/** « Comment ça marche » épinglé : la séquence avance avec le scroll. */
-export function PinnedSteps() {
-  const wrapperRef = useRef<HTMLDivElement>(null)
+/** Comment ça marche : trois gestes, puis plus rien à faire. */
+export function StepsSection() {
   const { t } = useLang()
 
-  useEffect(() => {
-    const wrapper = wrapperRef.current
-    if (!wrapper) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  return (
+    <section
+      id="comment"
+      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+    >
+      <Reveal>
+        <div className="grid gap-8 md:grid-cols-12 md:items-end">
+          <h2 className="font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em] md:col-span-7">
+            {t('steps.title')}
+          </h2>
+          <p className="max-w-[44ch] text-[1.0625rem] leading-[1.65] text-foreground/70 md:col-span-5">
+            {t('steps.sub')}
+          </p>
+        </div>
+      </Reveal>
 
-    const context = gsap.context(() => {
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: wrapper,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 0.6,
-        },
-      })
+      <div className="mt-16 grid gap-12 md:mt-28 md:grid-cols-3 md:gap-12">
+        {STEPS.map((step, index) => (
+          <Reveal key={step.titleKey} delay={index * 90}>
+            <h3 className="font-heading text-[1.5rem] leading-snug tracking-[-0.01em]">
+              {t(step.titleKey)}
+            </h3>
+            <p className="mt-4 max-w-[34ch] text-[1rem] leading-[1.7] text-foreground/70">
+              {t(step.textKey)}
+            </p>
+          </Reveal>
+        ))}
+      </div>
 
-      timeline
-        .to('.pinned-progress', { scaleY: 1, duration: 1, ease: 'none' }, 0)
-        .to('.pinned-step-0', { opacity: 1, duration: 0.1 }, 0)
-        .to('.pinned-step-1', { opacity: 1, duration: 0.1 }, 0.42)
-        .to('.pinned-step-2', { opacity: 1, duration: 0.1 }, 0.84)
-        .to('.pinned-visual-1', { opacity: 1, duration: 0.15 }, 0.38)
-        .to('.pinned-visual-2', { opacity: 1, duration: 0.15 }, 0.8)
-    }, wrapper)
+      <Reveal className="mt-20 md:mt-32">
+        <ScreenshotFrame
+          src="/screenshots/dashboard-grid.png"
+          alt={t('steps.alt2')}
+          tone="light"
+        />
+      </Reveal>
+    </section>
+  )
+}
 
-    return () => context.revert()
-  }, [])
+const LOCALES: Record<string, string> = {
+  fr: 'fr-FR',
+  en: 'en-GB',
+  es: 'es-ES',
+  zh: 'zh-CN',
+}
+
+const MAX_DAYS = (REASON_HOURS.remember / 24) || 90
+
+/**
+ * Démonstration vivante : on choisit une raison, la page montre
+ * la durée de vie que le produit lui donne vraiment (même calcul).
+ */
+function LifetimeDemo() {
+  const { t, lang } = useLang()
+  const [reason, setReason] = useState<Reason>('remember')
+  // Date figée à l'ouverture de la page : le calcul reste stable entre deux rendus.
+  const [now] = useState(() => new Date())
+  const days = REASON_HOURS[reason] / 24
+  const percent = Math.max(3, Math.round((days / MAX_DAYS) * 100))
+  const expires = new Intl.DateTimeFormat(LOCALES[lang] ?? 'fr-FR', {
+    day: 'numeric',
+    month: 'long',
+  }).format(new Date(computeExpiry('normal', 0, now, reason)))
 
   return (
-    <div ref={wrapperRef} className="relative h-[240vh] bg-background">
-      <div className="sticky top-0 flex min-h-screen items-center overflow-hidden">
-        <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
-          <div>
-            <h2 className="max-w-md font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              {t('steps.title')}
-            </h2>
-            <div className="relative mt-10 pl-8">
-              <span
-                aria-hidden="true"
-                className="absolute top-1 bottom-1 left-[5px] w-1 rounded-full bg-border"
-              />
-              <span
-                aria-hidden="true"
-                className="pinned-progress absolute top-1 bottom-1 left-[5px] w-1 origin-top scale-y-0 rounded-full bg-lime"
-              />
-              <ol className="space-y-9">
-                {STEPS.map((step, index) => (
-                  <li
-                    key={step.titleKey}
-                    className={`pinned-step-${index} relative opacity-35 transition-none`}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="absolute top-1.5 -left-8 size-3.5 rounded-full bg-lime"
-                    />
-                    <h3 className="font-heading text-xl font-medium">{t(step.titleKey)}</h3>
-                    <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-foreground/70">
-                      {t(step.textKey)}
-                    </p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
+    <div className="rounded-[1.5rem] bg-card p-6 text-card-foreground sm:p-9">
+      <p className="text-sm text-muted-foreground">{t('lifetime.choose')}</p>
 
-          <div className="relative hidden h-[380px] md:block">
-            <div className="pinned-visual-0 absolute inset-0 flex items-center justify-center">
-              <ScreenshotFrame
-                src="/screenshots/dashboard-overview.png"
-                alt={t('steps.alt1')}
-                className="w-full max-w-sm"
-              />
-            </div>
+      <div role="group" aria-label={t('lifetime.choose')} className="mt-4 flex flex-wrap gap-2">
+        {REASON_ORDER.map((item) => {
+          const active = item === reason
+          return (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setReason(item)}
+              className={
+                'inline-flex h-9 items-center rounded-full px-4 text-sm font-medium transition-colors ' +
+                (active
+                  ? 'bg-lime text-lime-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-accent')
+              }
+            >
+              {t(`reason.${item}`)}
+            </button>
+          )
+        })}
+      </div>
 
-            <div className="pinned-visual-1 absolute inset-0 flex items-center justify-center opacity-0">
-              <ScreenshotFrame
-                src="/screenshots/dashboard-grid.png"
-                alt={t('steps.alt2')}
-                className="w-full max-w-sm"
-              />
-            </div>
+      <p className="mt-6 text-[0.9375rem] leading-relaxed text-foreground/70">
+        {t(`lifetime.r.${reason}`)}
+      </p>
 
-            <div className="pinned-visual-2 absolute inset-0 flex items-center justify-center opacity-0">
-              <ScreenshotFrame
-                src="/screenshots/dashboard-detail.png"
-                alt={t('steps.alt3')}
-                crop="center"
-                className="w-full max-w-sm"
-              />
-            </div>
-          </div>
-        </div>
+      <div className="mt-8 flex items-baseline gap-3">
+        <span className="font-heading text-[clamp(3rem,7vw,4.75rem)] leading-none tracking-[-0.03em] tabular-nums">
+          {days}
+        </span>
+        <span className="text-base text-foreground/70">{t('lifetime.unit')}</span>
+      </div>
+
+      <div
+        className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-secondary"
+        role="img"
+        aria-label={`${days} ${t('lifetime.unit')}`}
+      >
+        <div
+          className="h-full rounded-full bg-lime transition-[width] duration-500 ease-out"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 text-sm">
+        <span className="text-foreground/70">
+          {t('lifetime.expires')} <span className="text-foreground">{expires}</span>
+        </span>
+        <span className="text-muted-foreground">{t('lifetime.visits')}</span>
       </div>
     </div>
   )
 }
 
-const BENTO = [
-  {
-    icon: Clock,
-    titleKey: 'bento.b1.title',
-    textKey: 'bento.b1.text',
-    span: 'sm:col-span-2',
-  },
-  { icon: Pin, titleKey: 'bento.b2.title', textKey: 'bento.b2.text' },
-  { icon: Bookmark, titleKey: 'bento.b3.title', textKey: 'bento.b3.text' },
-  { icon: EyeOff, titleKey: 'bento.b4.title', textKey: 'bento.b4.text' },
-  { icon: FolderOpen, titleKey: 'bento.b5.title', textKey: 'bento.b5.text' },
-  { icon: ShieldCheck, titleKey: 'bento.b6.title', textKey: 'bento.b6.text' },
-] as const
-
-/** Bento grid : ce que le produit fait vraiment, avec une entrée orchestrée. */
-export function BentoSection() {
-  const ref = useRef<HTMLDivElement>(null)
+/** Le principe : une durée de vie par page, choisie par la raison de la garder. */
+export function LifetimeSection() {
   const { t } = useLang()
 
-  useEffect(() => {
-    const element = ref.current
-    if (!element) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  return (
+    <section id="principe" className="scroll-mt-24 bg-field text-field-ink">
+      <div className="mx-auto w-full max-w-[1240px] px-6 py-24 md:px-10 md:py-40">
+        <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
+          <Reveal className="md:col-span-5">
+            <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
+              {t('lifetime.title')}
+            </h2>
+            <p className="mt-8 max-w-[42ch] text-[1.0625rem] leading-[1.65] text-field-muted">
+              {t('lifetime.text')}
+            </p>
+            <p className="mt-6 max-w-[40ch] text-sm leading-relaxed text-field-muted">
+              {t('lifetime.note')}
+            </p>
+          </Reveal>
+          <Reveal delay={120} className="md:col-span-7">
+            <LifetimeDemo />
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  )
+}
 
-    const context = gsap.context(() => {
-      gsap.from('.bento-card', {
-        y: 44,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.08,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: element, start: 'top 78%' },
-      })
-    }, ref)
-
-    return () => context.revert()
-  }, [])
+/** Les projets : une page ne vit pas seule, elle appartient à une intention. */
+export function ProjectsSection() {
+  const { t } = useLang()
 
   return (
-    <section id="produit" ref={ref} className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
-      <div className="mx-auto w-full max-w-6xl">
-        <h2 className="max-w-2xl font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-          {t('bento.title')}
-        </h2>
-        <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground/70">{t('bento.sub')}</p>
+    <section
+      id="projets"
+      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+    >
+      <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
+        <Reveal className="md:col-span-5">
+          <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
+            {t('split.projects.title')}
+          </h2>
+          <p className="mt-8 max-w-[42ch] text-[1.0625rem] leading-[1.65] text-foreground/70">
+            {t('split.projects.text')}
+          </p>
+        </Reveal>
+        <Reveal delay={120} className="md:col-span-7">
+          <ScreenshotFrame
+            src="/screenshots/dashboard-detail.png"
+            alt={t('split.detail.alt')}
+            crop="center"
+          />
+        </Reveal>
+      </div>
+    </section>
+  )
+}
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {BENTO.map((item) => {
-            const Icon = item.icon
-            return (
-              <div
-                key={item.titleKey}
-                className={`bento-card rounded-2xl border border-border bg-card p-6 ${'span' in item ? item.span : ''}`}
+const EXTENSION_FACTS = ['extension.f1', 'extension.f2', 'extension.f3'] as const
+
+/** L'extension : le geste à faire pour que tout le reste existe. */
+export function ExtensionSection() {
+  const { t } = useLang()
+
+  return (
+    <section id="extension" className="scroll-mt-24 bg-secondary">
+      <div className="mx-auto w-full max-w-[1240px] px-6 py-24 md:px-10 md:py-32">
+        <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-16">
+          <Reveal className="md:col-span-6">
+            <h2 className="font-heading text-[clamp(1.95rem,3.2vw,3.05rem)] leading-[1.03] tracking-[-0.03em]">
+              {t('extension.title')}
+            </h2>
+            <p className="mt-8 max-w-[42ch] text-[1.0625rem] leading-[1.65] text-foreground/75">
+              {t('extension.text')}
+            </p>
+
+            <ul className="mt-8 space-y-3">
+              {EXTENSION_FACTS.map((key) => (
+                <li key={key} className="flex items-start gap-3 text-[0.9375rem] leading-relaxed">
+                  <Check className="mt-0.5 size-4 shrink-0 text-lime" aria-hidden="true" />
+                  <span>{t(key)}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <a
+                href="/extension"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-[0.9375rem] font-semibold text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
               >
-                <span className="flex size-9 items-center justify-center rounded-lg bg-secondary">
-                  <Icon className="size-4" />
-                </span>
-                <h3 className="mt-4 font-heading text-lg font-medium">{t(item.titleKey)}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-foreground/70">
-                  {t(item.textKey)}
-                </p>
-              </div>
-            )
-          })}
+                {t('extension.cta')}
+              </a>
+              <span className="text-sm text-foreground/70">{t('extension.note')}</span>
+            </div>
+          </Reveal>
+
+          <Reveal delay={120} className="md:col-span-6">
+            <div className="mx-auto w-full max-w-[440px] rounded-[1.5rem] bg-card p-6 sm:p-10">
+              <img
+                src="/screenshots/popup-connected.png"
+                alt={t('extension.alt')}
+                loading="lazy"
+                decoding="async"
+                className="mx-auto block w-full max-w-[300px] rounded-[1.25rem]"
+              />
+            </div>
+            <p className="mt-4 text-center text-sm text-foreground/65">{t('extension.caption')}</p>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -236,25 +307,30 @@ const FAQ = [
 export function FaqSection() {
   const { t } = useLang()
   return (
-    <section id="faq" className="scroll-mt-24 px-6 py-24 md:px-10 md:py-32">
-      <div className="mx-auto w-full max-w-3xl">
-        <h2 className="font-heading text-3xl leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+    <section
+      id="faq"
+      className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 md:px-10 md:py-40"
+    >
+      <div className="grid gap-10 md:grid-cols-12">
+        <h2 className="font-heading text-[clamp(2.1rem,4.4vw,3.9rem)] leading-[1] tracking-[-0.03em] md:col-span-4">
           {t('nav.faq')}
         </h2>
 
-        <div className="mt-10 divide-y divide-border border-y border-border">
+        <div className="md:col-span-8">
           {FAQ.map((item) => (
-            <details key={item.questionKey} className="group py-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium">
-                {t(item.questionKey)}
+            <details key={item.questionKey} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-[1.0625rem] font-medium">
+                <span>{t(item.questionKey)}</span>
                 <span
                   aria-hidden="true"
-                  className="text-muted-foreground transition-transform group-open:rotate-45"
+                  className="mt-0.5 shrink-0 text-xl leading-none text-foreground/70 transition-transform duration-300 group-open:rotate-45"
                 >
                   +
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-foreground/70">{t(item.answerKey)}</p>
+              <p className="mt-3 max-w-[62ch] text-[0.9375rem] leading-[1.7] text-foreground/70">
+                {t(item.answerKey)}
+              </p>
             </details>
           ))}
         </div>

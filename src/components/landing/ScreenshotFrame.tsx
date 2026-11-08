@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 /**
- * Cadre de navigateur autour d'une vraie capture d'écran de l'application.
+ * Cadre autour d'une vraie capture d'écran de l'application.
  * Le contenu est réel : seuls le contour et la barre d'adresse sont décoratifs.
  */
 export function ScreenshotFrame({
@@ -10,6 +10,7 @@ export function ScreenshotFrame({
   tone = 'light',
   crop = 'top',
   portrait = false,
+  eager = false,
   className,
 }: {
   src: string
@@ -17,31 +18,32 @@ export function ScreenshotFrame({
   tone?: 'light' | 'dark'
   crop?: 'top' | 'center'
   portrait?: boolean
+  eager?: boolean
   className?: string
 }) {
   const dark = tone === 'dark'
-  const dot = dark ? 'bg-white/15' : 'bg-border'
   return (
     <figure
       className={cn(
-        'overflow-hidden rounded-2xl border',
-        dark ? 'border-white/10 bg-white/[0.03]' : 'border-border bg-card',
+        'overflow-hidden rounded-[1.25rem]',
+        dark ? 'bg-field text-field-ink' : 'bg-card text-foreground',
         className,
       )}
     >
       <div
         aria-hidden="true"
-        className={cn('flex items-center gap-1.5 border-b px-3 py-2', dark ? 'border-white/10' : 'border-border')}
+        className={cn(
+          'flex items-center gap-2 px-4 py-2.5',
+          dark ? 'bg-white/[0.06]' : 'bg-secondary',
+        )}
       >
-        <span className={cn('size-2 rounded-full', dot)} />
-        <span className={cn('size-2 rounded-full', dot)} />
-        <span className={cn('size-2 rounded-full', dot)} />
+        <span className={cn('size-2 rounded-full', dark ? 'bg-white/25' : 'bg-foreground/20')} />
+        <span className={cn('size-2 rounded-full', dark ? 'bg-white/25' : 'bg-foreground/20')} />
+        <span className={cn('size-2 rounded-full', dark ? 'bg-white/25' : 'bg-foreground/20')} />
         <span
           className={cn(
-            'ml-2 flex-1 truncate rounded-full border px-3 py-1 text-[10px]',
-            dark
-              ? 'border-white/10 bg-white/[0.05] text-brand-cream/65'
-              : 'border-border bg-background text-muted-foreground',
+            'mx-auto w-1/2 truncate rounded-full px-3 py-1 text-center text-[11px]',
+            dark ? 'bg-white/[0.06] text-field-muted' : 'bg-card text-muted-foreground',
           )}
         >
           filnest.pages.dev
@@ -50,7 +52,8 @@ export function ScreenshotFrame({
       <img
         src={src}
         alt={alt}
-        loading="lazy"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
         className={cn(
           'block w-full object-cover',
           crop === 'top' ? 'object-top' : 'object-center',

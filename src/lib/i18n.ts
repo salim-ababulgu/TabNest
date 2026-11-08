@@ -8,10 +8,14 @@ export type Entry = string | string[]
 type Dict = Record<string, Entry>
 
 const FR: Dict = {
-  'hero.h1a': 'Filnest garde les pages',
-  'hero.h1b': 'que vous visitez.',
+  'hero.h1a': 'Fermez vos onglets.',
+  'hero.h1b': 'Rien ne se perd.',
   'hero.sub':
-    "Vous fermez vos onglets, vos pages restent. Une extension qui enregistre automatiquement vos pages, les range par projets et leur donne une durée de vie. Celles qui expirent passent dans les archives, restaurables. Fini les 50 onglets ouverts par peur de perdre le fil.",
+    'Filnest enregistre chaque page que vous visitez, la range par projet et lui donne une durée de vie. Fermez l’onglet : la page vous attend.',
+  'hero.ctaInstall': "Installer l'extension",
+  'hero.ctaSignup': 'Créer un compte gratuit',
+  'hero.note': 'Gratuit, sans carte bancaire. Chrome, Edge ou Brave.',
+  'hero.alt': 'Le tableau de bord Filnest : les pages gardées, rangées par sites et par visites',
   'hero.cta': 'Commencer gratuitement',
   'hero.install': "Installer l'extension",
   'hero.how': 'Comment ça marche',
@@ -23,6 +27,7 @@ const FR: Dict = {
   'nav.try': 'Essayer',
   'nav.faq': 'Questions fréquentes',
   'nav.install': "Installer l'extension",
+  'nav.installShort': 'Installer',
   'nav.lang': 'FR',
   'nav.langTitle': 'Passer en français',
   'nav.langAria': 'Changer de langue',
@@ -41,16 +46,46 @@ const FR: Dict = {
     'Série à regarder',
   ],
 
-  'steps.title': 'Trois étapes suffisent.',
+  'steps.nav': 'Comment ça marche',
+  'steps.title': 'Installez, naviguez, retrouvez.',
+  'steps.sub':
+    'Trois gestes au début, puis plus rien à faire. Filnest travaille pendant que vous naviguez.',
   'steps.s1.title': "Installez l'extension",
-  'steps.s1.text': 'Chrome ou Edge. Un dossier, deux clics, et la capture est active.',
+  'steps.s1.text': 'Chrome, Edge ou Brave. Deux minutes, une connexion, et la capture est active.',
   'steps.s2.title': 'Naviguez normalement',
-  'steps.s2.text': 'Chaque page visitée est enregistrée, sans rien faire. Le bruit reste dehors.',
+  'steps.s2.text':
+    'Chaque page visitée est enregistrée sans rien faire, et sa durée de vie s’allonge à chaque retour.',
   'steps.s3.title': 'Retrouvez tout',
-  'steps.s3.text': 'Vos pages sont rangées par sites et projets, avec une durée de vie.',
+  'steps.s3.text':
+    'Cherchez, rangez dans un projet, ou laissez l’archive. Aucune page utile ne repart en fumée.',
   'steps.alt1': 'Le tableau de bord Filnest à la première connexion',
   'steps.alt2': 'Les sites enregistrés, empilés par visites',
   'steps.alt3': "Le détail d'une page : sa raison et sa durée de vie",
+
+  'lifetime.title': 'Chaque page a une durée de vie.',
+  'lifetime.text':
+    'Une documentation et une offre d’emploi ne méritent pas la même attention. Vous dites pourquoi vous gardez une page ; Filnest en déduit combien de temps la garder.',
+  'lifetime.note':
+    'Sans raison choisie, une page reste trois jours. Ensuite elle rejoint les archives, d’où vous pouvez la restaurer.',
+  'lifetime.choose': 'La raison de la garder',
+  'lifetime.unit': 'jours',
+  'lifetime.expires': 'Expire le',
+  'lifetime.visits': '+50 % à chaque visite',
+  'lifetime.r.decide': 'Je n’arrive pas à décider.',
+  'lifetime.r.finish': 'Je n’ai pas terminé.',
+  'lifetime.r.explore': 'Je ne veux pas perdre cette possibilité.',
+  'lifetime.r.remember': 'Je ne veux pas oublier que ça existe.',
+
+  'extension.title': 'L’extension fait le travail.',
+  'extension.text':
+    'Chaque page visitée est enregistrée en une seconde : adresse, titre, icône. Vous n’avez rien à cliquer, rien à classer.',
+  'extension.f1': 'Capture automatique, sans rien cliquer.',
+  'extension.f2': 'Pause en un clic, sans désinstaller.',
+  'extension.f3': 'Une session, tous vos appareils.',
+  'extension.cta': "Installer l'extension",
+  'extension.note': 'Chrome, Edge ou Brave. Deux minutes.',
+  'extension.alt': 'La fenêtre de l’extension Filnest, une fois connectée au compte',
+  'extension.caption': 'L’extension, une fois connectée.',
 
   'bento.title': 'Ce que Filnest fait vraiment.',
   'bento.sub':
@@ -96,6 +131,7 @@ const FR: Dict = {
     'La bêta est gratuite : toutes les fonctions actuelles sont ouvertes à tous. Les offres payantes seront activées plus tard, quand tout sera prêt et vérifiable.',
   'pricing.waitlist': 'Être prévenu à l’ouverture des offres',
   'pricing.title': 'Gratuit pour commencer.',
+  'pricing.nav': 'Tarifs',
   'pricing.sub':
     "Filnest reste gratuit pour garder vos pages. Les formules payantes ajouteront du confort, jamais l'essentiel.",
   'pricing.rec': 'Recommandé',
@@ -174,7 +210,7 @@ const FR: Dict = {
   'split.auto.text':
     "Une documentation visitée quatre fois n'a pas la même valeur qu'une offre expirée ouverte une seule fois.",
   'split.detail.alt': "Le détail d'une page dans Filnest : raison, durée de vie et visites",
-  'split.projects.title': 'Les pages ne vivent pas seules. Elles appartiennent à vos projets.',
+  'split.projects.title': 'Vos pages, rangées par projets.',
   'split.projects.text':
     "Une offre, un comparatif et une documentation n'ont de sens que reliés à ce que vous essayez de faire. Filnest crée ce lien, puis archive le tout quand le projet est terminé.",
   'split.grid.alt': 'Les sites empilés dans Filnest, avec les projets dans le menu',
@@ -186,10 +222,16 @@ const FR: Dict = {
   'split.focus.number': '1',
 
   'cta.title': 'Fermez tous les autres. Gardez Filnest.',
+  'cta.titlea': 'Fermez vos onglets.',
+  'cta.titleb': 'Filnest s’en souvient.',
+  'cta.sub':
+    'Deux minutes pour installer l’extension, et votre navigateur arrête de vous coûter des pages perdues.',
+  'cta.install': "Installer l'extension",
+  'cta.signup': 'Créer un compte gratuit',
   'cta.email': 'Votre adresse e-mail',
   'cta.emailPlaceholder': 'vous@exemple.fr',
   'cta.button': 'Commencer',
-  'cta.note': 'Gratuit pour commencer. Aucun spam.',
+  'cta.note': 'Gratuit, sans carte bancaire. Vous supprimez ce que vous voulez, quand vous voulez.',
 
   'privacy.title': 'Vos pages restent les vôtres.',
   'privacy.text':
@@ -235,10 +277,14 @@ const FR: Dict = {
 }
 
 const EN: Dict = {
-  'hero.h1a': 'Filnest keeps the pages',
-  'hero.h1b': 'you visit.',
+  'hero.h1a': 'Close your tabs.',
+  'hero.h1b': 'Nothing is lost.',
   'hero.sub':
-    'Close your tabs, your pages stay. An extension that saves your pages automatically, sorts them into projects and gives each one a lifetime. Expired pages move to the archives, where you can restore them. No more 50 open tabs kept out of fear.',
+    'Filnest records every page you visit, files it into projects and gives it a lifetime. Close the tab: the page waits for you.',
+  'hero.ctaInstall': 'Install the extension',
+  'hero.ctaSignup': 'Create a free account',
+  'hero.note': 'Free, no card. Chrome, Edge or Brave.',
+  'hero.alt': 'The Filnest dashboard: kept pages, grouped by site and visits',
   'hero.cta': 'Start for free',
   'hero.install': 'Install the extension',
   'hero.how': 'How it works',
@@ -250,6 +296,7 @@ const EN: Dict = {
   'nav.try': 'Try it',
   'nav.faq': 'FAQ',
   'nav.install': 'Install the extension',
+  'nav.installShort': 'Install',
   'nav.lang': 'EN',
   'nav.langTitle': 'Switch to English',
   'nav.langAria': 'Switch language',
@@ -268,16 +315,45 @@ const EN: Dict = {
     'Series to watch',
   ],
 
-  'steps.title': 'Three steps, done.',
+  'steps.nav': 'How it works',
+  'steps.title': 'Install, browse, find back.',
+  'steps.sub': 'Three gestures at the start, then nothing to do. Filnest works while you browse.',
   'steps.s1.title': 'Install the extension',
-  'steps.s1.text': 'Chrome or Edge. One folder, two clicks, capture is on.',
+  'steps.s1.text': 'Chrome, Edge or Brave. Two minutes, one sign-in, and capture is on.',
   'steps.s2.title': 'Browse as usual',
-  'steps.s2.text': 'Every page you visit is saved, with no effort. The noise stays out.',
+  'steps.s2.text':
+    'Every page you visit is saved with no effort, and its lifetime grows each time you come back.',
   'steps.s3.title': 'Find everything back',
-  'steps.s3.text': 'Your pages are grouped by site and project, each with a lifetime.',
+  'steps.s3.text':
+    'Search it, file it into a project, or let the archive keep it. No useful page goes up in smoke.',
   'steps.alt1': 'The Filnest dashboard on first sign-in',
   'steps.alt2': 'Saved sites, stacked by visits',
   'steps.alt3': "A page's detail: its reason and its lifetime",
+
+  'lifetime.title': 'Every page has a lifetime.',
+  'lifetime.text':
+    'A doc and a job posting do not deserve the same attention. You say why you keep a page; Filnest works out how long to keep it.',
+  'lifetime.note':
+    'With no reason chosen, a page stays three days. Then it moves to the archives, where you can restore it.',
+  'lifetime.choose': 'Why you are keeping it',
+  'lifetime.unit': 'days',
+  'lifetime.expires': 'Expires on',
+  'lifetime.visits': '+50% with each visit',
+  'lifetime.r.decide': 'I can’t decide.',
+  'lifetime.r.finish': 'I haven’t finished.',
+  'lifetime.r.explore': 'I don’t want to lose this possibility.',
+  'lifetime.r.remember': 'I don’t want to forget this exists.',
+
+  'extension.title': 'The extension does the work.',
+  'extension.text':
+    'Every page you visit is saved in a second: address, title, icon. Nothing to click, nothing to sort.',
+  'extension.f1': 'Automatic capture, nothing to click.',
+  'extension.f2': 'Pause in one click, no uninstall.',
+  'extension.f3': 'One session, all your devices.',
+  'extension.cta': 'Install the extension',
+  'extension.note': 'Chrome, Edge or Brave. Two minutes.',
+  'extension.alt': 'The Filnest extension popup, connected to the account',
+  'extension.caption': 'The extension, once connected.',
 
   'bento.title': 'What Filnest actually does.',
   'bento.sub': 'Not another bookmark manager. A system that decides with you, and forgets for you.',
@@ -318,6 +394,7 @@ const EN: Dict = {
     "A description of a product category, not of a specific competitor: most tab and bookmark managers store your data locally, without an account.",
 
   'pricing.title': 'Free to start.',
+  'pricing.nav': 'Pricing',
   'pricing.sub':
     'Filnest stays free for keeping your pages. Paid plans will add comfort, never the essentials.',
   'pricing.rec': 'Recommended',
@@ -396,7 +473,7 @@ const EN: Dict = {
   'split.auto.text':
     "A documentation visited four times is not worth the same as an expired offer opened once.",
   'split.detail.alt': "A page's detail in Filnest: reason, lifetime and visits",
-  'split.projects.title': "Pages don't live alone. They belong to your projects.",
+  'split.projects.title': 'Your pages, filed by project.',
   'split.projects.text':
     "An offer, a comparison and a documentation only make sense tied to what you are trying to do. Filnest creates that link, then archives it all when the project is done.",
   'split.grid.alt': 'Sites stacked in Filnest, with projects in the menu',
@@ -408,10 +485,16 @@ const EN: Dict = {
   'split.focus.number': '1',
 
   'cta.title': 'Close all the others. Keep Filnest.',
+  'cta.titlea': 'Close your tabs.',
+  'cta.titleb': 'Filnest remembers.',
+  'cta.sub':
+    'Two minutes to install the extension, and your browser stops costing you lost pages.',
+  'cta.install': 'Install the extension',
+  'cta.signup': 'Create a free account',
   'cta.email': 'Your email address',
   'cta.emailPlaceholder': 'you@example.com',
   'cta.button': 'Start',
-  'cta.note': 'Free to start. No spam.',
+  'cta.note': 'Free, no card. Delete whatever you want, whenever you want.',
 
   'privacy.title': 'Your pages stay yours.',
   'privacy.text':
