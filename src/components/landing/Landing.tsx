@@ -51,7 +51,7 @@ function LandingContent({ onStart }: LandingProps) {
             <LanguageSelector onDark />
             <a
               href="/extension"
-              className="inline-flex h-10 items-center rounded-full bg-lime px-4 text-sm font-semibold text-lime-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:px-5"
+              className="hidden h-10 items-center rounded-full bg-lime px-4 text-sm font-semibold text-lime-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:inline-flex sm:px-5"
             >
               {t('nav.installShort')}
             </a>

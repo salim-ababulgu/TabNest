@@ -25,14 +25,14 @@ export function Hero({ onStart }: { onStart: () => void }) {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
                 href="/extension"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-lime px-7 text-[0.9375rem] font-semibold text-lime-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                className="hidden h-12 items-center justify-center rounded-full bg-lime px-7 text-[0.9375rem] font-semibold text-lime-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:inline-flex"
               >
                 {t('hero.ctaInstall')}
               </a>
               <button
                 type="button"
                 onClick={onStart}
-                className="inline-flex h-12 items-center justify-center rounded-full px-6 text-[0.9375rem] font-medium text-field-ink underline decoration-field-ink/30 decoration-1 underline-offset-[6px] transition-colors hover:decoration-field-ink"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-lime px-7 text-[0.9375rem] font-semibold text-lime-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:bg-transparent sm:px-6 sm:font-medium sm:text-field-ink sm:underline sm:decoration-field-ink/30 sm:decoration-1 sm:underline-offset-[6px] sm:hover:translate-y-0 sm:hover:decoration-field-ink"
               >
                 {t('hero.ctaSignup')}
               </button>

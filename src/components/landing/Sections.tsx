@@ -265,11 +265,14 @@ export function ExtensionSection() {
             <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               <a
                 href="/extension"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-[0.9375rem] font-semibold text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                className="hidden h-12 items-center justify-center rounded-full bg-primary px-7 text-[0.9375rem] font-semibold text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:inline-flex"
               >
                 {t('extension.cta')}
               </a>
               <span className="text-sm text-foreground/70">{t('extension.note')}</span>
+              <p className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground/75 sm:hidden">
+                {t('extension.mobileNote')}
+              </p>
             </div>
           </Reveal>
 
