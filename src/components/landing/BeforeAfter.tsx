@@ -43,8 +43,8 @@ const WALL = Array.from({ length: 176 }, (_, index) => {
 })
 
 const CYCLE = 12000
-const MAX = 92
-const MIN = 8
+const MAX = 100
+const MIN = 0
 
 const ease = (value: number) => value * value * (3 - 2 * value)
 
@@ -58,9 +58,9 @@ function splitFor(time: number): number {
 }
 
 /**
- * Comparaison avant / après : le mur d'onglets ouverts, puis le même navigateur
- * avec un seul onglet et la navigation rangée dans Filnest. Le séparateur glisse
- * tout seul ; la souris le met en pause, le clavier le déplace.
+ * Comparaison avant / après : le mur d'onglets ouverts, puis la même navigation
+ * rangée dans Filnest. Le séparateur glisse tout seul ; la souris le met en pause,
+ * le clavier et la poignée permettent de le déplacer à la main.
  */
 export function BeforeAfter() {
   const { t } = useLang()
@@ -116,8 +116,24 @@ export function BeforeAfter() {
           pausedRef.current = false
         }}
       >
-        {/* Avant : le mur d'onglets */}
-        <div aria-hidden="true" className="absolute inset-0">
+        {/* Après : la même navigation, rangée (toujours entière sous le mur) */}
+        <img
+          src="/screenshots/dashboard-pages.png"
+          alt={t('compare.alt')}
+          width={1024}
+          height={604}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
+
+        {/* Avant : le mur d'onglets, découpé par le séparateur */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[#26332b]"
+          style={{ clipPath: 'inset(0 calc(100% - var(--split, 100%)) 0 0)' }}
+        >
           <div className="grid h-full w-full grid-cols-4 content-start gap-1.5 p-3 sm:grid-cols-6 sm:gap-2 sm:p-4 lg:grid-cols-8 lg:p-5">
             {WALL.map((tab, index) => (
               <div
@@ -134,35 +150,18 @@ export function BeforeAfter() {
           </div>
         </div>
 
-        {/* Après : un seul onglet, et les pages rangées */}
-        <div className="absolute inset-0 flex flex-col" style={{ clipPath: 'inset(0 0 0 var(--split, 92%))' }}>
-          <div className="flex h-10 shrink-0 items-end gap-1 bg-[#efe8d8] px-3 pt-1.5">
-            <div className="flex h-8 items-center gap-1.5 rounded-t-lg bg-[#fcf9f0] px-3 text-[12px] text-[#26312a]">
-              <span className="size-2.5 rounded-full bg-[#e8a13c]" />
-              <span className="font-medium">Filnest</span>
-            </div>
-          </div>
-          <img
-            src="/screenshots/dashboard-overview.png"
-            alt={t('compare.alt')}
-            width={1280}
-            height={800}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            className="min-h-0 w-full flex-1 object-cover object-top"
-          />
-        </div>
-
-        {/* Poignée */}
+        {/* Poignée : la ligne suit le séparateur, le bouton reste dans le cadre. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute top-0 bottom-0 w-0.5 -translate-x-1/2 bg-[#e8a13c]"
-          style={{ left: 'var(--split, 92%)' }}
+          style={{ left: 'var(--split, 100%)' }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#e8a13c] text-[#241a08]"
+          style={{ left: 'clamp(22px, var(--split, 100%), calc(100% - 22px))' }}
         >
-          <span className="absolute top-1/2 left-1/2 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#e8a13c] text-[#241a08]">
-            <ChevronsLeftRight className="size-4" aria-hidden="true" />
-          </span>
+          <ChevronsLeftRight className="size-4" aria-hidden="true" />
         </div>
 
         {/* Contrôle clavier et tactile (invisible, au-dessus de la comparaison). */}
