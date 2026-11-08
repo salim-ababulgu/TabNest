@@ -53,7 +53,7 @@ export function FeedbackPanel({ onDone }: { onDone?: () => void }) {
   }
 
   function send() {
-    const subject = `[TabNest] ${t(`feedback.cat.${category}`)}`
+    const subject = `[Filnest] ${t(`feedback.cat.${category}`)}`
     const body = buildBody()
     window.location.href = `mailto:salimababulgu@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     onDone?.()

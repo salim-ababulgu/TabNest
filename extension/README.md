@@ -1,4 +1,4 @@
-# Extension TabNest Capture
+# Extension Filnest Capture
 
 Capture automatiquement les pages que vous visitez et permet de les ranger directement, sans ouvrir le site.
 
@@ -8,7 +8,7 @@ Capture automatiquement les pages que vous visitez et permet de les ranger direc
 2. Activez le **Mode développeur** (en haut à droite).
 3. Cliquez sur **Charger l'extension non empaquetée**.
 4. Sélectionnez ce dossier `extension`.
-5. Épinglez l'extension, cliquez sur son icône, puis connectez-vous avec votre compte TabNest.
+5. Épinglez l'extension, cliquez sur son icône, puis connectez-vous avec votre compte Filnest.
 
 ## Connexion
 
@@ -34,7 +34,7 @@ L'identifiant s'affiche sur `chrome://extensions` (ou dans l'erreur renvoyée pa
 - **Épingler / Désépingler** : conservation sans limite.
 - **Projet** : range la page dans l'un de vos projets (ou « Aucun projet »).
 - **Capturer cette page** : force la capture de l'onglet courant.
-- **Ouvrir TabNest** : accède au tableau de bord complet (facultatif).
+- **Ouvrir Filnest** : accède au tableau de bord complet (facultatif).
 
 ## Configuration
 
@@ -53,7 +53,7 @@ Le popup existe en **FR / EN / ES / 中文**. La langue choisie dans l'extension
 - **Créer** : capture automatique, « Capturer cette page », import historique/favoris.
 - **Lire** : titre + domaine de l'onglet, état de la page, projets, compteur.
 - **Mettre à jour** : étagère (À retenir / À finir / Piste / À décider), épingle, projet.
-- **Supprimer / restaurer** : « Retirer de TabNest » (archivage doux, la page reste dans les archives du site) et « Restaurer dans TabNest » pour une page archivée.
+- **Supprimer / restaurer** : « Retirer de Filnest » (archivage doux, la page reste dans les archives du site) et « Restaurer dans Filnest » pour une page archivée.
 
 Le formulaire de connexion valide l'e-mail par expression régulière et impose 6 caractères minimum ; le bouton reste désactivé tant que tout n'est pas valide. Le popup suit le mode clair/sombre du système et affiche des squelettes pendant le chargement.
 

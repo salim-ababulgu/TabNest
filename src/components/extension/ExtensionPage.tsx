@@ -19,7 +19,7 @@ export function ExtensionPage() {
             <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
               <Sparkles className="size-4" />
             </span>
-            <span className="font-heading text-lg font-semibold">TabNest</span>
+            <span className="font-heading text-lg font-semibold">Filnest</span>
           </a>
           <div className="flex items-center gap-3">
             <ThemeToggle />

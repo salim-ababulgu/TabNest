@@ -1356,7 +1356,7 @@ export function Dashboard() {
             <Sparkles className="size-4" aria-hidden="true" />
           </span>
           {!sidebarCollapsed && (
-            <span className="font-heading text-xl font-semibold">TabNest</span>
+            <span className="font-heading text-xl font-semibold">Filnest</span>
           )}
           <button
             type="button"
@@ -1452,7 +1452,7 @@ export function Dashboard() {
             <span className="flex size-7 items-center justify-center rounded-lg bg-lime text-lime-foreground">
               <Sparkles className="size-4" />
             </span>
-            <span className="font-heading text-lg font-semibold">TabNest</span>
+            <span className="font-heading text-lg font-semibold">Filnest</span>
           </div>
           <p className="hidden text-sm text-muted-foreground md:block">{formatToday()}</p>
           <div className="flex items-center gap-1.5 md:gap-2">

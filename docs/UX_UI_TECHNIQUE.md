@@ -1,13 +1,13 @@
-# TabNest — Document technique UX/UI & Frontend
+# Filnest — Document technique UX/UI & Frontend
 
 > Rédigé sous l'angle « développeur frontend senior + designer UX/UI senior ».
-> Version : 1.0 — novembre 2025 · Projet : TabNest (web + extension Chrome MV3)
+> Version : 1.0 — novembre 2025 · Projet : Filnest (web + extension Chrome MV3)
 
 ---
 
 ## 1. Vision produit & principes UX
 
-**Promesse centrale** : *TabNest ne te demande pas de choisir quoi garder. Il te demande **pourquoi** tu gardes.*
+**Promesse centrale** : *Filnest ne te demande pas de choisir quoi garder. Il te demande **pourquoi** tu gardes.*
 
 Le produit remplace la question binaire « favori ou pas ? » par **4 intentions** qui couvrent les raisons réelles pour lesquelles on garde des onglets :
 
@@ -86,7 +86,7 @@ GSAP est le moteur d'animation unique. Trois plugins utilisés : **core**, **Scr
 
 ### Deux familles d'animations
 1. **Déclenchées** : entrées au scroll (IntersectionObserver + tween), apparitions de modales (shadcn/Radix), hovers, compteurs, secousse d'erreur.
-2. **Scrubées** (cinématique) : le hero de la landing est une **scène sticky de 280 vh** pilotée par `ScrollTrigger.scrub` — le texte s'efface, les fenêtres convergent, le logo apparaît, la page TabNest se révèle. Revenir en arrière **rembobine** la séquence.
+2. **Scrubées** (cinématique) : le hero de la landing est une **scène sticky de 280 vh** pilotée par `ScrollTrigger.scrub` — le texte s'efface, les fenêtres convergent, le logo apparaît, la page Filnest se révèle. Revenir en arrière **rembobine** la séquence.
 
 ### Inventaire des animations actuelles
 | Écran | Animation | Technique |

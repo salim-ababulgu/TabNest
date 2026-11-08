@@ -2,7 +2,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
 
 const IGNORED =
   /^(chrome|edge|about|chrome-extension|devtools|view-source|file|data|blob):/i
-const APP_HOSTS = ['localhost:5173', '127.0.0.1:5173', 'tabnest-alb.pages.dev']
+const APP_HOSTS = ['localhost:5173', '127.0.0.1:5173', 'filnest.pages.dev']
 const CAPTURE_COOLDOWN_MS = 15000
 const lastCaptured = new Map()
 
@@ -61,7 +61,7 @@ async function refreshSession(session) {
       body: JSON.stringify({ refresh_token: session.refresh_token }),
     })
     if (!res.ok) {
-      console.warn('[TabNest] rafraîchissement de session échoué', res.status)
+      console.warn('[Filnest] rafraîchissement de session échoué', res.status)
       await chrome.storage.local.remove('session')
       return null
     }
@@ -74,7 +74,7 @@ async function refreshSession(session) {
     await chrome.storage.local.set({ session: next })
     return next
   } catch (error) {
-    console.warn('[TabNest] rafraîchissement de session : erreur réseau', error)
+    console.warn('[Filnest] rafraîchissement de session : erreur réseau', error)
     return null
   }
 }
@@ -168,7 +168,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
       { headers },
     )
     if (!existingRes.ok) {
-      console.warn('[TabNest] lecture de la page échouée', existingRes.status)
+      console.warn('[Filnest] lecture de la page échouée', existingRes.status)
       return
     }
     const rows = await existingRes.json()
@@ -212,7 +212,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
         body,
       )
       if (!updateRes.ok) {
-        console.warn('[TabNest] mise à jour de la page échouée', updateRes.status)
+        console.warn('[Filnest] mise à jour de la page échouée', updateRes.status)
         return
       }
     } else {
@@ -234,16 +234,16 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
         },
       )
       if (!insertRes.ok) {
-        console.warn('[TabNest] insertion de la page échouée', insertRes.status)
+        console.warn('[Filnest] insertion de la page échouée', insertRes.status)
         return
       }
     }
 
-    console.log('[TabNest] capturée', increment ? '(visite)' : '(maj)', url)
+    console.log('[Filnest] capturée', increment ? '(visite)' : '(maj)', url)
     await chrome.storage.local.set({ lastCapture: { url, at: now } })
     await bumpBadge()
   } catch (error) {
-    console.warn('[TabNest] capture : erreur réseau', error)
+    console.warn('[Filnest] capture : erreur réseau', error)
   }
 }
 
@@ -275,7 +275,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 })
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('[TabNest] extension installée / mise à jour')
+  console.log('[Filnest] extension installée / mise à jour')
   void syncAutoCloseAlarm()
   void updateBadge()
 })
@@ -360,7 +360,7 @@ async function fetchPageRow(session, url) {
   return Array.isArray(rows) && rows.length > 0 ? rows[0] : null
 }
 
-/** Retire la page de TabNest (archivage doux, réversible). */
+/** Retire la page de Filnest (archivage doux, réversible). */
 async function removePageByUrl() {
   const session = await getSession()
   if (!session) return { ok: false, error: 'Non connecté.' }
@@ -441,7 +441,7 @@ async function classify(message) {
 
   let row = await fetchPageRow(session, tab.url)
   if (row?.deleted_at) {
-    return { ok: false, error: 'Page retirée de TabNest : restaure-la d’abord.' }
+    return { ok: false, error: 'Page retirée de Filnest : restaure-la d’abord.' }
   }
   if (!row) {
     // Deux clics : on capture la page à la volée, puis on la range.
@@ -544,7 +544,7 @@ async function importUrls(entries) {
       body: JSON.stringify(batch),
     })
     if (res.ok) imported += batch.length
-    else console.warn('[TabNest] import de pages échoué', res.status)
+    else console.warn('[Filnest] import de pages échoué', res.status)
   }
 
   await chrome.storage.local.set({
@@ -635,7 +635,7 @@ async function closeExpiredTabs() {
   }
   if (closed > 0) {
     await chrome.storage.local.set({ lastAutoClose: { count: closed, at: Date.now() } })
-    console.log('[TabNest] onglets expirés fermés :', closed)
+    console.log('[Filnest] onglets expirés fermés :', closed)
   }
   return { ok: true, closed }
 }

@@ -121,7 +121,7 @@ export function MobileMenu({
             <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
               <Sparkles className="size-4" aria-hidden="true" />
             </span>
-            <span className="font-heading text-lg font-semibold">TabNest</span>
+            <span className="font-heading text-lg font-semibold">Filnest</span>
           </SheetTitle>
         </SheetHeader>
 

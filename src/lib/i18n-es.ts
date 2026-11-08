@@ -2,7 +2,7 @@ import type { Entry } from '@/lib/i18n'
 
 // Dictionnaire espagnol (landing + produit). Clés identiques aux dictionnaires FR/EN.
 export const ES_ALL: Record<string, Entry> = {
-  'hero.h1a': 'TabNest guarda las páginas',
+  'hero.h1a': 'Filnest guarda las páginas',
   'hero.h1b': 'que usted visita.',
   'hero.sub':
     'Cierra tus pestañas, tus páginas se quedan. Una extensión que guarda tus páginas automáticamente, las organiza por proyectos y les da una vida útil. Las que caducan pasan a los archivos, donde puedes restaurarlas. Se acabaron las 50 pestañas abiertas por miedo a perder el hilo.',
@@ -21,7 +21,7 @@ export const ES_ALL: Record<string, Entry> = {
   'nav.langTitle': 'Cambiar a español',
   'nav.langAria': 'Cambiar de idioma',
 
-  'marquee.label': 'Tipos de páginas que TabNest conserva',
+  'marquee.label': 'Tipos de páginas que Filnest conserva',
   'marquee.items': [
     'Documentación',
     'Oferta de empleo',
@@ -42,11 +42,11 @@ export const ES_ALL: Record<string, Entry> = {
   'steps.s2.text': 'Cada página que visita se guarda sin hacer nada. El ruido se queda fuera.',
   'steps.s3.title': 'Recupérelo todo',
   'steps.s3.text': 'Sus páginas se organizan por sitios y proyectos, con una vida útil.',
-  'steps.alt1': 'El panel de TabNest en el primer inicio de sesión',
+  'steps.alt1': 'El panel de Filnest en el primer inicio de sesión',
   'steps.alt2': 'Los sitios guardados, apilados por visitas',
   'steps.alt3': 'El detalle de una página: su motivo y su vida útil',
 
-  'bento.title': 'Lo que TabNest hace de verdad.',
+  'bento.title': 'Lo que Filnest hace de verdad.',
   'bento.sub':
     'No es otro gestor de marcadores más. Un sistema que decide con usted y olvida por usted.',
   'bento.b1.title': 'Cuatro motivos para guardar',
@@ -63,11 +63,11 @@ export const ES_ALL: Record<string, Entry> = {
   'bento.b6.title': 'Separado por cuenta',
   'bento.b6.text': 'Sus páginas solo son visibles para usted, nunca para otro usuario.',
 
-  'comparison.title': 'Un gestor de pestañas ordena. TabNest recuerda.',
+  'comparison.title': 'Un gestor de pestañas ordena. Filnest recuerda.',
   'comparison.sub':
-    'Las extensiones clásicas guardan sesiones o marcadores en un solo navegador. TabNest guarda la página con su intención y su vida útil, y la recupera en todas partes.',
+    'Las extensiones clásicas guardan sesiones o marcadores en un solo navegador. Filnest guarda la página con su intención y su vida útil, y la recupera en todas partes.',
   'comparison.local': 'Una extensión local',
-  'comparison.tabnest': 'TabNest',
+  'comparison.tabnest': 'Filnest',
   'comparison.r1.label': 'Qué se guarda',
   'comparison.r1.local': 'Una sesión del navegador, o un marcador guardado en una carpeta.',
   'comparison.r1.tabnest': 'La propia página, con el motivo para guardarla y su fecha de expiración.',
@@ -91,7 +91,7 @@ export const ES_ALL: Record<string, Entry> = {
   'pricing.waitlist': 'Avísame cuando abran las ofertas',
   'pricing.title': 'Gratis para empezar.',
   'pricing.sub':
-    'TabNest seguirá siendo gratis para guardar sus páginas. Los planes de pago añadirán comodidad, nunca lo esencial.',
+    'Filnest seguirá siendo gratis para guardar sus páginas. Los planes de pago añadirán comodidad, nunca lo esencial.',
   'pricing.rec': 'Recomendado',
   'pricing.cta.free': 'Empezar gratis',
   'pricing.cta.choose': 'Elegir este plan',
@@ -99,7 +99,7 @@ export const ES_ALL: Record<string, Entry> = {
   'pricing.note':
     'Los pagos aún no están abiertos: la actividad está en proceso de registro. Los precios mostrados son orientativos y no constituyen una oferta de venta.',
   'pricing.noteReady':
-    'Pago seguro con Lemon Squeezy, vendedor registrado. TabNest no almacena ningún dato bancario. Puede cancelar en cualquier momento.',
+    'Pago seguro con Lemon Squeezy, vendedor registrado. Filnest no almacena ningún dato bancario. Puede cancelar en cualquier momento.',
   'plans.free.name': 'Descubrimiento',
   'plans.free.period': 'para siempre',
   'plans.free.desc': 'No pierda el hilo, sin pagar nada.',
@@ -128,7 +128,7 @@ export const ES_ALL: Record<string, Entry> = {
     'Soporte prioritario',
   ],
 
-  'faq.q1': '¿TabNest lee el contenido de mis páginas?',
+  'faq.q1': '¿Filnest lee el contenido de mis páginas?',
   'faq.a1':
     'No. Solo se guardan los metadatos públicos: dirección, título, icono del sitio, imagen para compartir y color dominante. Sin capturas de pantalla, sin texto de la página.',
   'faq.q2': '¿Dónde se guardan mis datos?',
@@ -142,7 +142,7 @@ export const ES_ALL: Record<string, Entry> = {
     'Pasan a los archivos y dejan de mostrarse. Puede eliminarlas definitivamente en cualquier momento, y al eliminar su cuenta se borran todos sus datos.',
   'faq.q5': '¿Por qué no una extensión de gestión de pestañas o marcadores?',
   'faq.a5':
-    'Las extensiones clásicas guardan sesiones o marcadores en un solo navegador. TabNest guarda la página con el motivo para conservarla y una vida útil, y la recupera en todos sus dispositivos gracias a su cuenta.',
+    'Las extensiones clásicas guardan sesiones o marcadores en un solo navegador. Filnest guarda la página con el motivo para conservarla y una vida útil, y la recupera en todos sus dispositivos gracias a su cuenta.',
   'faq.q6': '¿Si cambio de ordenador, recupero mis páginas?',
   'faq.a6':
     'Sí. Sus páginas están en su cuenta, no en el navegador: inicie sesión desde otro dispositivo y allí estarán.',
@@ -152,7 +152,7 @@ export const ES_ALL: Record<string, Entry> = {
   'faq.q8': '¿Qué pasa si cierro una pestaña o si el navegador se reinicia?',
   'faq.a8':
     'No se pierde nada: la página ya se guardó en el momento de la visita. Es lo contrario de una sesión que depende del navegador.',
-  'faq.q9': '¿TabNest funciona en el móvil?',
+  'faq.q9': '¿Filnest funciona en el móvil?',
   'faq.a9':
     'La extensión está disponible en los navegadores de escritorio (Chrome, Edge). Los navegadores móviles limitan las extensiones; estamos trabajando en una solución para teléfonos.',
   'faq.q10': '¿Es gratis?',
@@ -162,16 +162,16 @@ export const ES_ALL: Record<string, Entry> = {
   'split.principle.title': 'Usted no guarda pestañas. Guarda intenciones.',
   'split.principle.text':
     'Leer, comparar, postular, comprar, aprender. Cerrar una página da la sensación de abandonar lo que quería hacer con ella.',
-  'split.mobile.alt': 'TabNest en el móvil: las páginas guardadas, ordenadas por sitio',
-  'split.dark': 'Reunir las páginas no basta. Si no, TabNest sería solo un marcador más.',
-  'split.auto.title': 'TabNest entiende la página.',
+  'split.mobile.alt': 'Filnest en el móvil: las páginas guardadas, ordenadas por sitio',
+  'split.dark': 'Reunir las páginas no basta. Si no, Filnest sería solo un marcador más.',
+  'split.auto.title': 'Filnest entiende la página.',
   'split.auto.text':
     'Una documentación visitada cuatro veces no vale lo mismo que una oferta expirada abierta una sola vez.',
-  'split.detail.alt': 'El detalle de una página en TabNest: motivo, vida útil y visitas',
+  'split.detail.alt': 'El detalle de una página en Filnest: motivo, vida útil y visitas',
   'split.projects.title': 'Las páginas no viven solas. Pertenecen a sus proyectos.',
   'split.projects.text':
-    'Una oferta, una comparativa y una documentación solo tienen sentido si se relacionan con lo que usted intenta hacer. TabNest crea ese vínculo y lo archiva todo cuando el proyecto termina.',
-  'split.grid.alt': 'Los sitios apilados en TabNest, con los proyectos en el menú',
+    'Una oferta, una comparativa y una documentación solo tienen sentido si se relacionan con lo que usted intenta hacer. Filnest crea ese vínculo y lo archiva todo cuando el proyecto termina.',
+  'split.grid.alt': 'Los sitios apilados en Filnest, con los proyectos en el menú',
   'split.focus.title': 'Su navegador por fin puede volver a ser un espacio de trabajo.',
   'split.focus.l1': 'Las páginas importantes siguen estando accesibles.',
   'split.focus.l2': 'Las páginas temporales desaparecen de forma natural.',
@@ -179,7 +179,7 @@ export const ES_ALL: Record<string, Entry> = {
   'split.focus.badge': 'pestaña abierta',
   'split.focus.number': '1',
 
-  'cta.title': 'Cierre todas las demás. Quédese con TabNest.',
+  'cta.title': 'Cierre todas las demás. Quédese con Filnest.',
   'cta.email': 'Su dirección de correo electrónico',
   'cta.emailPlaceholder': 'usted@ejemplo.es',
   'cta.button': 'Empezar',
@@ -187,7 +187,7 @@ export const ES_ALL: Record<string, Entry> = {
 
   'privacy.title': 'Sus páginas siguen siendo suyas.',
   'privacy.text':
-    'TabNest guarda la dirección, el título y la imagen pública de sus páginas. Sin capturas de pantalla, sin contenido privado, sin reventa. Usted elimina lo que quiera, cuando quiera.',
+    'Filnest guarda la dirección, el título y la imagen pública de sus páginas. Sin capturas de pantalla, sin contenido privado, sin reventa. Usted elimina lo que quiera, cuando quiera.',
 
   'footer.tagline': 'Una pestaña para no perder el hilo.',
   'footer.legalNotice': 'Aviso legal',
@@ -274,7 +274,7 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.noAlerts': 'No hay alertas. Todo está ordenado.',
   'dash.hero.title': 'Lo importante vuelve en el momento justo.',
   'dash.hero.sub':
-    'Cierre sus pestañas con la mente tranquila. TabNest filtra el ruido, conserva lo importante y se lo recuerda cuando hace falta.',
+    'Cierre sus pestañas con la mente tranquila. Filnest filtra el ruido, conserva lo importante y se lo recuerda cuando hace falta.',
   'dash.pagesKept': '{n} páginas guardadas',
   'dash.onboarding.title': 'Tres pasos para empezar',
   'dash.onboarding.progress': '{done} de {total} hechos',
@@ -331,7 +331,7 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.deleteDesc': '«{t}» se quitará de su lista.',
   'dash.autoCloseTitle': 'Cerrar pestañas caducadas',
   'dash.autoCloseDesc':
-    'Desde la extensión TabNest: cierra las pestañas caducadas, inactivas y no fijadas. Las páginas siguen en TabNest.',
+    'Desde la extensión Filnest: cierra las pestañas caducadas, inactivas y no fijadas. Las páginas siguen en Filnest.',
   'dash.autoCloseWhere': 'Ajuste en la extensión',
   'dash.deleteAccount': 'Eliminar mi cuenta',
   'dash.deleteAccountDesc': 'Borra definitivamente tus páginas, proyectos y cuenta.',
@@ -343,7 +343,7 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.loadTimeout': 'La conexión es demasiado lenta. Revisa tu red e inténtalo de nuevo.',
   'dash.retry': 'Reintentar',
   'dash.mobileReadOnly':
-    'En móvil, TabNest es de solo lectura: la captura automática funciona con la extensión en el ordenador.',
+    'En móvil, Filnest es de solo lectura: la captura automática funciona con la extensión en el ordenador.',
   'pocket.title': 'Importar desde Pocket',
   'pocket.desc': 'Pocket cerró: recupera tus enlaces con su exportación HTML. Las etiquetas «terminar», «pista», etc. se convierten en estantes.',
   'pocket.button': 'Elegir un archivo',
@@ -354,7 +354,7 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.toast.projectDeleted': 'Proyecto eliminado (las páginas se conservan).',
   'dash.deleteProjectTitle': '¿Eliminar este proyecto?',
   'dash.deleteProjectDesc':
-    'El proyecto «{p}» se eliminará. Las páginas siguen en TabNest, sin clasificar.',
+    'El proyecto «{p}» se eliminará. Las páginas siguen en Filnest, sin clasificar.',
 
   'dash.expiredHidden': '{n} página(s) caducada(s) están ocultas.',
   'dash.seeArchives': 'Ver archivos',
@@ -415,10 +415,10 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.extLinkedOff': 'Vinculada a su cuenta, captura desactivada.',
   'dash.extNoAccount': 'Instalada, pero no conectada. Haga clic en su icono e inicie sesión.',
   'dash.extOtherAccount': 'Vinculada a otra cuenta. Desconéctela y vuelva a conectarla con esta cuenta.',
-  'dash.extAbsent': 'No detectada. Instale la extensión de TabNest.',
+  'dash.extAbsent': 'No detectada. Instale la extensión de Filnest.',
   'dash.seeInstall': 'Ver las instrucciones de instalación',
   'dash.browserAlerts': 'Alertas del navegador',
-  'dash.browserAlertsDesc': 'Avisa cuando una página expira. TabNest debe estar abierto.',
+  'dash.browserAlertsDesc': 'Avisa cuando una página expira. Filnest debe estar abierto.',
   'dash.browserAlertsOn': 'Activadas',
   'dash.browserAlertsBlocked': 'Bloqueadas',
   'dash.browserAlertsNone': 'No disponible',
@@ -479,7 +479,7 @@ export const ES_ALL: Record<string, Entry> = {
   'auth.signupTitle': 'Crea tu nido',
   'auth.sideTitle': 'Las pestañas se cierran. Las páginas se quedan.',
   'auth.sideText':
-    'TabNest guarda las páginas que visitas, les da una vida útil y las ordena por ti.',
+    'Filnest guarda las páginas que visitas, les da una vida útil y las ordena por ti.',
   'auth.side1': 'No se pierde nada al cerrar una pestaña.',
   'auth.side2': 'Cada página tiene su vida útil y luego se archiva.',
   'auth.side3': 'Tus páginas se ordenan solas en estantes.',
@@ -531,7 +531,7 @@ export const ES_ALL: Record<string, Entry> = {
   'ext.download.meta': 'Versión 0.6.0 · instalación en 4 pasos abajo',
   'ext.title': 'Instale la extensión y conserve todo lo demás.',
   'ext.sub':
-    'La extensión es lo que hace mágico a TabNest: guarda las páginas que usted visita sin necesidad de hacer clic. Cuatro pasos, una sola vez.',
+    'La extensión es lo que hace mágico a Filnest: guarda las páginas que usted visita sin necesidad de hacer clic. Cuatro pasos, una sola vez.',
   'ext.s1.title': 'Descargue la carpeta de la extensión',
   'ext.s1.text':
     'La carpeta «extension» del proyecto contiene el manifiesto, los scripts y la interfaz de la extensión (versión de prueba).',
@@ -540,7 +540,7 @@ export const ES_ALL: Record<string, Entry> = {
     'Active el modo de desarrollador (interruptor arriba a la derecha), haga clic en «Cargar extensión descomprimida» y seleccione la carpeta.',
   'ext.s3.title': 'Conecte la extensión a su cuenta',
   'ext.s3.text':
-    'Haga clic en el icono de TabNest en la barra del navegador e inicie sesión con la dirección de correo de su cuenta de TabNest.',
+    'Haga clic en el icono de Filnest en la barra del navegador e inicie sesión con la dirección de correo de su cuenta de Filnest.',
   'ext.s4.title': 'Navegue: eso es todo',
   'ext.s4.text':
     'Cada página visitada se guarda automáticamente. Aparecerá en su panel, organizada por sitio.',
@@ -560,7 +560,7 @@ export const ES_ALL: Record<string, Entry> = {
   'usecase.c1.title': 'Terminar una candidatura',
   'usecase.c1.steps': [
     'Abre una oferta, luego otra y después el sitio de la empresa.',
-    'TabNest las ordena en el proyecto « Empleo », para terminar en 7 días.',
+    'Filnest las ordena en el proyecto « Empleo », para terminar en 7 días.',
     'Retoma el hilo donde lo dejó, desde cualquier dispositivo.',
   ],
   'usecase.c1.alt': 'Las páginas del proyecto Empleo, recuperadas en el móvil',
@@ -574,7 +574,7 @@ export const ES_ALL: Record<string, Entry> = {
   'usecase.c3.title': 'Aprender sin perder su documentación',
   'usecase.c3.steps': [
     'Una documentación de CSS visitada cuatro veces vale oro.',
-    'TabNest la guarda 30 días, siempre a mano.',
+    'Filnest la guarda 30 días, siempre a mano.',
     'Los tutoriales visitados una sola vez quedan aparte, en Recursos.',
   ],
   'usecase.c3.alt': 'Los sitios apilados por visitas, con la documentación en primer lugar',

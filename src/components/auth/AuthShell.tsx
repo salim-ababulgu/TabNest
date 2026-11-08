@@ -56,9 +56,9 @@ export function AuthShell({ children }: { children: ReactNode }) {
 
         <div className="relative flex items-center gap-2.5">
           <span className="grid size-8 place-items-center rounded-lg bg-lime text-sm font-semibold text-lime-foreground">
-            T
+            F
           </span>
-          <span className="font-heading text-lg font-semibold">TabNest</span>
+          <span className="font-heading text-lg font-semibold">Filnest</span>
         </div>
 
         <div className="relative max-w-lg">
@@ -72,7 +72,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
               <span className="size-1.5 rounded-full bg-background/25" />
               <span className="size-1.5 rounded-full bg-background/25" />
               <span className="size-1.5 rounded-full bg-background/25" />
-              <span className="ml-2 text-[10px] text-brand-cream/40">tabnest-alb.pages.dev</span>
+              <span className="ml-2 text-[10px] text-brand-cream/40">filnest.pages.dev</span>
             </div>
             <img
               src="/screenshots/dashboard-overview.png"
@@ -99,9 +99,9 @@ export function AuthShell({ children }: { children: ReactNode }) {
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 lg:hidden">
             <span className="grid size-7 place-items-center rounded-md bg-lime text-xs font-semibold text-lime-foreground">
-              T
+              F
             </span>
-            <span className="font-heading text-base font-semibold">TabNest</span>
+            <span className="font-heading text-base font-semibold">Filnest</span>
           </span>
 
           <div className="ml-auto flex items-center gap-2" role="group" aria-label="Langue">

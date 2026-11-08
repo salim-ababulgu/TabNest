@@ -59,7 +59,7 @@ function LandingContent({ onStart }: LandingProps) {
             <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
               <Sparkles className="size-4" />
             </span>
-            <span className="font-heading text-lg font-semibold text-brand-cream">TabNest</span>
+            <span className="font-heading text-lg font-semibold text-brand-cream">Filnest</span>
           </a>
           <nav className="hidden items-center gap-7 text-sm text-brand-cream/70 md:flex">
             <a href="#principe" className="transition-colors hover:text-brand-cream">
@@ -287,7 +287,7 @@ function LandingContent({ onStart }: LandingProps) {
               <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
                 <Sparkles className="size-4" />
               </span>
-              <span className="font-heading text-lg font-semibold">TabNest</span>
+              <span className="font-heading text-lg font-semibold">Filnest</span>
             </div>
             <p className="mt-3 max-w-[22ch] text-foreground/65">{t('footer.tagline')}</p>
           </div>

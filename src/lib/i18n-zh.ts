@@ -2,7 +2,7 @@ import type { Entry } from '@/lib/i18n'
 
 // 简体中文词典（落地页 + 产品）。键与 FR/EN 词典完全一致。
 export const ZH_ALL: Record<string, Entry> = {
-  'hero.h1a': 'TabNest 保存你访问的',
+  'hero.h1a': 'Filnest 保存你访问的',
   'hero.h1b': '每一个页面。',
   'hero.sub':
     '关闭标签页，页面会留下。一款自动保存页面、按项目整理、并为每页设定有效期的扩展。过期页面会进入归档，可随时恢复。再也不用因为怕丢线索而开着 50 个标签页。',
@@ -21,7 +21,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'nav.langTitle': '切换到中文',
   'nav.langAria': '切换语言',
 
-  'marquee.label': 'TabNest 保存的页面类型',
+  'marquee.label': 'Filnest 保存的页面类型',
   'marquee.items': [
     '文档',
     '招聘信息',
@@ -42,11 +42,11 @@ export const ZH_ALL: Record<string, Entry> = {
   'steps.s2.text': '你访问的每个页面都会被自动保存，无需任何操作。噪音被挡在门外。',
   'steps.s3.title': '全部找回',
   'steps.s3.text': '页面按网站和项目整理，每一页都有自己的存活期限。',
-  'steps.alt1': '首次登录时的 TabNest 仪表盘',
+  'steps.alt1': '首次登录时的 Filnest 仪表盘',
   'steps.alt2': '已保存的网站，按访问次数堆叠排列',
   'steps.alt3': '页面详情：保存理由与存活期限',
 
-  'bento.title': 'TabNest 真正做的事。',
+  'bento.title': 'Filnest 真正做的事。',
   'bento.sub': '不是又一个书签管理器，而是一个与你共同决策、替你遗忘的系统。',
   'bento.b1.title': '四种保存理由',
   'bento.b1.text': '待决定、待完成、线索、要记住。每种理由决定页面的存活期限。',
@@ -61,11 +61,11 @@ export const ZH_ALL: Record<string, Entry> = {
   'bento.b6.title': '账号之间完全隔离',
   'bento.b6.text': '你的页面只有你自己能看见，其他用户永远无法访问。',
 
-  'comparison.title': '标签管理器只会整理。TabNest 替你记住。',
+  'comparison.title': '标签管理器只会整理。Filnest 替你记住。',
   'comparison.sub':
-    '传统扩展只在一个浏览器里保存会话或书签。TabNest 连同页面的意图和存活期限一起保存，并在任何地方都能找回。',
+    '传统扩展只在一个浏览器里保存会话或书签。Filnest 连同页面的意图和存活期限一起保存，并在任何地方都能找回。',
   'comparison.local': '普通本地扩展',
-  'comparison.tabnest': 'TabNest',
+  'comparison.tabnest': 'Filnest',
   'comparison.r1.label': '保存什么',
   'comparison.r1.local': '一个浏览器会话，或一个收进文件夹的书签。',
   'comparison.r1.tabnest': '页面本身，连同保存它的理由和过期日期。',
@@ -87,7 +87,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'pricing.beta': '测试期免费：当前所有功能对所有人开放。付费方案将在一切就绪并可验证后开放。',
   'pricing.waitlist': '开放付费时通知我',
   'pricing.title': '免费开始。',
-  'pricing.sub': '保存页面，TabNest 永远免费。付费方案只增加便利，核心功能从不收费。',
+  'pricing.sub': '保存页面，Filnest 永远免费。付费方案只增加便利，核心功能从不收费。',
   'pricing.rec': '推荐',
   'pricing.cta.free': '免费开始使用',
   'pricing.cta.choose': '选择此方案',
@@ -95,7 +95,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'pricing.note':
     '支付功能尚未开放：业务注册手续正在办理中。所示价格仅供参考，不构成销售要约。',
   'pricing.noteReady':
-    '由注册商户 Lemon Squeezy 提供安全支付。TabNest 不存储任何银行卡信息。你可以随时取消。',
+    '由注册商户 Lemon Squeezy 提供安全支付。Filnest 不存储任何银行卡信息。你可以随时取消。',
   'plans.free.name': '入门版',
   'plans.free.period': '永久',
   'plans.free.desc': '留住线索，完全免费。',
@@ -124,7 +124,7 @@ export const ZH_ALL: Record<string, Entry> = {
     '优先支持',
   ],
 
-  'faq.q1': 'TabNest 会读取页面内容吗？',
+  'faq.q1': 'Filnest 会读取页面内容吗？',
   'faq.a1':
     '不会。只保存公开元数据：网址、标题、网站图标、分享图片和主色调。不截图，也不保存页面文字。',
   'faq.q2': '我的数据存在哪里？',
@@ -137,7 +137,7 @@ export const ZH_ALL: Record<string, Entry> = {
     '它们会进入归档，不再显示。你可以随时彻底删除；注销账号也会清除你的全部数据。',
   'faq.q5': '为什么不选标签页或书签管理扩展？',
   'faq.a5':
-    '传统扩展只在一个浏览器里保存会话或书签。TabNest 保存页面本身，连同保存理由和存活期限，并借助你的账号在所有设备上找回它们。',
+    '传统扩展只在一个浏览器里保存会话或书签。Filnest 保存页面本身，连同保存理由和存活期限，并借助你的账号在所有设备上找回它们。',
   'faq.q6': '换了电脑，还能找回我的页面吗？',
   'faq.a6': '可以。页面存在你的账号里，而不是浏览器里：在另一台设备上登录，它们就在那里。',
   'faq.q7': '扩展会申请哪些权限？',
@@ -145,7 +145,7 @@ export const ZH_ALL: Record<string, Entry> = {
     '读取当前页面的网址、标题、图标和主色，以及保存你的登录会话。它从不读取页面内容，看不到你的密码，也不读取你的其他标签页。历史记录与书签是两项可选权限，仅用于你主动触发的导入，可以拒绝。',
   'faq.q8': '关闭标签页或重启浏览器会怎样？',
   'faq.a8': '什么都不会丢：页面在访问时就已经保存。这与依赖浏览器的会话正好相反。',
-  'faq.q9': 'TabNest 能在手机上用吗？',
+  'faq.q9': 'Filnest 能在手机上用吗？',
   'faq.a9':
     '扩展支持桌面浏览器（Chrome、Edge）。手机浏览器对扩展有限制；我们正在开发手机端方案。',
   'faq.q10': '免费吗？',
@@ -153,15 +153,15 @@ export const ZH_ALL: Record<string, Entry> = {
 
   'split.principle.title': '你保存的不是标签页，而是意图。',
   'split.principle.text': '阅读、对比、投递、购买、学习。关闭页面，就像放弃了你本想做的事。',
-  'split.mobile.alt': '手机上的 TabNest：已保存的页面按网站分组',
-  'split.dark': '把页面收集在一起还不够，否则 TabNest 不过是又一个书签。',
-  'split.auto.title': 'TabNest 理解页面。',
+  'split.mobile.alt': '手机上的 Filnest：已保存的页面按网站分组',
+  'split.dark': '把页面收集在一起还不够，否则 Filnest 不过是又一个书签。',
+  'split.auto.title': 'Filnest 理解页面。',
   'split.auto.text': '访问过四次的文档，与只打开过一次的过期招聘信息，价值并不相同。',
-  'split.detail.alt': 'TabNest 中的页面详情：理由、期限与访问次数',
+  'split.detail.alt': 'Filnest 中的页面详情：理由、期限与访问次数',
   'split.projects.title': '页面不是孤立的，它们属于你的项目。',
   'split.projects.text':
-    '招聘信息、对比评测和文档，只有与你正在做的事联系起来才有意义。TabNest 建立这种联系，并在项目结束后统一归档。',
-  'split.grid.alt': 'TabNest 中按网站堆叠的页面，菜单中是项目',
+    '招聘信息、对比评测和文档，只有与你正在做的事联系起来才有意义。Filnest 建立这种联系，并在项目结束后统一归档。',
+  'split.grid.alt': 'Filnest 中按网站堆叠的页面，菜单中是项目',
   'split.focus.title': '你的浏览器终于可以重新成为工作空间。',
   'split.focus.l1': '重要页面始终触手可及。',
   'split.focus.l2': '临时页面自然消失。',
@@ -169,7 +169,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'split.focus.badge': '打开的标签页',
   'split.focus.number': '1',
 
-  'cta.title': '关掉其他所有标签页，留下 TabNest。',
+  'cta.title': '关掉其他所有标签页，留下 Filnest。',
   'cta.email': '你的电子邮件地址',
   'cta.emailPlaceholder': 'you@example.com',
   'cta.button': '开始使用',
@@ -177,7 +177,7 @@ export const ZH_ALL: Record<string, Entry> = {
 
   'privacy.title': '你的页面始终属于你。',
   'privacy.text':
-    'TabNest 只保存页面的网址、标题和公开图片。不截图、不保存私密内容、不转卖数据。你想删什么就删什么，随时都可以。',
+    'Filnest 只保存页面的网址、标题和公开图片。不截图、不保存私密内容、不转卖数据。你想删什么就删什么，随时都可以。',
 
   'footer.tagline': '一个标签页，留住线索。',
   'footer.legalNotice': '法律声明',
@@ -262,7 +262,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.openMenu': '打开菜单',
   'dash.noAlerts': '没有提醒，一切都已整理妥当。',
   'dash.hero.title': '重要的东西，会在恰当的时机回来。',
-  'dash.hero.sub': '放心关闭标签页。TabNest 滤掉噪音、保留重点，并在需要时提醒你。',
+  'dash.hero.sub': '放心关闭标签页。Filnest 滤掉噪音、保留重点，并在需要时提醒你。',
   'dash.pagesKept': '已保存 {n} 个页面',
   'dash.onboarding.title': '三步开始使用',
   'dash.onboarding.progress': '已完成 {done}/{total}',
@@ -316,7 +316,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.deleteTitle': '移除此页面？',
   'dash.deleteDesc': '「{t}」将从你的列表中移除。',
   'dash.autoCloseTitle': '关闭过期标签页',
-  'dash.autoCloseDesc': '在 TabNest 扩展中：自动关闭已过期、未激活且未固定的标签页。页面仍保留在 TabNest。',
+  'dash.autoCloseDesc': '在 Filnest 扩展中：自动关闭已过期、未激活且未固定的标签页。页面仍保留在 Filnest。',
   'dash.autoCloseWhere': '在扩展中设置',
   'dash.deleteAccount': '删除我的账户',
   'dash.deleteAccountDesc': '永久删除你的页面、项目和账户。',
@@ -326,7 +326,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.toast.accountDeleted': '账户已删除。',
   'dash.loadTimeout': '网络太慢。请检查网络后重试。',
   'dash.retry': '重试',
-  'dash.mobileReadOnly': '在手机上，TabNest 为只读模式：自动捕捉由电脑上的扩展完成。',
+  'dash.mobileReadOnly': '在手机上，Filnest 为只读模式：自动捕捉由电脑上的扩展完成。',
   'pocket.title': '从 Pocket 导入',
   'pocket.desc': 'Pocket 已关闭：通过它的 HTML 导出找回你的链接。「待完成」「线索」等标签会变成架子。',
   'pocket.button': '选择文件',
@@ -336,7 +336,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.toast.projectRenamed': '已重命名项目。',
   'dash.toast.projectDeleted': '已删除项目（页面已保留）。',
   'dash.deleteProjectTitle': '删除这个项目？',
-  'dash.deleteProjectDesc': '项目「{p}」将被删除。页面仍保留在 TabNest 中，只是不再归类。',
+  'dash.deleteProjectDesc': '项目「{p}」将被删除。页面仍保留在 Filnest 中，只是不再归类。',
 
   'dash.expiredHidden': '已隐藏 {n} 个过期页面。',
   'dash.seeArchives': '查看归档',
@@ -396,10 +396,10 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.extLinkedOff': '已关联你的账号，自动保存已关闭。',
   'dash.extNoAccount': '已安装但未登录。点击它的图标并登录。',
   'dash.extOtherAccount': '已关联其他账号。请先退出，再用当前账号重新连接。',
-  'dash.extAbsent': '未检测到。请安装 TabNest 扩展。',
+  'dash.extAbsent': '未检测到。请安装 Filnest 扩展。',
   'dash.seeInstall': '查看安装说明',
   'dash.browserAlerts': '浏览器提醒',
-  'dash.browserAlertsDesc': '页面过期时通知你。需要 TabNest 处于打开状态。',
+  'dash.browserAlertsDesc': '页面过期时通知你。需要 Filnest 处于打开状态。',
   'dash.browserAlertsOn': '已开启',
   'dash.browserAlertsBlocked': '已阻止',
   'dash.browserAlertsNone': '不可用',
@@ -459,7 +459,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'auth.loginTitle': '欢迎回来',
   'auth.signupTitle': '创建你的窝',
   'auth.sideTitle': '标签页会关闭，页面会留下。',
-  'auth.sideText': 'TabNest 会保存你访问的页面，给它们有效期，并自动整理。',
+  'auth.sideText': 'Filnest 会保存你访问的页面，给它们有效期，并自动整理。',
   'auth.side1': '关闭标签页也不会丢失。',
   'auth.side2': '每个页面都有有效期，之后归档。',
   'auth.side3': '页面会自动归到架子上。',
@@ -510,13 +510,13 @@ export const ZH_ALL: Record<string, Entry> = {
   'ext.download.meta': '版本 0.6.0 · 下方四步安装',
   'ext.title': '安装扩展，其余的一切自动保存。',
   'ext.sub':
-    '扩展是 TabNest 的魔法所在：无需任何点击，自动保存你访问的每个页面。四步设置，一次完成。',
+    '扩展是 Filnest 的魔法所在：无需任何点击，自动保存你访问的每个页面。四步设置，一次完成。',
   'ext.s1.title': '下载扩展文件夹',
   'ext.s1.text': '项目中的「extension」文件夹包含清单文件、脚本和扩展界面（测试版）。',
   'ext.s2.title': 'Chrome 或 Edge：打开「chrome://extensions」',
   'ext.s2.text': '开启开发者模式（右上角开关），点击「加载已解压的扩展程序」，然后选择该文件夹。',
   'ext.s3.title': '将扩展连接到你的账号',
-  'ext.s3.text': '点击浏览器工具栏中的 TabNest 图标，然后用 TabNest 账号的电子邮件地址登录。',
+  'ext.s3.text': '点击浏览器工具栏中的 Filnest 图标，然后用 Filnest 账号的电子邮件地址登录。',
   'ext.s4.title': '照常浏览：就这么简单',
   'ext.s4.text': '你访问的每个页面都会自动保存，并按网站整理后显示在仪表盘中。',
   'ext.sees.title': '扩展能看到什么，以及永远看不到什么',
@@ -534,7 +534,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'usecase.c1.title': '完成求职申请',
   'usecase.c1.steps': [
     '你打开一个招聘信息，又打开一个，接着打开公司官网。',
-    'TabNest 把它们收进《Emploi》项目，限 7 天内完成。',
+    'Filnest 把它们收进《Emploi》项目，限 7 天内完成。',
     '在任意设备上，都能从上次中断的地方接着来。',
   ],
   'usecase.c1.alt': 'Emploi 项目的页面，在手机上找回',
@@ -548,7 +548,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'usecase.c3.title': '学习时不弄丢资料',
   'usecase.c3.steps': [
     '一篇访问过四次的 CSS 文档，价值连城。',
-    'TabNest 把它保留 30 天，随时触手可及。',
+    'Filnest 把它保留 30 天，随时触手可及。',
     '只访问过一次的教程单独放在「资源」里。',
   ],
   'usecase.c3.alt': '按访问次数堆叠的网站，文档排在前面',

@@ -1,4 +1,4 @@
-# TabNest — 25 améliorations UI + 25 améliorations UX
+# Filnest — 25 améliorations UI + 25 améliorations UX
 
 > Chantier lancé le 2 novembre 2025. Chaque ligne est datée par son état :
 > ✅ fait · 🚧 en cours · ⏳ à faire · ❌ bloqué/à décider.
@@ -14,7 +14,7 @@
 | 5 | Hero statique : texte + boutons au-dessus, fenêtres en éventail coupées en bas | ✅ |
 | 6 | Bandeau défilant de **types de pages** (aucune marque, pas de faux partenariats) | ✅ |
 | 7 | « Comment ça marche » épinglé, progression au scroll, visuels qui changent | ✅ |
-| 8 | Bento grid « Ce que TabNest fait vraiment » | ✅ |
+| 8 | Bento grid « Ce que Filnest fait vraiment » | ✅ |
 | 9 | Section **tarifs** avec badge « Recommandé » et état « Bientôt disponible » | ✅ |
 | 10 | FAQ en accordéon natif (`details`) | ✅ |
 | 11 | Footer 4 colonnes (Produit / Légal / Contact + mention éditeur) | ✅ |

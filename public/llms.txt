@@ -1,9 +1,9 @@
-# TabNest
+# Filnest
 
-> TabNest est un service web français qui enregistre automatiquement les pages web que vous
+> Filnest est un service web français qui enregistre automatiquement les pages web que vous
 > visitez (via une extension de navigateur), les classe par sites et par projets, leur attribue
 > une durée de vie et les conserve pour que vous ne perdiez jamais le fil.
-> Principe produit : « TabNest ne vous demande pas de choisir quoi garder, il vous demande
+> Principe produit : « Filnest ne vous demande pas de choisir quoi garder, il vous demande
 > **pourquoi** vous gardez. »
 
 ## Ce que fait le service

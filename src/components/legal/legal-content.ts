@@ -1,4 +1,4 @@
-// Textes légaux de TabNest.
+// Textes légaux de Filnest.
 // Brouillons rédigés selon le droit français (RGPD, loi Informatique et Libertés,
 // Code de la consommation). Ils doivent être relus par un juriste avant publication.
 // Éditeur : ABA (personne physique, activité non immatriculée à ce jour).
@@ -37,7 +37,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '1. Éditeur du site',
         paragraphs: [
-          "Le site TabNest (https://tabnest-alb.pages.dev) est édité par ABA, personne physique, exerçant sous le nom commercial « TabNest ».",
+          "Le site Filnest (https://filnest.pages.dev) est édité par ABA, personne physique, exerçant sous le nom commercial « Filnest ».",
           "Contact : salimababulgu@gmail.com.",
           "L'activité n'est pas immatriculée à ce jour : aucun numéro SIRET ne peut donc être communiqué. Conformément à l'article 6, III de la LCEN, l'adresse d'un éditeur non professionnel n'est pas publiée ; elle est communiquée à l'hébergeur du site. Dès l'immatriculation de l'activité, les mentions SIRET seront ajoutées.",
           "Directeur de la publication : ABA, joignable à l'adresse salimababulgu@gmail.com.",
@@ -54,8 +54,8 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '3. Propriété intellectuelle',
         paragraphs: [
-          "La marque TabNest, le code de l'application, les textes, l'identité visuelle et les éléments graphiques du site sont protégés par le droit de la propriété intellectuelle. Toute reproduction ou réutilisation non autorisée est interdite.",
-          "Les pages web enregistrées par un utilisateur restent la propriété de leurs auteurs respectifs. TabNest n'en conserve que les métadonnées nécessaires au service (adresse, titre, aperçu public, date de visite) et met ces données à disposition de l'utilisateur concerné.",
+          "La marque Filnest, le code de l'application, les textes, l'identité visuelle et les éléments graphiques du site sont protégés par le droit de la propriété intellectuelle. Toute reproduction ou réutilisation non autorisée est interdite.",
+          "Les pages web enregistrées par un utilisateur restent la propriété de leurs auteurs respectifs. Filnest n'en conserve que les métadonnées nécessaires au service (adresse, titre, aperçu public, date de visite) et met ces données à disposition de l'utilisateur concerné.",
         ],
       },
       {
@@ -67,7 +67,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '5. Responsabilité',
         paragraphs: [
-          "TabNest met à disposition un outil d'aide à la conservation de pages web. Le service est fourni « en l'état », sans garantie de disponibilité continue, et peut évoluer. L'utilisateur reste responsable de l'usage qu'il fait des contenus qu'il enregistre.",
+          "Filnest met à disposition un outil d'aide à la conservation de pages web. Le service est fourni « en l'état », sans garantie de disponibilité continue, et peut évoluer. L'utilisateur reste responsable de l'usage qu'il fait des contenus qu'il enregistre.",
         ],
       },
       {
@@ -91,12 +91,12 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
     title: 'Politique de confidentialité',
     updated: '1er novembre 2025',
     intro:
-      "TabNest conserve les pages web que vous visitez pour que vous ne perdiez plus le fil. Cette page explique, sans jargon, quelles données nous traitons, pourquoi, pendant combien de temps, et quels sont vos droits. Nous appliquons le principe de minimisation : nous ne collectons que ce qui est nécessaire au fonctionnement du service.",
+      "Filnest conserve les pages web que vous visitez pour que vous ne perdiez plus le fil. Cette page explique, sans jargon, quelles données nous traitons, pourquoi, pendant combien de temps, et quels sont vos droits. Nous appliquons le principe de minimisation : nous ne collectons que ce qui est nécessaire au fonctionnement du service.",
     sections: [
       {
         title: '1. Responsable du traitement',
         paragraphs: [
-          "Le responsable du traitement est ABA, personne physique, exerçant sous le nom TabNest. Contact : salimababulgu@gmail.com.",
+          "Le responsable du traitement est ABA, personne physique, exerçant sous le nom Filnest. Contact : salimababulgu@gmail.com.",
           "L’activité n’est pas immatriculée à ce jour : aucun numéro SIRET ne peut donc être communiqué. Conformément à l’article 6, III de la LCEN, l’adresse d’un éditeur non professionnel n’est pas publiée ; elle est communiquée à l’hébergeur du site.",
           "Pour toute question relative à vos données : salimababulgu@gmail.com.",
         ],
@@ -221,19 +221,19 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
     title: "Conditions générales d'utilisation",
     updated: '1er novembre 2025',
     intro:
-      "Les présentes conditions générales encadrent l'utilisation de TabNest, service web qui conserve automatiquement les pages que vous visitez. En créant un compte, vous les acceptez.",
+      "Les présentes conditions générales encadrent l'utilisation de Filnest, service web qui conserve automatiquement les pages que vous visitez. En créant un compte, vous les acceptez.",
     sections: [
       {
         title: '1. Éditeur du service',
         paragraphs: [
-          "TabNest est édité par ABA, personne physique, sous le nom TabNest. Contact : salimababulgu@gmail.com.",
+          "Filnest est édité par ABA, personne physique, sous le nom Filnest. Contact : salimababulgu@gmail.com.",
           "L’activité n’est pas immatriculée à ce jour : aucun numéro SIRET ne peut donc être communiqué. Conformément à l’article 6, III de la LCEN, l’adresse d’un éditeur non professionnel n’est pas publiée ; elle est communiquée à l’hébergeur du site. Dès l’immatriculation de l’activité, les mentions SIRET seront ajoutées.",
         ],
       },
       {
         title: '2. Objet du service',
         paragraphs: [
-          "TabNest enregistre les pages web que vous consultez (via son extension de navigateur), les classe par site et par projet, leur attribue une durée de vie et vous permet de les retrouver. Le service est fourni « en l’état », dans le cadre d’un usage personnel.",
+          "Filnest enregistre les pages web que vous consultez (via son extension de navigateur), les classe par site et par projet, leur attribue une durée de vie et vous permet de les retrouver. Le service est fourni « en l’état », dans le cadre d’un usage personnel.",
         ],
       },
       {
@@ -285,7 +285,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '9. Propriété intellectuelle',
         paragraphs: [
-          "Le nom TabNest, le logo, l’interface et le code du service sont protégés. Nous vous accordons un droit d’usage personnel, non exclusif et non transférable du service. Les pages enregistrées restent la propriété de leurs éditeurs respectifs.",
+          "Le nom Filnest, le logo, l’interface et le code du service sont protégés. Nous vous accordons un droit d’usage personnel, non exclusif et non transférable du service. Les pages enregistrées restent la propriété de leurs éditeurs respectifs.",
         ],
       },
       {
@@ -315,13 +315,13 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
     title: 'Cookies et traceurs',
     updated: '1er novembre 2025',
     intro:
-      "Cette page décrit ce que TabNest stocke sur votre appareil. Nous n'utilisons aujourd'hui aucun traceur publicitaire ni cookie de réseaux sociaux. La mesure d'audience (PostHog) n'est pas activée actuellement : le code est en place mais reste inactif tant qu'aucune clé n'est configurée, et elle ne se chargera qu'avec votre accord.",
+      "Cette page décrit ce que Filnest stocke sur votre appareil. Nous n'utilisons aujourd'hui aucun traceur publicitaire ni cookie de réseaux sociaux. La mesure d'audience (PostHog) n'est pas activée actuellement : le code est en place mais reste inactif tant qu'aucune clé n'est configurée, et elle ne se chargera qu'avec votre accord.",
     sections: [
       {
         title: '1. Le principe',
         paragraphs: [
           "La CNIL distingue les traceurs strictement nécessaires au service (dispense de consentement) des traceurs qui ne le sont pas (publicité, mesure d’audience, réseaux sociaux), qui exigent votre consentement préalable.",
-          "TabNest n’utilise aujourd’hui que des traceurs strictement nécessaires, c’est pourquoi vous ne voyez pas de bandeau : la mesure d’audience est désactivée. Si elle est activée plus tard, un bandeau bloquant apparaîtra au premier passage et rien ne sera chargé avant votre choix.",
+          "Filnest n’utilise aujourd’hui que des traceurs strictement nécessaires, c’est pourquoi vous ne voyez pas de bandeau : la mesure d’audience est désactivée. Si elle est activée plus tard, un bandeau bloquant apparaîtra au premier passage et rien ne sera chargé avant votre choix.",
         ],
       },
       {
@@ -386,7 +386,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
     title: 'Remboursement et rétractation',
     updated: '1er novembre 2025',
     intro:
-      "Le service TabNest est actuellement gratuit. Cette page décrit les règles qui s'appliqueront aux formules payantes, lorsqu'elles seront proposées, ainsi que vos droits légaux.",
+      "Le service Filnest est actuellement gratuit. Cette page décrit les règles qui s'appliqueront aux formules payantes, lorsqu'elles seront proposées, ainsi que vos droits légaux.",
     sections: [
       {
         title: '1. Qui vend le service',
@@ -404,7 +404,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: '3. Cas du contenu numérique fourni immédiatement',
         paragraphs: [
-          "L’accès à TabNest est fourni immédiatement après le paiement. Conformément à l’article L221-28 13° du Code de la consommation, vous pouvez renoncer à votre droit de rétractation en cochant une case expresse au moment de l’achat, reconnaissant que l’exécution commence immédiatement et que vous perdez votre droit de rétractation.",
+          "L’accès à Filnest est fourni immédiatement après le paiement. Conformément à l’article L221-28 13° du Code de la consommation, vous pouvez renoncer à votre droit de rétractation en cochant une case expresse au moment de l’achat, reconnaissant que l’exécution commence immédiatement et que vous perdez votre droit de rétractation.",
           "Si cette case n’est pas cochée, le droit de rétractation de 14 jours s’applique normalement.",
         ],
       },

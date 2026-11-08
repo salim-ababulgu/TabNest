@@ -1,4 +1,4 @@
-# TabNest — Conformité, données et accessibilité
+# Filnest — Conformité, données et accessibilité
 
 > Audit technique et rédactionnel (novembre 2025). Ce document accompagne les pages légales
 > publiées dans l’application (`/confidentialite`, `/cgu`, `/cookies`, `/remboursement`).

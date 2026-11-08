@@ -1,7 +1,7 @@
-# TabNest — Configuration Lemon Squeezy (paiements)
+# Filnest — Configuration Lemon Squeezy (paiements)
 
 > Guide opérationnel. Lemon Squeezy est retenu comme **vendeur enregistré (merchant of record)** :
-> il encaisse, facture, gère la TVA et les remboursements. TabNest ne stocke **aucune donnée
+> il encaisse, facture, gère la TVA et les remboursements. Filnest ne stocke **aucune donnée
 > bancaire**. Ce document décrit la configuration à faire côté compte + ce qui est déjà prêt dans le code.
 
 ## 0. Prérequis — à ne pas sauter
@@ -15,7 +15,7 @@
 ## 1. Créer la boutique
 
 1. Se connecter à Lemon Squeezy → **Store → Create store**.
-2. Nom : `TabNest`. URL : `tabnest.lemonsqueezy.com` (ou variante disponible).
+2. Nom : `Filnest`. URL : `tabnest.lemonsqueezy.com` (ou variante disponible).
 3. Renseigner l'adresse de facturation, la devise (**EUR**) et la langue (**français**).
 
 ## 2. Créer les produits
@@ -24,8 +24,8 @@ Pour chaque formule payante (voir `src/lib/billing.ts`) :
 
 | Produit | Prix | Type |
 |---|---|---|
-| TabNest Plus | 4,99 € / mois | Abonnement mensuel |
-| TabNest Pro | 9,99 € / mois | Abonnement mensuel |
+| Filnest Plus | 4,99 € / mois | Abonnement mensuel |
+| Filnest Pro | 9,99 € / mois | Abonnement mensuel |
 
 Pour chacun : **Products → New product** → type *Subscription* → prix → description → **Save**.
 
@@ -61,7 +61,7 @@ landing).
 
 ## 6. Webhooks (étape suivante, quand les comptes existeront)
 
-Objectif : savoir dans TabNest qui a un abonnement actif.
+Objectif : savoir dans Filnest qui a un abonnement actif.
 
 1. **Settings → Webhooks → Add webhook**, URL : une **Edge Function Supabase** (à créer),
    par exemple `https://<projet>.supabase.co/functions/v1/ls-webhook`.

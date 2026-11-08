@@ -1,7 +1,7 @@
-# AGENTS.md — TabNest
+# AGENTS.md — Filnest
 
 ## Ce que fait le produit
-TabNest est un service web qui conserve automatiquement les pages web
+Filnest est un service web qui conserve automatiquement les pages web
 de l'utilisateur, pour qu'aucun onglet fermé ne soit perdu et qu'aucune
 page utile ne soit oubliée.
 

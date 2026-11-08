@@ -20,7 +20,7 @@ export function LegalPage({ slug }: { slug: LegalSlug }) {
             <span className="flex size-7 items-center justify-center rounded-md bg-lime text-lime-foreground">
               <Sparkles className="size-4" />
             </span>
-            <span className="font-heading text-lg font-semibold">TabNest</span>
+            <span className="font-heading text-lg font-semibold">Filnest</span>
           </a>
           <div className="flex items-center gap-3">
             <ThemeToggle />
@@ -125,7 +125,7 @@ export function LegalPage({ slug }: { slug: LegalSlug }) {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-3xl px-6 py-6 text-xs text-muted-foreground">
-          TabNest, édité par ABA (personne physique, activité non immatriculée à ce jour). Contact :
+          Filnest, édité par ABA (personne physique, activité non immatriculée à ce jour). Contact :
           salimababulgu@gmail.com. Ces documents doivent être relus par un professionnel du droit.
         </div>
       </footer>

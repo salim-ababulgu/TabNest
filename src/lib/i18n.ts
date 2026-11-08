@@ -8,7 +8,7 @@ export type Entry = string | string[]
 type Dict = Record<string, Entry>
 
 const FR: Dict = {
-  'hero.h1a': 'TabNest garde les pages',
+  'hero.h1a': 'Filnest garde les pages',
   'hero.h1b': 'que vous visitez.',
   'hero.sub':
     "Vous fermez vos onglets, vos pages restent. Une extension qui enregistre automatiquement vos pages, les range par projets et leur donne une durée de vie. Celles qui expirent passent dans les archives, restaurables. Fini les 50 onglets ouverts par peur de perdre le fil.",
@@ -27,7 +27,7 @@ const FR: Dict = {
   'nav.langTitle': 'Passer en français',
   'nav.langAria': 'Changer de langue',
 
-  'marquee.label': 'Types de pages que TabNest conserve',
+  'marquee.label': 'Types de pages que Filnest conserve',
   'marquee.items': [
     'Documentation',
     "Offre d'emploi",
@@ -48,11 +48,11 @@ const FR: Dict = {
   'steps.s2.text': 'Chaque page visitée est enregistrée, sans rien faire. Le bruit reste dehors.',
   'steps.s3.title': 'Retrouvez tout',
   'steps.s3.text': 'Vos pages sont rangées par sites et projets, avec une durée de vie.',
-  'steps.alt1': 'Le tableau de bord TabNest à la première connexion',
+  'steps.alt1': 'Le tableau de bord Filnest à la première connexion',
   'steps.alt2': 'Les sites enregistrés, empilés par visites',
   'steps.alt3': "Le détail d'une page : sa raison et sa durée de vie",
 
-  'bento.title': 'Ce que TabNest fait vraiment.',
+  'bento.title': 'Ce que Filnest fait vraiment.',
   'bento.sub':
     'Pas un énième gestionnaire de favoris. Un système qui décide avec vous, et oublie pour vous.',
   'bento.b1.title': 'Quatre raisons de garder',
@@ -69,11 +69,11 @@ const FR: Dict = {
   'bento.b6.title': 'Cloisonné par compte',
   'bento.b6.text': 'Vos pages ne sont visibles que par vous, jamais par un autre utilisateur.',
 
-  'comparison.title': "Un gestionnaire d'onglets range. TabNest se souvient.",
+  'comparison.title': "Un gestionnaire d'onglets range. Filnest se souvient.",
   'comparison.sub':
-    'Les extensions classiques gardent des sessions ou des favoris, sur un seul navigateur. TabNest garde la page avec son intention et sa durée de vie, et la retrouve partout.',
+    'Les extensions classiques gardent des sessions ou des favoris, sur un seul navigateur. Filnest garde la page avec son intention et sa durée de vie, et la retrouve partout.',
   'comparison.local': 'Une extension locale',
-  'comparison.tabnest': 'TabNest',
+  'comparison.tabnest': 'Filnest',
   'comparison.r1.label': 'Ce qui est gardé',
   'comparison.r1.local': 'Une session du navigateur, ou un favori rangé dans un dossier.',
   'comparison.r1.tabnest': "La page elle-même, avec la raison de la garder et sa date d'expiration.",
@@ -97,7 +97,7 @@ const FR: Dict = {
   'pricing.waitlist': 'Être prévenu à l’ouverture des offres',
   'pricing.title': 'Gratuit pour commencer.',
   'pricing.sub':
-    "TabNest reste gratuit pour garder vos pages. Les formules payantes ajouteront du confort, jamais l'essentiel.",
+    "Filnest reste gratuit pour garder vos pages. Les formules payantes ajouteront du confort, jamais l'essentiel.",
   'pricing.rec': 'Recommandé',
   'pricing.cta.free': 'Commencer gratuitement',
   'pricing.cta.choose': 'Choisir cette offre',
@@ -105,7 +105,7 @@ const FR: Dict = {
   'pricing.note':
     "Les paiements ne sont pas encore ouverts : l'activité est en cours d'immatriculation. Les tarifs affichés sont indicatifs et ne constituent pas une offre de vente.",
   'pricing.noteReady':
-    "Paiement sécurisé par Lemon Squeezy, vendeur enregistré. Aucune donnée bancaire n'est stockée par TabNest. Vous pouvez annuler à tout moment.",
+    "Paiement sécurisé par Lemon Squeezy, vendeur enregistré. Aucune donnée bancaire n'est stockée par Filnest. Vous pouvez annuler à tout moment.",
   'plans.free.name': 'Découverte',
   'plans.free.period': 'pour toujours',
   'plans.free.desc': 'Garder le fil, sans rien payer.',
@@ -134,7 +134,7 @@ const FR: Dict = {
     'Support prioritaire',
   ],
 
-  'faq.q1': 'TabNest lit-il le contenu de mes pages ?',
+  'faq.q1': 'Filnest lit-il le contenu de mes pages ?',
   'faq.a1':
     "Non. Seules les métadonnées publiques sont enregistrées : adresse, titre, icône du site, image de partage et couleur dominante. Aucune capture d'écran, aucun texte de page.",
   'faq.q2': 'Où sont stockées mes données ?',
@@ -148,7 +148,7 @@ const FR: Dict = {
     'Elles basculent dans les archives et ne sont plus affichées. Vous pouvez les supprimer définitivement à tout moment, et la suppression de votre compte efface toutes vos données.',
   'faq.q5': "Pourquoi pas une extension de gestion d'onglets ou de favoris ?",
   'faq.a5':
-    'Les extensions classiques gardent des sessions ou des favoris sur un seul navigateur. TabNest garde la page avec la raison de la garder et une durée de vie, puis la retrouve sur tous vos appareils grâce à votre compte.',
+    'Les extensions classiques gardent des sessions ou des favoris sur un seul navigateur. Filnest garde la page avec la raison de la garder et une durée de vie, puis la retrouve sur tous vos appareils grâce à votre compte.',
   'faq.q6': "Je change d'ordinateur : je retrouve mes pages ?",
   'faq.a6':
     "Oui. Vos pages sont dans votre compte, pas dans le navigateur : connectez-vous depuis un autre appareil et elles sont là.",
@@ -158,7 +158,7 @@ const FR: Dict = {
   'faq.q8': 'Que se passe-t-il si je ferme un onglet ou si le navigateur redémarre ?',
   'faq.a8':
     "Rien n'est perdu au moment de la fermeture : la page est déjà enregistrée. Elle reste disponible jusqu'à la fin de sa durée de vie, puis dans les archives, restaurables. C'est l'inverse d'une session qui dépend du navigateur.",
-  'faq.q9': 'TabNest fonctionne-t-il sur mobile ?',
+  'faq.q9': 'Filnest fonctionne-t-il sur mobile ?',
   'faq.a9':
     "L'extension est disponible sur les navigateurs de bureau (Chrome, Edge). Les navigateurs mobiles limitent les extensions ; nous travaillons sur une solution pour téléphone.",
   'faq.q10': 'Est-ce gratuit ?',
@@ -168,16 +168,16 @@ const FR: Dict = {
   'split.principle.title': 'Vous ne gardez pas des onglets. Vous gardez des intentions.',
   'split.principle.text':
     "Lire, comparer, postuler, acheter, apprendre. Fermer une page donne l'impression d'abandonner ce que vous vouliez en faire.",
-  'split.mobile.alt': 'TabNest sur mobile : les pages gardées, triées par site',
-  'split.dark': "Réunir les pages ne suffit pas. Sinon TabNest ne serait qu'un favori de plus.",
-  'split.auto.title': 'TabNest comprend la page.',
+  'split.mobile.alt': 'Filnest sur mobile : les pages gardées, triées par site',
+  'split.dark': "Réunir les pages ne suffit pas. Sinon Filnest ne serait qu'un favori de plus.",
+  'split.auto.title': 'Filnest comprend la page.',
   'split.auto.text':
     "Une documentation visitée quatre fois n'a pas la même valeur qu'une offre expirée ouverte une seule fois.",
-  'split.detail.alt': "Le détail d'une page dans TabNest : raison, durée de vie et visites",
+  'split.detail.alt': "Le détail d'une page dans Filnest : raison, durée de vie et visites",
   'split.projects.title': 'Les pages ne vivent pas seules. Elles appartiennent à vos projets.',
   'split.projects.text':
-    "Une offre, un comparatif et une documentation n'ont de sens que reliés à ce que vous essayez de faire. TabNest crée ce lien, puis archive le tout quand le projet est terminé.",
-  'split.grid.alt': 'Les sites empilés dans TabNest, avec les projets dans le menu',
+    "Une offre, un comparatif et une documentation n'ont de sens que reliés à ce que vous essayez de faire. Filnest crée ce lien, puis archive le tout quand le projet est terminé.",
+  'split.grid.alt': 'Les sites empilés dans Filnest, avec les projets dans le menu',
   'split.focus.title': 'Votre navigateur peut enfin redevenir un espace de travail.',
   'split.focus.l1': 'Les pages importantes restent accessibles.',
   'split.focus.l2': 'Les pages temporaires disparaissent naturellement.',
@@ -185,7 +185,7 @@ const FR: Dict = {
   'split.focus.badge': 'onglet ouvert',
   'split.focus.number': '1',
 
-  'cta.title': 'Fermez tous les autres. Gardez TabNest.',
+  'cta.title': 'Fermez tous les autres. Gardez Filnest.',
   'cta.email': 'Votre adresse e-mail',
   'cta.emailPlaceholder': 'vous@exemple.fr',
   'cta.button': 'Commencer',
@@ -193,7 +193,7 @@ const FR: Dict = {
 
   'privacy.title': 'Vos pages restent les vôtres.',
   'privacy.text':
-    "TabNest stocke l'adresse, le titre et l'image publique de vos pages. Pas de capture d'écran, pas de contenu privé, pas de revente. Vous supprimez ce que vous voulez, quand vous voulez.",
+    "Filnest stocke l'adresse, le titre et l'image publique de vos pages. Pas de capture d'écran, pas de contenu privé, pas de revente. Vous supprimez ce que vous voulez, quand vous voulez.",
 
   'footer.tagline': 'Un onglet pour garder le fil.',
   'footer.legalNotice': 'Mentions légales',
@@ -214,7 +214,7 @@ const FR: Dict = {
   'usecase.c1.title': 'Terminer une candidature',
   'usecase.c1.steps': [
     'Vous ouvrez une offre, puis une autre, puis le site de l’entreprise.',
-    'TabNest les range dans le projet « Emploi », à finir sous 7 jours.',
+    'Filnest les range dans le projet « Emploi », à finir sous 7 jours.',
     'Vous reprenez là où vous vous étiez arrêté, sur n’importe quel appareil.',
   ],
   'usecase.c1.alt': 'Les pages du projet Emploi, retrouvées sur mobile',
@@ -228,14 +228,14 @@ const FR: Dict = {
   'usecase.c3.title': 'Apprendre sans perdre ses docs',
   'usecase.c3.steps': [
     'Une doc CSS visitée quatre fois vaut de l’or.',
-    'TabNest la garde 30 jours, à portée de main.',
+    'Filnest la garde 30 jours, à portée de main.',
     'Les tutoriels visités une fois restent à part, dans Ressources.',
   ],
   'usecase.c3.alt': 'Les sites empilés par visites, avec la documentation en tête',
 }
 
 const EN: Dict = {
-  'hero.h1a': 'TabNest keeps the pages',
+  'hero.h1a': 'Filnest keeps the pages',
   'hero.h1b': 'you visit.',
   'hero.sub':
     'Close your tabs, your pages stay. An extension that saves your pages automatically, sorts them into projects and gives each one a lifetime. Expired pages move to the archives, where you can restore them. No more 50 open tabs kept out of fear.',
@@ -254,7 +254,7 @@ const EN: Dict = {
   'nav.langTitle': 'Switch to English',
   'nav.langAria': 'Switch language',
 
-  'marquee.label': 'Kinds of pages TabNest keeps',
+  'marquee.label': 'Kinds of pages Filnest keeps',
   'marquee.items': [
     'Documentation',
     'Job posting',
@@ -275,11 +275,11 @@ const EN: Dict = {
   'steps.s2.text': 'Every page you visit is saved, with no effort. The noise stays out.',
   'steps.s3.title': 'Find everything back',
   'steps.s3.text': 'Your pages are grouped by site and project, each with a lifetime.',
-  'steps.alt1': 'The TabNest dashboard on first sign-in',
+  'steps.alt1': 'The Filnest dashboard on first sign-in',
   'steps.alt2': 'Saved sites, stacked by visits',
   'steps.alt3': "A page's detail: its reason and its lifetime",
 
-  'bento.title': 'What TabNest actually does.',
+  'bento.title': 'What Filnest actually does.',
   'bento.sub': 'Not another bookmark manager. A system that decides with you, and forgets for you.',
   'bento.b1.title': 'Four reasons to keep',
   'bento.b1.text': 'Decide, finish, explore, remember. Each reason sets the page lifetime.',
@@ -294,11 +294,11 @@ const EN: Dict = {
   'bento.b6.title': 'Private per account',
   'bento.b6.text': 'Only you can see your pages, never another user.',
 
-  'comparison.title': 'A tab manager tidies up. TabNest remembers.',
+  'comparison.title': 'A tab manager tidies up. Filnest remembers.',
   'comparison.sub':
-    'Classic extensions keep sessions or bookmarks in a single browser. TabNest keeps the page with its intent and its lifetime, and finds it back everywhere.',
+    'Classic extensions keep sessions or bookmarks in a single browser. Filnest keeps the page with its intent and its lifetime, and finds it back everywhere.',
   'comparison.local': 'A local extension',
-  'comparison.tabnest': 'TabNest',
+  'comparison.tabnest': 'Filnest',
   'comparison.r1.label': 'What is kept',
   'comparison.r1.local': 'A browser session, or a bookmark filed in a folder.',
   'comparison.r1.tabnest': 'The page itself, with the reason to keep it and its expiry date.',
@@ -319,7 +319,7 @@ const EN: Dict = {
 
   'pricing.title': 'Free to start.',
   'pricing.sub':
-    'TabNest stays free for keeping your pages. Paid plans will add comfort, never the essentials.',
+    'Filnest stays free for keeping your pages. Paid plans will add comfort, never the essentials.',
   'pricing.rec': 'Recommended',
   'pricing.cta.free': 'Start for free',
   'pricing.cta.choose': 'Choose this plan',
@@ -327,7 +327,7 @@ const EN: Dict = {
   'pricing.note':
     "Payments are not open yet: the business registration is in progress. The prices shown are indicative and do not constitute an offer to sell.",
   'pricing.noteReady':
-    'Secure payment by Lemon Squeezy, merchant of record. TabNest never stores your card details. Cancel anytime.',
+    'Secure payment by Lemon Squeezy, merchant of record. Filnest never stores your card details. Cancel anytime.',
   'plans.free.name': 'Starter',
   'plans.free.period': 'forever',
   'plans.free.desc': 'Keep the thread, pay nothing.',
@@ -356,7 +356,7 @@ const EN: Dict = {
     'Priority support',
   ],
 
-  'faq.q1': 'Does TabNest read the content of my pages?',
+  'faq.q1': 'Does Filnest read the content of my pages?',
   'faq.a1':
     'No. Only public metadata is stored: address, title, site icon, share image and dominant colour. No screenshots, no page text.',
   'faq.q2': 'Where is my data stored?',
@@ -370,7 +370,7 @@ const EN: Dict = {
     'They move to the archives and are no longer shown. You can delete them permanently at any time, and deleting your account erases all your data.',
   'faq.q5': 'Why not a tab or bookmark manager extension?',
   'faq.a5':
-    'Classic extensions keep sessions or bookmarks in a single browser. TabNest keeps the page with its reason and a lifetime, and finds it back on all your devices through your account.',
+    'Classic extensions keep sessions or bookmarks in a single browser. Filnest keeps the page with its reason and a lifetime, and finds it back on all your devices through your account.',
   'faq.q6': 'If I change computers, do I get my pages back?',
   'faq.a6':
     'Yes. Your pages live in your account, not in the browser: sign in from another device and they are there.',
@@ -380,7 +380,7 @@ const EN: Dict = {
   'faq.q8': 'What happens if I close a tab or the browser restarts?',
   'faq.a8':
     'Nothing is lost when you close: the page is already saved. It stays available until the end of its lifetime, then in the archives, restorable. The opposite of a session that depends on the browser.',
-  'faq.q9': 'Does TabNest work on mobile?',
+  'faq.q9': 'Does Filnest work on mobile?',
   'faq.a9':
     'The extension works on desktop browsers (Chrome, Edge). Mobile browsers restrict extensions; we are working on a phone solution.',
   'faq.q10': 'Is it free?',
@@ -390,16 +390,16 @@ const EN: Dict = {
   'split.principle.title': 'You are not keeping tabs. You are keeping intentions.',
   'split.principle.text':
     'Read, compare, apply, buy, learn. Closing a page feels like abandoning what you wanted to do with it.',
-  'split.mobile.alt': 'TabNest on mobile: saved pages, grouped by site',
-  'split.dark': "Bringing pages together is not enough. Otherwise TabNest would be just another bookmark.",
-  'split.auto.title': 'TabNest understands the page.',
+  'split.mobile.alt': 'Filnest on mobile: saved pages, grouped by site',
+  'split.dark': "Bringing pages together is not enough. Otherwise Filnest would be just another bookmark.",
+  'split.auto.title': 'Filnest understands the page.',
   'split.auto.text':
     "A documentation visited four times is not worth the same as an expired offer opened once.",
-  'split.detail.alt': "A page's detail in TabNest: reason, lifetime and visits",
+  'split.detail.alt': "A page's detail in Filnest: reason, lifetime and visits",
   'split.projects.title': "Pages don't live alone. They belong to your projects.",
   'split.projects.text':
-    "An offer, a comparison and a documentation only make sense tied to what you are trying to do. TabNest creates that link, then archives it all when the project is done.",
-  'split.grid.alt': 'Sites stacked in TabNest, with projects in the menu',
+    "An offer, a comparison and a documentation only make sense tied to what you are trying to do. Filnest creates that link, then archives it all when the project is done.",
+  'split.grid.alt': 'Sites stacked in Filnest, with projects in the menu',
   'split.focus.title': 'Your browser can finally be a workspace again.',
   'split.focus.l1': 'Important pages stay within reach.',
   'split.focus.l2': 'Temporary pages disappear naturally.',
@@ -407,7 +407,7 @@ const EN: Dict = {
   'split.focus.badge': 'open tab',
   'split.focus.number': '1',
 
-  'cta.title': 'Close all the others. Keep TabNest.',
+  'cta.title': 'Close all the others. Keep Filnest.',
   'cta.email': 'Your email address',
   'cta.emailPlaceholder': 'you@example.com',
   'cta.button': 'Start',
@@ -415,7 +415,7 @@ const EN: Dict = {
 
   'privacy.title': 'Your pages stay yours.',
   'privacy.text':
-    "TabNest stores the address, title and public image of your pages. No screenshots, no private content, no resale. You delete whatever you want, whenever you want.",
+    "Filnest stores the address, title and public image of your pages. No screenshots, no private content, no resale. You delete whatever you want, whenever you want.",
 
   'footer.tagline': 'One tab to keep the thread.',
   'footer.legalNotice': 'Legal notice',
@@ -435,7 +435,7 @@ const EN: Dict = {
   'usecase.c1.title': 'Finish a job application',
   'usecase.c1.steps': [
     'You open one offer, then another, then the company site.',
-    'TabNest files them in the "Job" project, to finish within 7 days.',
+    'Filnest files them in the "Job" project, to finish within 7 days.',
     'You pick up where you left off, on any device.',
   ],
   'usecase.c1.alt': 'Job project pages, found back on mobile',
@@ -449,7 +449,7 @@ const EN: Dict = {
   'usecase.c3.title': 'Learn without losing your docs',
   'usecase.c3.steps': [
     'A CSS doc visited four times is worth gold.',
-    'TabNest keeps it for 30 days, within reach.',
+    'Filnest keeps it for 30 days, within reach.',
     'Tutorials visited once stay apart, in Resources.',
   ],
   'usecase.c3.alt': 'Sites stacked by visits, with the documentation on top',

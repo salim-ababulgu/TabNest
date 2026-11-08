@@ -38,7 +38,7 @@ export function DashboardFooter() {
         </a>
       </nav>
       <p className="mt-3 leading-relaxed">
-        © {year} TabNest — {t('footer.editedBy')}
+        © {year} Filnest — {t('footer.editedBy')}
       </p>
     </footer>
   )

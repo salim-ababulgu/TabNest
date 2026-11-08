@@ -52,7 +52,7 @@ export function buildMarkdownList(groups: Group[], pages: Page[]): string {
     sections.set(project, list)
   }
 
-  const lines = ['# TabNest, mes pages', '']
+  const lines = ['# Filnest, mes pages', '']
   for (const [project, list] of sections) {
     lines.push(`## ${project}`, '')
     for (const page of list) {

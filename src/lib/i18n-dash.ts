@@ -78,7 +78,7 @@ const FR: Record<string, Entry> = {
   'dash.noAlerts': 'Aucune alerte. Tout est rangé.',
   'dash.hero.title': 'Ce qui compte revient au bon moment.',
   'dash.hero.sub':
-    'Fermez vos onglets l’esprit léger. TabNest trie le bruit, préserve l’important et vous le rappelle quand il faut.',
+    'Fermez vos onglets l’esprit léger. Filnest trie le bruit, préserve l’important et vous le rappelle quand il faut.',
   'dash.pagesKept': '{n} pages gardées',
   'dash.onboarding.title': 'Trois gestes pour commencer',
   'dash.onboarding.progress': '{done} sur {total} faits',
@@ -137,7 +137,7 @@ const FR: Record<string, Entry> = {
   'dash.deleteDesc': '« {t} » sera retirée de votre liste.',
   'dash.autoCloseTitle': 'Fermer les onglets expirés',
   'dash.autoCloseDesc':
-    'Depuis l’extension TabNest : elle ferme les onglets expirés, inactifs et non épinglés. Les pages restent dans TabNest.',
+    'Depuis l’extension Filnest : elle ferme les onglets expirés, inactifs et non épinglés. Les pages restent dans Filnest.',
   'dash.autoCloseWhere': 'Réglage dans l’extension',
   'dash.deleteAccount': 'Supprimer mon compte',
   'dash.deleteAccountDesc': 'Efface définitivement vos pages, vos projets et votre compte.',
@@ -149,7 +149,7 @@ const FR: Record<string, Entry> = {
   'dash.loadTimeout': 'La connexion est trop lente. Vérifie ton réseau, puis réessaie.',
   'dash.retry': 'Réessayer',
   'dash.mobileReadOnly':
-    'Sur mobile, TabNest est en lecture seule : la capture automatique fonctionne depuis l’extension sur ordinateur.',
+    'Sur mobile, Filnest est en lecture seule : la capture automatique fonctionne depuis l’extension sur ordinateur.',
   'pocket.title': 'Importer depuis Pocket',
   'pocket.desc': 'Pocket a fermé : récupère tes liens via son export HTML. Les étiquettes « à finir », « piste », etc. deviennent des étagères.',
   'pocket.button': 'Choisir un fichier',
@@ -160,7 +160,7 @@ const FR: Record<string, Entry> = {
   'dash.toast.projectDeleted': 'Projet supprimé (les pages sont conservées).',
   'dash.deleteProjectTitle': 'Supprimer ce projet ?',
   'dash.deleteProjectDesc':
-    'Le projet « {p} » sera supprimé. Les pages restent dans TabNest, simplement non classées.',
+    'Le projet « {p} » sera supprimé. Les pages restent dans Filnest, simplement non classées.',
 
   'dash.expiredHidden': '{n} page(s) expirée(s) sont masquées.',
   'dash.seeArchives': 'Voir les archives',
@@ -226,10 +226,10 @@ const FR: Record<string, Entry> = {
   'dash.extNoAccount': 'Installée, mais pas connectée. Clique sur son icône et connecte-toi.',
   'dash.extOtherAccount':
     'Reliée à un autre compte. Déconnecte-la puis reconnecte-toi avec ce compte.',
-  'dash.extAbsent': "Non détectée. Installe l'extension TabNest.",
+  'dash.extAbsent': "Non détectée. Installe l'extension Filnest.",
   'dash.seeInstall': 'Voir les instructions d’installation',
   'dash.browserAlerts': 'Alertes du navigateur',
-  'dash.browserAlertsDesc': 'Prévient quand une page expire. TabNest doit être ouvert.',
+  'dash.browserAlertsDesc': 'Prévient quand une page expire. Filnest doit être ouvert.',
   'dash.browserAlertsOn': 'Activées',
   'dash.browserAlertsBlocked': 'Bloquées',
   'dash.browserAlertsNone': 'Non disponible',
@@ -291,7 +291,7 @@ const FR: Record<string, Entry> = {
   'auth.signupTitle': 'Crée ton nid',
   'auth.sideTitle': 'Les onglets ferment. Les pages restent.',
   'auth.sideText':
-    'TabNest garde les pages que tu visites, leur donne une durée de vie et les range toutes seules.',
+    'Filnest garde les pages que tu visites, leur donne une durée de vie et les range toutes seules.',
   'auth.side1': 'Rien ne se perd quand tu fermes un onglet.',
   'auth.side2': 'Chaque page a sa durée de vie, puis s’archive.',
   'auth.side3': 'Tes pages se rangent en étagères, sans effort.',
@@ -343,7 +343,7 @@ const FR: Record<string, Entry> = {
   'ext.download.meta': 'Version 0.6.0 · installation en 4 étapes ci-dessous',
   'ext.title': 'Installez l’extension, gardez tout le reste.',
   'ext.sub':
-    'L’extension est ce qui rend TabNest magique : elle enregistre les pages que vous visitez, sans que vous ayez à cliquer. Quatre étapes, une seule fois.',
+    'L’extension est ce qui rend Filnest magique : elle enregistre les pages que vous visitez, sans que vous ayez à cliquer. Quatre étapes, une seule fois.',
   'ext.s1.title': 'Téléchargez le fichier de l’extension',
   'ext.s1.text':
     'Cliquez sur « Télécharger l’extension (.zip) » puis décompressez le fichier dans un dossier de votre ordinateur.',
@@ -352,7 +352,7 @@ const FR: Record<string, Entry> = {
     'Activez le mode développeur (interrupteur en haut à droite), puis cliquez sur « Charger l’extension non empaquetée » et sélectionnez le dossier.',
   'ext.s3.title': 'Connectez l’extension à votre compte',
   'ext.s3.text':
-    'Cliquez sur l’icône TabNest dans la barre du navigateur, puis connectez-vous avec l’adresse e-mail de votre compte TabNest.',
+    'Cliquez sur l’icône Filnest dans la barre du navigateur, puis connectez-vous avec l’adresse e-mail de votre compte Filnest.',
   'ext.s4.title': 'Naviguez : c’est tout',
   'ext.s4.text':
     'Chaque page visitée est enregistrée automatiquement. Elle apparaît dans votre tableau de bord, rangée par site.',
@@ -442,7 +442,7 @@ const EN: Record<string, Entry> = {
   'dash.noAlerts': 'No alerts. Everything is tidy.',
   'dash.hero.title': 'What matters comes back at the right time.',
   'dash.hero.sub':
-    'Close your tabs with a light mind. TabNest sorts the noise, keeps what matters and brings it back when needed.',
+    'Close your tabs with a light mind. Filnest sorts the noise, keeps what matters and brings it back when needed.',
   'dash.pagesKept': '{n} pages kept',
   'dash.onboarding.title': 'Three steps to start',
   'dash.onboarding.progress': '{done} of {total} done',
@@ -498,7 +498,7 @@ const EN: Record<string, Entry> = {
   'dash.deleteDesc': '"{t}" will be removed from your list.',
   'dash.autoCloseTitle': 'Close expired tabs',
   'dash.autoCloseDesc':
-    'From the TabNest extension: it closes expired, inactive, non-pinned tabs. Pages stay in TabNest.',
+    'From the Filnest extension: it closes expired, inactive, non-pinned tabs. Pages stay in Filnest.',
   'dash.autoCloseWhere': 'Setting in the extension',
   'dash.deleteAccount': 'Delete my account',
   'dash.deleteAccountDesc': 'Permanently erases your pages, projects and account.',
@@ -510,7 +510,7 @@ const EN: Record<string, Entry> = {
   'dash.loadTimeout': 'The connection is too slow. Check your network, then try again.',
   'dash.retry': 'Try again',
   'dash.mobileReadOnly':
-    'On mobile, TabNest is read-only: automatic capture runs from the extension on your computer.',
+    'On mobile, Filnest is read-only: automatic capture runs from the extension on your computer.',
   'pocket.title': 'Import from Pocket',
   'pocket.desc': 'Pocket shut down: recover your links via its HTML export. Tags like “to finish”, “lead”, etc. become shelves.',
   'pocket.button': 'Choose a file',
@@ -521,7 +521,7 @@ const EN: Record<string, Entry> = {
   'dash.toast.projectDeleted': 'Project deleted (pages are kept).',
   'dash.deleteProjectTitle': 'Delete this project?',
   'dash.deleteProjectDesc':
-    'The project “{p}” will be deleted. Pages stay in TabNest, simply unfiled.',
+    'The project “{p}” will be deleted. Pages stay in Filnest, simply unfiled.',
 
   'dash.expiredHidden': '{n} expired page(s) are hidden.',
   'dash.seeArchives': 'See archives',
@@ -586,10 +586,10 @@ const EN: Record<string, Entry> = {
   'dash.extLinkedOff': 'Linked to your account, capture off.',
   'dash.extNoAccount': 'Installed, but not signed in. Click its icon and sign in.',
   'dash.extOtherAccount': 'Linked to another account. Sign out there, then reconnect with this account.',
-  'dash.extAbsent': 'Not detected. Install the TabNest extension.',
+  'dash.extAbsent': 'Not detected. Install the Filnest extension.',
   'dash.seeInstall': 'See installation instructions',
   'dash.browserAlerts': 'Browser alerts',
-  'dash.browserAlertsDesc': 'Warns when a page expires. TabNest must be open.',
+  'dash.browserAlertsDesc': 'Warns when a page expires. Filnest must be open.',
   'dash.browserAlertsOn': 'On',
   'dash.browserAlertsBlocked': 'Blocked',
   'dash.browserAlertsNone': 'Unavailable',
@@ -650,7 +650,7 @@ const EN: Record<string, Entry> = {
   'auth.signupTitle': 'Create your nest',
   'auth.sideTitle': 'Tabs close. Pages stay.',
   'auth.sideText':
-    'TabNest keeps the pages you visit, gives them a lifetime and files them for you.',
+    'Filnest keeps the pages you visit, gives them a lifetime and files them for you.',
   'auth.side1': 'Nothing is lost when you close a tab.',
   'auth.side2': 'Every page has a lifetime, then moves to the archive.',
   'auth.side3': 'Your pages sort themselves onto shelves.',
@@ -702,7 +702,7 @@ const EN: Record<string, Entry> = {
   'ext.download.meta': 'Version 0.6.0 · 4-step install below',
   'ext.title': 'Install the extension, keep everything else.',
   'ext.sub':
-    'The extension is what makes TabNest magical: it saves the pages you visit, with no clicking. Four steps, once.',
+    'The extension is what makes Filnest magical: it saves the pages you visit, with no clicking. Four steps, once.',
   'ext.s1.title': 'Download the extension folder',
   'ext.s1.text':
     'The "extension" folder of the project contains the manifest, the scripts and the extension UI (test build).',
@@ -711,7 +711,7 @@ const EN: Record<string, Entry> = {
     'Enable developer mode (switch at the top right), then click "Load unpacked" and select the folder.',
   'ext.s3.title': 'Connect the extension to your account',
   'ext.s3.text':
-    'Click the TabNest icon in the browser bar, then sign in with the email of your TabNest account.',
+    'Click the Filnest icon in the browser bar, then sign in with the email of your Filnest account.',
   'ext.s4.title': 'Browse: that is all',
   'ext.s4.text':
     'Every page you visit is saved automatically. It appears in your dashboard, grouped by site.',

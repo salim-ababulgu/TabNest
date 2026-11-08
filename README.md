@@ -1,12 +1,12 @@
-# TabNest
+# Filnest
 
-TabNest conserve les pages web que vous visitez : chaque page a une durée de vie,
+Filnest conserve les pages web que vous visitez : chaque page a une durée de vie,
 une raison de la garder (à décider, à finir, piste, à retenir), et se range dans
 des étagères ou des projets. Les pages expirées vont dans les archives, où elles
 peuvent être restaurées.
 
-- Application web : https://tabnest-alb.pages.dev
-- Extension Chrome (bêta, installation manuelle) : https://tabnest-alb.pages.dev/extension
+- Application web : https://filnest.pages.dev
+- Extension Chrome (bêta, installation manuelle) : https://filnest.pages.dev/extension
 - Interface en 4 langues : français, anglais, espagnol, chinois. Thème clair/sombre.
 
 ## Démarrer en local

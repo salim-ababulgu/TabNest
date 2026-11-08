@@ -17,7 +17,7 @@ export function PricingSection() {
         <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-lime/40 bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-2xl text-sm leading-relaxed text-foreground/80">{t('pricing.beta')}</p>
           <a
-            href="mailto:salimababulgu@gmail.com?subject=TabNest%20-%20offres%20payantes"
+            href="mailto:salimababulgu@gmail.com?subject=Filnest%20-%20offres%20payantes"
             className="inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-border px-4 text-xs font-medium hover:bg-accent"
           >
             {t('pricing.waitlist')}

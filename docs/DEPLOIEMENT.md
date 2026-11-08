@@ -1,17 +1,17 @@
-# TabNest — Déploiement
+# Filnest — Déploiement
 
-> **État : site en ligne sur https://tabnest-alb.pages.dev** (Cloudflare Pages, projet `tabnest`,
+> **État : site en ligne sur https://filnest.pages.dev** (Cloudflare Pages, projet `tabnest`,
 > déployé depuis le poste local avec `wrangler pages deploy dist`). À chaque nouveau build :
 > `npm run build` puis `npx wrangler pages deploy dist --project-name=tabnest --branch=main`.
 
-> Objectif : mettre TabNest en ligne sur une vraie URL, pour que de vrais utilisateurs puissent le tester.
+> Objectif : mettre Filnest en ligne sur une vraie URL, pour que de vrais utilisateurs puissent le tester.
 > Ce document compare deux options et donne les étapes exactes.
 
 ## 1. Faut-il un VPS ?
 
 **Réponse courte : non, pas maintenant.**
 
-TabNest est une **application statique** (Vite → HTML/CSS/JS) qui parle directement à **Supabase**
+Filnest est une **application statique** (Vite → HTML/CSS/JS) qui parle directement à **Supabase**
 (base de données, authentification, sécurité par compte). Il n'y a **aucun serveur applicatif** à
 faire tourner : pas d'API maison, pas de base locale, pas de fichiers uploadés.
 
@@ -56,7 +56,7 @@ que l'hébergeur renvoie `index.html` pour toute route inconnue. Le fichier `pub
 ## 3. Option A (recommandée) — Cloudflare Pages, Netlify ou Vercel
 
 ### Étapes communes
-1. Pousser le code sur GitHub (déjà fait : `salim-ababulgu/TabNest`).
+1. Pousser le code sur GitHub (déjà fait : `salim-ababulgu/Filnest`).
 2. Créer un compte sur l'hébergeur et importer le dépôt.
 3. Réglages de build :
    - Commande : `npm run build`
