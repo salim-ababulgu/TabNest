@@ -24,13 +24,19 @@ const AdminPage = lazy(() =>
   import('@/components/admin/AdminPage').then((module) => ({ default: module.AdminPage })),
 )
 
-type LegalSlug = 'confidentialite' | 'cgu' | 'cookies' | 'remboursement'
+type LegalSlug =
+  | 'confidentialite'
+  | 'cgu'
+  | 'cookies'
+  | 'remboursement'
+  | 'mentions-legales'
 
 const LEGAL_ROUTES: Record<string, LegalSlug> = {
   '/confidentialite': 'confidentialite',
   '/cgu': 'cgu',
   '/cookies': 'cookies',
   '/remboursement': 'remboursement',
+  '/mentions-legales': 'mentions-legales',
 }
 
 function usePathname() {

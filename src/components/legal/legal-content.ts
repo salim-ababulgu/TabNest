@@ -3,7 +3,12 @@
 // Code de la consommation). Ils doivent être relus par un juriste avant publication.
 // Éditeur : ABA (personne physique, activité non immatriculée à ce jour).
 
-export type LegalSlug = 'confidentialite' | 'cgu' | 'cookies' | 'remboursement'
+export type LegalSlug =
+  | 'confidentialite'
+  | 'cgu'
+  | 'cookies'
+  | 'remboursement'
+  | 'mentions-legales'
 
 export type LegalSection = {
   title: string
@@ -22,6 +27,65 @@ export type LegalDoc = {
 }
 
 export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
+  'mentions-legales': {
+    slug: 'mentions-legales',
+    title: 'Mentions légales',
+    updated: '8 novembre 2026',
+    intro:
+      "Cette page rassemble les informations exigées par la loi pour l'édition d'un site web (article 6 de la loi pour la confiance dans l'économie numérique, LCEN). Elle est accessible depuis toutes les pages du service.",
+    sections: [
+      {
+        title: '1. Éditeur du site',
+        paragraphs: [
+          "Le site TabNest (https://tabnest-alb.pages.dev) est édité par ABA, personne physique, exerçant sous le nom commercial « TabNest ».",
+          "Contact : salimababulgu@gmail.com.",
+          "L'activité n'est pas immatriculée à ce jour : aucun numéro SIRET ne peut donc être communiqué. Conformément à l'article 6, III de la LCEN, l'adresse d'un éditeur non professionnel n'est pas publiée ; elle est communiquée à l'hébergeur du site. Dès l'immatriculation de l'activité, les mentions SIRET seront ajoutées.",
+          "Directeur de la publication : ABA, joignable à l'adresse salimababulgu@gmail.com.",
+        ],
+      },
+      {
+        title: '2. Hébergement',
+        paragraphs: [
+          "Application et site : Cloudflare, Inc. (Cloudflare Pages), 101 Townsend St, San Francisco, CA 94107, États-Unis — https://www.cloudflare.com.",
+          "Base de données et authentification : Supabase, Inc. — https://supabase.com.",
+          "Ces prestataires peuvent traiter des données en dehors de l'Union européenne, dans les conditions décrites dans la politique de confidentialité.",
+        ],
+      },
+      {
+        title: '3. Propriété intellectuelle',
+        paragraphs: [
+          "La marque TabNest, le code de l'application, les textes, l'identité visuelle et les éléments graphiques du site sont protégés par le droit de la propriété intellectuelle. Toute reproduction ou réutilisation non autorisée est interdite.",
+          "Les pages web enregistrées par un utilisateur restent la propriété de leurs auteurs respectifs. TabNest n'en conserve que les métadonnées nécessaires au service (adresse, titre, aperçu public, date de visite) et met ces données à disposition de l'utilisateur concerné.",
+        ],
+      },
+      {
+        title: '4. Données personnelles et cookies',
+        paragraphs: [
+          "Le traitement des données personnelles est décrit dans la politique de confidentialité. Les cookies et stockages locaux utilisés (thème, langue, préférences, mesure d'audience avec consentement) sont décrits dans la page Cookies.",
+        ],
+      },
+      {
+        title: '5. Responsabilité',
+        paragraphs: [
+          "TabNest met à disposition un outil d'aide à la conservation de pages web. Le service est fourni « en l'état », sans garantie de disponibilité continue, et peut évoluer. L'utilisateur reste responsable de l'usage qu'il fait des contenus qu'il enregistre.",
+        ],
+      },
+      {
+        title: '6. Paiements et médiation',
+        paragraphs: [
+          "L'usage de base est gratuit. Lorsque des formules payantes seront proposées, le paiement et la facturation seront assurés par Lemon Squeezy, qui agit comme vendeur enregistré (merchant of record) et applique ses propres conditions.",
+          "Conformément au Code de la consommation, le médiateur de la consommation compétent sera indiqué sur cette page dès la mise en place des offres payantes.",
+        ],
+      },
+      {
+        title: '7. Contact',
+        paragraphs: [
+          "Pour toute question relative au site, à vos données ou à ces mentions : salimababulgu@gmail.com.",
+        ],
+      },
+    ],
+  },
+
   confidentialite: {
     slug: 'confidentialite',
     title: 'Politique de confidentialité',
@@ -97,7 +161,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
           'Microlink : plateforme d’extraction de métadonnées. Elle reçoit l’adresse des pages enregistrées lorsque l’extension n’a pas pu récupérer le titre ou l’image directement, afin de compléter votre fiche.',
           'Lemon Squeezy : à venir : paiement et facturation. Lemon Squeezy agit comme vendeur enregistré (merchant of record) et applique ses propres conditions.',
           'Amazon SES : à venir : envoi des e-mails de service (confirmation, réinitialisation du mot de passe).',
-          'L’hébergeur du site : à venir : hébergement de l’application et journaux techniques.',
+          'Cloudflare (Cloudflare Pages) : hébergement de l’application et journaux techniques. Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, États-Unis.',
         ],
         paragraphsAfter: [
           "Certains prestataires peuvent traiter des données en dehors de l’Union européenne (notamment aux États-Unis). Ces transferts sont encadrés par les clauses contractuelles types de la Commission européenne ou par un mécanisme équivalent prévu par le RGPD.",
@@ -373,4 +437,5 @@ export const LEGAL_PATHS: Record<string, LegalSlug> = {
   '/cgu': 'cgu',
   '/cookies': 'cookies',
   '/remboursement': 'remboursement',
+  '/mentions-legales': 'mentions-legales',
 }

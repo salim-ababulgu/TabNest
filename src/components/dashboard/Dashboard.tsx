@@ -74,6 +74,7 @@ import {
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
 import { NestNav } from '@/components/dashboard/NestNav'
+import { DashboardFooter } from '@/components/dashboard/DashboardFooter'
 import { SkeletonGrid } from '@/components/dashboard/skeletons'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -1917,6 +1918,8 @@ export function Dashboard() {
               </div>
             )}
           </section>
+
+          <DashboardFooter />
         </main>
       </div>
 

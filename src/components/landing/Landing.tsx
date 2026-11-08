@@ -322,6 +322,11 @@ function LandingContent({ onStart }: LandingProps) {
             <p className="text-xs font-medium text-foreground/45">{t('footer.legal')}</p>
             <ul className="mt-3 space-y-2 text-foreground/70">
               <li>
+                <a href="/mentions-legales" className="hover:text-foreground">
+                  {t('footer.legalNotice')}
+                </a>
+              </li>
+              <li>
                 <a href="/confidentialite" className="hover:text-foreground">
                   {t('footer.privacy')}
                 </a>

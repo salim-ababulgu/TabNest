@@ -1,4 +1,4 @@
-import type { Entry } from '@/lib/i18n'
+﻿import type { Entry } from '@/lib/i18n'
 
 // 简体中文词典（落地页 + 产品）。键与 FR/EN 词典完全一致。
 export const ZH_ALL: Record<string, Entry> = {
@@ -178,6 +178,8 @@ export const ZH_ALL: Record<string, Entry> = {
     'TabNest 只保存页面的网址、标题和公开图片。不截图、不保存私密内容、不转卖数据。你想删什么就删什么，随时都可以。',
 
   'footer.tagline': '一个标签页，留住线索。',
+  'footer.legalNotice': '法律声明',
+  'footer.editedBy': '由 ABA（个人）发布。',
   'footer.product': '产品',
   'footer.legal': '法律',
   'footer.contact': '联系我们',

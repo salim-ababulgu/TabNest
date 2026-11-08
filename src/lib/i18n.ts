@@ -1,4 +1,4 @@
-// Dictionnaire de la landing (fr / en) et détection de langue.
+﻿// Dictionnaire de la landing (fr / en) et détection de langue.
 // Le dashboard reste en français pour l'instant : seule la page publique est bilingue.
 
 export type Lang = 'fr' | 'en' | 'es' | 'zh'
@@ -193,6 +193,8 @@ const FR: Dict = {
     "TabNest stocke l'adresse, le titre et l'image publique de vos pages. Pas de capture d'écran, pas de contenu privé, pas de revente. Vous supprimez ce que vous voulez, quand vous voulez.",
 
   'footer.tagline': 'Un onglet pour garder le fil.',
+  'footer.legalNotice': 'Mentions légales',
+  'footer.editedBy': 'édité par ABA, personne physique.',
   'footer.product': 'Produit',
   'footer.legal': 'Légal',
   'footer.contact': 'Contact',
@@ -413,6 +415,8 @@ const EN: Dict = {
     "TabNest stores the address, title and public image of your pages. No screenshots, no private content, no resale. You delete whatever you want, whenever you want.",
 
   'footer.tagline': 'One tab to keep the thread.',
+  'footer.legalNotice': 'Legal notice',
+  'footer.editedBy': 'edited by ABA, individual.',
   'footer.product': 'Product',
   'footer.legal': 'Legal',
   'footer.contact': 'Contact',

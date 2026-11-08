@@ -1,4 +1,4 @@
-import type { Entry } from '@/lib/i18n'
+﻿import type { Entry } from '@/lib/i18n'
 
 // Dictionnaire espagnol (landing + produit). Clés identiques aux dictionnaires FR/EN.
 export const ES_ALL: Record<string, Entry> = {
@@ -187,6 +187,8 @@ export const ES_ALL: Record<string, Entry> = {
     'TabNest guarda la dirección, el título y la imagen pública de sus páginas. Sin capturas de pantalla, sin contenido privado, sin reventa. Usted elimina lo que quiera, cuando quiera.',
 
   'footer.tagline': 'Una pestaña para no perder el hilo.',
+  'footer.legalNotice': 'Aviso legal',
+  'footer.editedBy': 'editado por ABA, persona física.',
   'footer.product': 'Producto',
   'footer.legal': 'Legal',
   'footer.contact': 'Contacto',
