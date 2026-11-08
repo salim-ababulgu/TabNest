@@ -171,8 +171,8 @@ export function NestNav({
           ? 'bg-accent text-foreground'
           : 'text-foreground/75 hover:bg-accent'
         : active
-          ? 'bg-sidebar-accent text-sidebar-foreground'
-          : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+          ? 'bg-sidebar-accent font-medium text-sidebar-foreground'
+          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
     )
 
   const labelClass = compact ? 'text-foreground/50' : 'text-sidebar-foreground/50'
@@ -207,7 +207,10 @@ export function NestNav({
         )}
       >
         {!collapsed && (
-          <span className={cn('text-xs font-medium', labelClass)}>{t('nest.title')}</span>
+          <span className={cn('flex items-center gap-1.5 text-xs font-medium', labelClass)}>
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-lime" />
+            {t('nest.title')}
+          </span>
         )}
         <button
           type="button"
@@ -252,7 +255,7 @@ export function NestNav({
                 <span className="min-w-0 flex-1 truncate text-left">{t(item.labelKey)}</span>
               )}
               {!collapsed && item.count > 0 && (
-                <span className="text-xs tabular-nums opacity-70">{item.count}</span>
+                <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[11px] tabular-nums opacity-90">{item.count}</span>
               )}
             </button>
             {editMode && canHide && !collapsed && (
@@ -324,7 +327,7 @@ export function NestNav({
                   <span className="min-w-0 flex-1 truncate text-left">{collection.name}</span>
                 )}
                 {!collapsed && (
-                  <span className="text-xs tabular-nums opacity-70">
+                  <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[11px] tabular-nums opacity-90">
                     {collectionCounts[collection.id] ?? 0}
                   </span>
                 )}
@@ -465,7 +468,10 @@ export function NestNav({
             )}
           >
             {!collapsed && (
-              <span className={cn('text-xs font-medium', labelClass)}>{t('dash.projects')}</span>
+              <span className={cn('flex items-center gap-1.5 text-xs font-medium', labelClass)}>
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-lime" />
+                {t('dash.projects')}
+              </span>
             )}
             {onAddProject && !collapsed && (
               <button
@@ -530,7 +536,7 @@ export function NestNav({
                     <span className="min-w-0 flex-1 truncate text-left">{project.name}</span>
                   )}
                   {!collapsed && project.count > 0 && (
-                    <span className="text-xs tabular-nums opacity-70">{project.count}</span>
+                    <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[11px] tabular-nums opacity-90">{project.count}</span>
                   )}
                 </button>
               )}

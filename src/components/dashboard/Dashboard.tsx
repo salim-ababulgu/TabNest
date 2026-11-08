@@ -1342,7 +1342,7 @@ export function Dashboard() {
     <div className="flex min-h-screen bg-background">
       <aside
         className={cn(
-          'sticky top-0 hidden h-screen shrink-0 flex-col overflow-hidden bg-sidebar text-sidebar-foreground transition-[width] duration-200 md:flex',
+          'sticky top-0 hidden h-screen shrink-0 flex-col overflow-hidden bg-sidebar text-sidebar-foreground transition-[width] duration-200 lg:flex',
           sidebarCollapsed ? 'w-16' : 'w-64',
         )}
       >
@@ -1440,7 +1440,7 @@ export function Dashboard() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-field bg-field text-field-ink px-4 py-3 md:gap-4 md:px-6 md:py-4">
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <Button
               variant="outline"
               size="icon-sm"
@@ -1455,7 +1455,7 @@ export function Dashboard() {
             </span>
             <span className="font-heading text-lg font-semibold">Filnest</span>
           </div>
-          <p className="hidden text-sm text-field-muted md:block">{formatToday()}</p>
+          <p className="hidden text-sm text-field-muted lg:block">{formatToday()}</p>
           <div className="flex items-center gap-1.5 md:gap-2">
             <Button
               variant="outline"
@@ -1554,7 +1554,7 @@ export function Dashboard() {
                 </div>
               </PopoverContent>
             </Popover>
-            <span className="hidden items-center gap-1.5 rounded-full border border-white/15 px-2.5 py-1 text-xs text-field-muted md:inline-flex">
+            <span className="hidden items-center gap-1.5 rounded-full border border-white/15 px-2.5 py-1 text-xs text-field-muted lg:inline-flex">
               <span
                 className={
                   'size-1.5 rounded-full ' +
@@ -1566,7 +1566,7 @@ export function Dashboard() {
             {extensionStatus !== 'linked' && (
               <a
                 href="/extension"
-                className="hidden text-xs text-field-muted underline-offset-2 hover:text-field-ink hover:underline md:inline"
+                className="hidden text-xs text-field-muted underline-offset-2 hover:text-field-ink hover:underline lg:inline"
               >
                 {t(extensionStatus === 'absent' ? 'dash.installLink' : 'dash.connectLink')}
               </a>
@@ -1680,7 +1680,7 @@ export function Dashboard() {
                       <p className={cn('text-sm font-medium', step.done && 'text-foreground/55')}>
                         {t(step.labelKey)}
                       </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{t(step.detailKey)}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t(step.detailKey)}</p>
                     </div>
                   </li>
                 ))}
@@ -2346,14 +2346,22 @@ export function Dashboard() {
 
       {showSettings && (
         <Modal title={t('dash.settings')} onClose={() => setShowSettings(false)}>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+          <div className="space-y-8">
+            <p className="-mt-1 text-sm leading-relaxed text-foreground/70">
+              {t('dash.settingsIntro')}
+            </p>
+
+            <section className="space-y-3">
+              <h3 className="text-xs font-medium text-foreground/60">
+                {t('dash.settingsPrefs')}
+              </h3>
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <p className="text-sm font-medium">{t('dash.appearance')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.appearanceDesc')}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t('dash.appearanceDesc')}</p>
               </div>
               <div
-                className="flex shrink-0 rounded-full border border-border p-0.5"
+                className="flex w-full shrink-0 rounded-full border border-border bg-background p-1 sm:w-auto"
                 role="group"
                 aria-label={t('dash.appearance')}
               >
@@ -2364,7 +2372,7 @@ export function Dashboard() {
                     onClick={() => setTheme(code)}
                     aria-pressed={theme === code}
                     className={cn(
-                      'rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
+                      'h-8 flex-1 rounded-full px-3 text-xs font-medium transition-colors sm:flex-none',
                       theme === code
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:text-foreground',
@@ -2380,13 +2388,13 @@ export function Dashboard() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <p className="text-sm font-medium">{t('dash.lang')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.langDesc')}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t('dash.langDesc')}</p>
               </div>
               <div
-                className="flex shrink-0 rounded-full border border-border p-0.5"
+                className="flex w-full shrink-0 rounded-full border border-border bg-background p-1 sm:w-auto"
                 role="group"
                 aria-label={t('dash.lang')}
               >
@@ -2397,7 +2405,7 @@ export function Dashboard() {
                     onClick={() => setLang(code)}
                     aria-pressed={lang === code}
                     className={cn(
-                      'rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
+                      'h-8 flex-1 rounded-full px-3 text-xs font-medium transition-colors sm:flex-none',
                       lang === code
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:text-foreground',
@@ -2409,10 +2417,10 @@ export function Dashboard() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <p className="text-sm font-medium">{t('dash.capture')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.captureDesc')}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t('dash.captureDesc')}</p>
               </div>
               <button
                 type="button"
@@ -2433,10 +2441,16 @@ export function Dashboard() {
                 />
               </button>
             </div>
+            </section>
 
-            <div className="rounded-xl border p-4 text-sm">
+            <section className="space-y-3">
+              <h3 className="text-xs font-medium text-foreground/60">
+                {t('dash.settingsData')}
+              </h3>
+
+            <div className="rounded-2xl border border-border bg-card p-4 text-sm sm:p-5">
               <p className="font-medium">{t('dash.extensionBlock')}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-sm leading-relaxed text-foreground/70">
                 {extensionStatus === 'linked'
                   ? captureEnabled
                     ? t('dash.extLinkedOn')
@@ -2456,9 +2470,9 @@ export function Dashboard() {
             </div>
 
             {user?.email?.toLowerCase() === 'salimababulgu@gmail.com' && (
-              <div className="rounded-xl border p-4">
+              <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
                 <p className="text-sm font-medium">Administration</p>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">
                   Statistiques agrégées de la plateforme, réservées à l'éditeur.
                 </p>
                 <a
@@ -2470,9 +2484,9 @@ export function Dashboard() {
               </div>
             )}
 
-            <div className="rounded-xl border p-4">
+            <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
               <p className="text-sm font-medium">{t('dash.exportTitle')}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{t('dash.exportDesc')}</p>
+              <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t('dash.exportDesc')}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button
                   size="sm"
@@ -2496,10 +2510,30 @@ export function Dashboard() {
               </p>
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+              <div>
+                <p className="text-sm font-medium">{t('pocket.title')}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t('pocket.desc')}</p>
+              </div>
+              <label className="inline-flex h-9 shrink-0 cursor-pointer items-center rounded-full border border-border px-4 text-xs font-medium hover:bg-accent">
+                <input
+                  type="file"
+                  accept=".html,.htm,text/html"
+                  className="sr-only"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0]
+                    if (file) void handlePocketImport(file)
+                    event.target.value = ''
+                  }}
+                />
+                {t('pocket.button')}
+              </label>
+            </div>
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <p className="text-sm font-medium">{t('dash.browserAlerts')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">
                   {t('dash.browserAlertsDesc')}
                 </p>
               </div>
@@ -2520,20 +2554,36 @@ export function Dashboard() {
                       : t('dash.browserAlertsEnable')}
               </Button>
             </div>
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <p className="text-sm font-medium">{t('dash.autoCloseTitle')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{t('dash.autoCloseDesc')}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t('dash.autoCloseDesc')}</p>
               </div>
               <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground">
                 {t('dash.autoCloseWhere')}
               </span>
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-xl border border-destructive/40 p-4">
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+              <div>
+                <p className="text-sm font-medium">{t('feedback.title')}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t('feedback.settingsHint')}</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => setShowFeedback(true)}>
+                {t('feedback.open')}
+              </Button>
+            </div>
+            </section>
+
+            <section className="space-y-3">
+              <h3 className="text-xs font-medium text-foreground/60">
+                {t('dash.settingsAccount')}
+              </h3>
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-destructive/40 bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <p className="text-sm font-medium text-destructive">{t('dash.deleteAccount')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">
                   {t('dash.deleteAccountDesc')}
                 </p>
               </div>
@@ -2547,35 +2597,7 @@ export function Dashboard() {
               </Button>
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
-              <div>
-                <p className="text-sm font-medium">{t('pocket.title')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{t('pocket.desc')}</p>
-              </div>
-              <label className="inline-flex h-9 shrink-0 cursor-pointer items-center rounded-full border border-border px-4 text-xs font-medium hover:bg-accent">
-                <input
-                  type="file"
-                  accept=".html,.htm,text/html"
-                  className="sr-only"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0]
-                    if (file) void handlePocketImport(file)
-                    event.target.value = ''
-                  }}
-                />
-                {t('pocket.button')}
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
-              <div>
-                <p className="text-sm font-medium">{t('feedback.title')}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{t('feedback.settingsHint')}</p>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => setShowFeedback(true)}>
-                {t('feedback.open')}
-              </Button>
-            </div>
+            </section>
           </div>
         </Modal>
       )}

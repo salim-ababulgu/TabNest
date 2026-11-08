@@ -9,7 +9,7 @@ async function login(page) {
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 })
     await page.getByRole('button', { name: /Créer un compte gratuit|Create a free account/ }).first().click()
   await page.waitForTimeout(700)
-  await page.getByRole('button', { name: /Connexion|Sign in/ }).first().click()
+  await page.getByRole('tab', { name: /^Connexion$|Sign in/ }).click()
   await page.locator('#email').fill(EMAIL)
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: /Se connecter|Sign in/ }).last().click()
