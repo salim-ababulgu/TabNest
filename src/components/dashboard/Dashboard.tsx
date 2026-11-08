@@ -1446,7 +1446,7 @@ export function Dashboard() {
               size="icon-sm"
               onClick={() => setMobileMenuOpen(true)}
               aria-label={t('dash.openMenu')}
-              className="border-white/15 text-field-ink hover:bg-white/10 hover:text-field-ink"
+              className="border-white/20 bg-transparent text-field-ink hover:bg-white/10 hover:text-field-ink"
             >
               <Menu className="size-4" aria-hidden="true" />
             </Button>
@@ -1463,7 +1463,7 @@ export function Dashboard() {
               onClick={() => void handleRefresh()}
               title={t('dash.refresh')}
               aria-label={t('dash.refresh')}
-              className="border-white/15 text-field-ink hover:bg-white/10 hover:text-field-ink"
+              className="border-white/20 bg-transparent text-field-ink hover:bg-white/10 hover:text-field-ink"
             >
               <RefreshCw className={cn('size-3.5', refreshing && 'animate-spin')} />
             </Button>
@@ -1484,7 +1484,7 @@ export function Dashboard() {
                       ? fmt(t('dash.alertsUnread'), { n: unreadAlerts.length })
                       : t('dash.alerts')
                   }
-                  className="relative border-white/15 text-field-ink hover:bg-white/10 hover:text-field-ink"
+                  className="relative border-white/20 bg-transparent text-field-ink hover:bg-white/10 hover:text-field-ink"
                 >
                   <Bell className="size-3.5" />
                   {unreadAlerts.length > 0 && (
@@ -1961,7 +1961,7 @@ export function Dashboard() {
                               />
                             )}
                             <div className="grid h-full place-items-center">
-                              <span className="font-heading text-2xl font-semibold uppercase text-foreground/20 sm:text-6xl">
+                              <span className="grid size-14 place-items-center rounded-2xl border border-border bg-card font-heading text-xl font-semibold uppercase text-foreground/70 sm:size-16 sm:text-2xl">
                                 {site.domain.charAt(0)}
                               </span>
                             </div>
@@ -2016,7 +2016,7 @@ export function Dashboard() {
                               {site.pages[0].title}
                             </p>
                           )}
-                          <p className="mt-0.5 truncate text-[11px] text-muted-foreground sm:mt-1 sm:text-xs">
+                          <p className="mt-0.5 truncate text-[11px] text-foreground/70 sm:mt-1 sm:text-xs">
                             {fmt(t('dash.cardMeta'), {
                               p: site.pages.length,
                               v: site.visits,
@@ -2024,7 +2024,7 @@ export function Dashboard() {
                             })}
                           </p>
                           {site.pages[0] && (
-                            <p className="mt-1 text-[11px] text-muted-foreground">
+                            <p className="mt-1 text-[11px] text-foreground/70">
                               {expiryText(site.pages[0])}
                             </p>
                           )}
