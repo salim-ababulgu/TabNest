@@ -147,8 +147,11 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
     if (last && now - last < CAPTURE_COOLDOWN_MS) return
   }
 
-  const { captureEnabled = true } = await chrome.storage.local.get('captureEnabled')
-  if (!captureEnabled) return
+  const { captureEnabled = true, paused = false } = await chrome.storage.local.get([
+    'captureEnabled',
+    'paused',
+  ])
+  if (!captureEnabled || paused) return
 
   const session = await getSession()
   if (!session?.access_token) return
@@ -280,6 +283,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[TabNest] extension installée / mise à jour')
   void syncAutoCloseAlarm()
+  void updateBadge()
 })
 
 /**
@@ -422,8 +426,10 @@ async function pageState() {
   const tab = await currentTab()
   if (!tab?.url) return { connected: true, page: null }
   const [row, groups] = await Promise.all([fetchPageRow(session, tab.url), fetchGroups(session)])
+  const { paused = false } = await chrome.storage.local.get('paused')
   return {
     connected: true,
+    paused,
     email: session.user?.email ?? null,
     page: row && !row.deleted_at ? row : null,
     archived: Boolean(row?.deleted_at),
@@ -591,6 +597,8 @@ async function importBookmarks() {
 
 /** Ferme les onglets dont la page a expiré (jamais l'onglet actif, épinglé ou audible). */
 async function closeExpiredTabs() {
+  const { paused = false } = await chrome.storage.local.get('paused')
+  if (paused) return { ok: true, closed: 0, paused: true }
   const session = await getSession()
   if (!session) return { ok: false, closed: 0 }
   const res = await fetch(
@@ -625,9 +633,60 @@ async function closeExpiredTabs() {
   return { ok: true, closed }
 }
 
+async function updateBadge() {
+  const { paused = false, captures = 0 } = await chrome.storage.local.get([
+    'paused',
+    'captures',
+  ])
+  try {
+    if (paused) {
+      await chrome.action.setBadgeBackgroundColor({ color: '#8e8770' })
+      await chrome.action.setBadgeText({ text: '⏸' })
+    } else {
+      await chrome.action.setBadgeBackgroundColor({ color: '#c8f05a' })
+      await chrome.action.setBadgeText({ text: captures > 0 ? String(captures) : '' })
+    }
+  } catch {
+    // badge non critique
+  }
+}
+
+async function setPause(value) {
+  const paused = Boolean(value)
+  await chrome.storage.local.set({ paused })
+  await updateBadge()
+  await syncAutoCloseAlarm()
+  return { ok: true, paused }
+}
+
+/** Envoie la langue choisie dans l'extension aux onglets du site. */
+async function broadcastLang(lang) {
+  const tabs = await chrome.tabs.query({})
+  for (const tab of tabs) {
+    if (!tab.id || !tab.url) continue
+    if (!APP_HOSTS.some((host) => tab.url.includes(host))) continue
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'apply-lang', lang })
+    } catch {
+      // onglet sans content script
+    }
+  }
+}
+
+async function setLanguage(lang, broadcast) {
+  const allowed = ['fr', 'en', 'es', 'zh']
+  if (!allowed.includes(lang)) return { ok: false, error: 'Langue inconnue.' }
+  await chrome.storage.local.set({ extensionLang: lang })
+  if (broadcast) await broadcastLang(lang)
+  return { ok: true, lang }
+}
+
 async function syncAutoCloseAlarm() {
-  const { autoCloseExpired = false } = await chrome.storage.local.get('autoCloseExpired')
-  if (autoCloseExpired) {
+  const { autoCloseExpired = false, paused = false } = await chrome.storage.local.get([
+    'autoCloseExpired',
+    'paused',
+  ])
+  if (autoCloseExpired && !paused) {
     chrome.alarms.create(AUTO_CLOSE_ALARM, { periodInMinutes: 15 })
     void closeExpiredTabs()
   } else {
@@ -649,9 +708,21 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     void importBookmarks().then(sendResponse)
     return true
   }
+  if (message?.type === 'set-pause') {
+    void setPause(message.paused).then(sendResponse)
+    return true
+  }
+  if (message?.type === 'set-lang') {
+    void setLanguage(message.lang, true).then(sendResponse)
+    return true
+  }
+  if (message?.type === 'site-lang') {
+    void setLanguage(message.lang, false).then(sendResponse)
+    return true
+  }
   if (message?.type === 'get-settings') {
     void chrome.storage.local
-      .get(['autoCloseExpired', 'lastAutoClose', 'lastImport'])
+      .get(['autoCloseExpired', 'lastAutoClose', 'lastImport', 'paused', 'extensionLang'])
       .then((data) => sendResponse({ ok: true, ...data }))
     return true
   }

@@ -30,7 +30,18 @@ function setGlobalLang(next: Lang) {
   currentLang = next
   saveLang(next)
   document.documentElement.lang = next
+  // Prévient l'extension (synchronisation de la langue dans les deux sens).
+  window.dispatchEvent(new CustomEvent('tabnest:lang-changed', { detail: { lang: next } }))
   for (const listener of listeners) listener()
+}
+
+// L'extension peut imposer la langue : on l'applique sans recharger la page.
+const LANGS: Lang[] = ['fr', 'en', 'es', 'zh']
+if (typeof window !== 'undefined') {
+  window.addEventListener('tabnest:lang', (event) => {
+    const requested = (event as CustomEvent<{ lang?: Lang }>).detail?.lang
+    if (requested && LANGS.includes(requested)) setGlobalLang(requested)
+  })
 }
 
 /** Version autonome (sans fournisseur), partagée entre tous les écrans. */

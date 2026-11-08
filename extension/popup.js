@@ -1,4 +1,5 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
+import { applyTranslations, detectExtensionLang, translate } from './i18n.js'
 
 const $ = (id) => document.getElementById(id)
 
@@ -24,20 +25,15 @@ const importBookmarksBtn = $('import-bookmarks')
 const captureBtn = $('capture-btn')
 const refreshBtn = $('refresh-btn')
 const logoutBtn = $('logout-btn')
-const reasonButtons = Array.from(document.querySelectorAll('[data-reason]'))
-const reasonsEl = $('reasons')
-const organizeRow = $('organize-row')
 const removeBtn = $('remove-btn')
 const restoreBtn = $('restore-btn')
+const reasonsEl = $('reasons')
+const organizeRow = $('organize-row')
+const pauseBtn = $('pause-btn')
+const pauseBanner = $('pause-banner')
+const langSelect = $('lang-select')
+const reasonButtons = Array.from(document.querySelectorAll('[data-reason]'))
 
-const REASON_LABELS = {
-  remember: 'À retenir',
-  finish: 'À finir',
-  explore: 'Piste',
-  decide: 'À décider',
-}
-
-// Même expression que le site : partie locale + domaine en étiquettes.
 const EMAIL_RE =
   /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i
 
@@ -47,8 +43,29 @@ const emailError = $('email-error')
 const passwordError = $('password-error')
 const loginBtn = $('login-btn')
 const togglePw = $('toggle-pw')
+
+let currentPage = null
+let currentPinned = false
+let busy = false
+let lang = 'fr'
+let paused = false
 let emailTouched = false
 let passwordTouched = false
+let lastAutoCloseCount = 0
+let lastImport = null
+
+const t = (key, vars) => translate(lang, key, vars)
+
+// ---------- Langue ----------
+
+async function loadLanguage() {
+  const { extensionLang } = await chrome.storage.local.get('extensionLang')
+  lang = detectExtensionLang(extensionLang)
+  langSelect.value = lang
+  applyTranslations(document.body, lang)
+}
+
+// ---------- Validation ----------
 
 function validateLogin() {
   const email = emailInput.value.trim()
@@ -57,12 +74,12 @@ function validateLogin() {
   const showEmailError = emailTouched && email.length > 0 && !emailValid
   const showPasswordError = passwordTouched && passwordInput.value.length > 0 && !passwordValid
 
-  emailError.textContent = showEmailError ? 'Cette adresse e-mail ne semble pas valide.' : ''
+  emailError.textContent = showEmailError ? t('auth.badEmail') : ''
   emailError.hidden = !showEmailError
   emailInput.setAttribute('aria-invalid', String(showEmailError))
   emailInput.classList.toggle('invalid', showEmailError)
 
-  passwordError.textContent = showPasswordError ? '6 caractères minimum.' : ''
+  passwordError.textContent = showPasswordError ? t('auth.shortPassword') : ''
   passwordError.hidden = !showPasswordError
   passwordInput.setAttribute('aria-invalid', String(showPasswordError))
   passwordInput.classList.toggle('invalid', showPasswordError)
@@ -85,15 +102,11 @@ passwordInput.addEventListener('blur', () => {
 togglePw.addEventListener('click', () => {
   const show = passwordInput.type === 'password'
   passwordInput.type = show ? 'text' : 'password'
-  togglePw.textContent = show ? 'Masquer' : 'Afficher'
+  togglePw.textContent = t(show ? 'auth.hide' : 'auth.show')
   togglePw.setAttribute('aria-pressed', String(show))
 })
 
-validateLogin()
-
-let currentPage = null
-let currentPinned = false
-let busy = false
+// ---------- Utilitaires ----------
 
 async function getSession() {
   const { session } = await chrome.storage.local.get('session')
@@ -120,6 +133,8 @@ function setBusy(value) {
   pinBtn.disabled = value
   groupSelect.disabled = value
   captureBtn.disabled = value
+  removeBtn.disabled = value
+  restoreBtn.disabled = value
 }
 
 function setReasonActive(reason) {
@@ -130,12 +145,22 @@ function setReasonActive(reason) {
   })
 }
 
+function renderPause() {
+  pauseBtn.hidden = loggedIn.hidden
+  pauseBtn.textContent = paused ? t('action.resume') : t('action.pause')
+  pauseBtn.classList.toggle('active', paused)
+  pauseBtn.setAttribute('aria-pressed', String(paused))
+  pauseBanner.hidden = !paused
+}
+
 function showConnectedUi(connected) {
   loggedOut.hidden = connected
   loggedIn.hidden = !connected
   refreshBtn.hidden = !connected
   logoutBtn.hidden = !connected
   accountEl.hidden = !connected
+  pauseBtn.hidden = !connected
+  renderPause()
 }
 
 function renderPageState(state) {
@@ -145,6 +170,7 @@ function renderPageState(state) {
     return
   }
   loadingEl.hidden = true
+  paused = Boolean(state.paused)
   showConnectedUi(true)
   accountEl.textContent = state.email ?? ''
 
@@ -176,25 +202,28 @@ function renderPageState(state) {
   restoreBtn.hidden = !archived
 
   if (archived) {
-    saveState.textContent = 'Cette page a été retirée de TabNest.'
+    saveState.textContent = t('state.archived')
     setReasonActive(null)
     return
   }
 
   if (currentPage) {
     setReasonActive(currentPage.reason ?? 'decide')
-    saveState.textContent = 'Cette page est enregistrée : range-la en un clic.'
-    pinBtn.textContent = currentPinned ? 'Désépingler' : 'Épingler'
+    saveState.textContent = t('state.saved')
+    pinBtn.textContent = currentPinned ? t('action.unpin') : t('action.pin')
     pinBtn.setAttribute('aria-pressed', String(currentPinned))
   } else {
     setReasonActive(null)
-    saveState.textContent =
-      'Page pas encore capturée : elle le sera automatiquement au premier rangement.'
-    pinBtn.textContent = 'Épingler'
+    saveState.textContent = t('state.notCaptured')
+    pinBtn.textContent = t('action.pin')
     pinBtn.setAttribute('aria-pressed', 'false')
   }
 
-  groupSelect.innerHTML = '<option value="">Aucun projet</option>'
+  groupSelect.innerHTML = ''
+  const none = document.createElement('option')
+  none.value = ''
+  none.textContent = t('action.noProject')
+  groupSelect.append(none)
   for (const group of state.groups ?? []) {
     const option = document.createElement('option')
     option.value = group.id
@@ -211,6 +240,7 @@ async function refreshUi(showSkeleton = false) {
     loggedOut.hidden = true
     loggedIn.hidden = true
   }
+  await loadLanguage()
   const session = await getSession()
   if (!session) {
     loadingEl.hidden = true
@@ -222,45 +252,54 @@ async function refreshUi(showSkeleton = false) {
 
   const settings = await send('get-settings')
   if (settings?.ok) {
+    paused = Boolean(settings.paused)
+    renderPause()
     autoClose.checked = Boolean(settings.autoCloseExpired)
-    autoCloseStatus.textContent = settings.lastAutoClose?.count
-      ? `${settings.lastAutoClose.count} onglet(s) fermé(s) lors du dernier passage.`
+    lastAutoCloseCount = settings.lastAutoClose?.count ?? 0
+    lastImport = settings.lastImport ?? null
+    autoCloseStatus.textContent = lastAutoCloseCount
+      ? t('panel.lastClosed', { n: lastAutoCloseCount })
       : ''
-    if (settings.lastImport?.imported) {
-      importStatus.textContent = `Dernier import : ${settings.lastImport.imported} page(s).`
+    if (lastImport?.imported) {
+      importStatus.textContent = t('panel.importResult', {
+        n: lastImport.imported,
+        s: lastImport.skipped ?? 0,
+      })
     }
   }
 
   const { captures = 0 } = await chrome.storage.local.get('captures')
-  countEl.textContent = `${captures} page(s) capturée(s) au total.`
+  countEl.textContent = t('count.pages', { n: captures })
 }
+
+// ---------- Connexion ----------
 
 $('google-btn').addEventListener('click', async () => {
   errorEl.hidden = true
   const btn = $('google-btn')
   btn.disabled = true
-  btn.textContent = 'Connexion Google…'
+  btn.textContent = 'Google…'
   try {
     const result = await send('google-signin')
-    if (!result?.ok) throw new Error(result?.error || 'Connexion Google impossible.')
+    if (!result?.ok) throw new Error(result?.error || t('status.failed'))
     await refreshUi(true)
   } catch (err) {
-    errorEl.textContent = err instanceof Error ? err.message : 'Erreur de connexion'
+    errorEl.textContent = err instanceof Error ? err.message : t('status.failed')
     errorEl.hidden = false
   } finally {
     btn.disabled = false
-    btn.textContent = 'Continuer avec Google'
+    applyTranslations(document.body, lang)
   }
 })
 
 $('login-form').addEventListener('submit', async (event) => {
   event.preventDefault()
   errorEl.hidden = true
-  const email = $('email').value.trim()
-  const password = $('password').value
-  const btn = $('login-btn')
-  btn.disabled = true
-  btn.textContent = 'Connexion…'
+  if (!validateLogin()) return
+  const email = emailInput.value.trim()
+  const password = passwordInput.value
+  loginBtn.disabled = true
+  loginBtn.textContent = t('auth.busy')
 
   try {
     const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
@@ -270,7 +309,7 @@ $('login-form').addEventListener('submit', async (event) => {
     })
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
-      throw new Error(data.error_description || data.msg || 'Identifiants incorrects')
+      throw new Error(data.error_description || data.msg || t('status.failed'))
     }
     const data = await res.json()
     const session = {
@@ -280,13 +319,15 @@ $('login-form').addEventListener('submit', async (event) => {
     await chrome.storage.local.set({ session })
     await refreshUi(true)
   } catch (err) {
-    errorEl.textContent = err instanceof Error ? err.message : 'Erreur de connexion'
+    errorEl.textContent = err instanceof Error ? err.message : t('status.failed')
     errorEl.hidden = false
   } finally {
-    btn.disabled = false
-    btn.textContent = 'Se connecter'
+    loginBtn.textContent = t('auth.login')
+    validateLogin()
   }
 })
+
+// ---------- Actions ----------
 
 reasonButtons.forEach((button) => {
   button.addEventListener('click', async () => {
@@ -297,12 +338,12 @@ reasonButtons.forEach((button) => {
     try {
       const result = await send('classify', { reason })
       if (!result?.ok) {
-        flash(result?.error || 'Impossible de ranger cette page.', true)
+        flash(result?.error || t('status.failed'), true)
         return
       }
       currentPage = { ...(currentPage ?? {}), reason }
       setReasonActive(reason)
-      flash(`Rangée dans « ${REASON_LABELS[reason]} » ✓`)
+      flash(t('status.ranked', { r: t(`reason.${reason}`) }))
     } finally {
       button.classList.remove('saving')
       setBusy(false)
@@ -317,13 +358,13 @@ pinBtn.addEventListener('click', async () => {
   try {
     const result = await send('classify', { pinned: next })
     if (!result?.ok) {
-      flash(result?.error || 'Impossible d’épingler.', true)
+      flash(result?.error || t('status.failed'), true)
       return
     }
     currentPinned = next
-    pinBtn.textContent = next ? 'Désépingler' : 'Épingler'
+    pinBtn.textContent = next ? t('action.unpin') : t('action.pin')
     pinBtn.setAttribute('aria-pressed', String(next))
-    flash(next ? 'Page épinglée : conservée sans limite ✓' : 'Page désépinglée ✓')
+    flash(t(next ? 'status.pinned' : 'status.unpinned'))
   } finally {
     setBusy(false)
   }
@@ -332,10 +373,10 @@ pinBtn.addEventListener('click', async () => {
 groupSelect.addEventListener('change', async () => {
   const result = await send('classify', { groupId: groupSelect.value })
   if (!result?.ok) {
-    flash(result?.error || 'Impossible de ranger dans ce projet.', true)
+    flash(result?.error || t('status.failed'), true)
     return
   }
-  flash(groupSelect.value ? 'Rangée dans le projet ✓' : 'Retirée du projet ✓')
+  flash(t(groupSelect.value ? 'status.projectSet' : 'status.projectCleared'))
 })
 
 captureBtn.addEventListener('click', async () => {
@@ -345,76 +386,91 @@ captureBtn.addEventListener('click', async () => {
     captureBtn.disabled = false
     void refreshUi(true)
   }, 900)
-  flash('Page capturée ✓')
-})
-
-autoClose.addEventListener('change', async () => {
-  const result = await send('set-auto-close', { enabled: autoClose.checked })
-  if (!result?.ok) {
-    flash('Impossible de modifier ce réglage.', true)
-    return
-  }
-  flash(autoClose.checked ? 'Fermeture automatique activée ✓' : 'Fermeture automatique désactivée.')
-})
-
-importHistoryBtn.addEventListener('click', async () => {
-  importStatus.textContent = 'Lecture de l’historique…'
-  importHistoryBtn.disabled = true
-  try {
-    const result = await send('import-history', { days: 30 })
-    if (!result?.ok) throw new Error(result?.error || 'Import impossible.')
-    importStatus.textContent = `Historique : ${result.imported} ajoutée(s), ${result.skipped} déjà connue(s).`
-  } catch (err) {
-    importStatus.textContent = err instanceof Error ? err.message : 'Import impossible.'
-  } finally {
-    importHistoryBtn.disabled = false
-  }
-})
-
-importBookmarksBtn.addEventListener('click', async () => {
-  importStatus.textContent = 'Lecture des favoris…'
-  importBookmarksBtn.disabled = true
-  try {
-    const result = await send('import-bookmarks')
-    if (!result?.ok) throw new Error(result?.error || 'Import impossible.')
-    importStatus.textContent = `Favoris : ${result.imported} ajoutée(s), ${result.skipped} déjà connue(s).`
-  } catch (err) {
-    importStatus.textContent = err instanceof Error ? err.message : 'Import impossible.'
-  } finally {
-    importBookmarksBtn.disabled = false
-  }
+  flash(t('status.captured'))
 })
 
 removeBtn.addEventListener('click', async () => {
-    if (!window.confirm('Retirer cette page de TabNest ? Elle sera conservée dans les archives.')) {
+  if (!window.confirm(t('confirm.remove'))) return
+  setBusy(true)
+  try {
+    const result = await send('remove-page')
+    if (!result?.ok) {
+      flash(result?.error || t('status.failed'), true)
       return
     }
-    setBusy(true)
-    try {
-      const result = await send('remove-page')
-      if (!result?.ok) {
-        flash(result?.error || 'Suppression impossible.', true)
-        return
-      }
-      flash('Page retirée de TabNest (archivée).')
-      await refreshUi(true)
-    } finally {
-      setBusy(false)
-    }
-  })
+    flash(t('status.removed'))
+    await refreshUi(true)
+  } finally {
+    setBusy(false)
+  }
+})
 
 restoreBtn.addEventListener('click', async () => {
   setBusy(true)
   try {
     const result = await send('restore-page')
     if (!result?.ok) {
-      flash(result?.error || 'Restauration impossible.', true)
+      flash(result?.error || t('status.failed'), true)
       return
     }
-    flash('Page restaurée dans TabNest ✓')
+    flash(t('status.restored'))
     await refreshUi(true)
   } finally {
     setBusy(false)
+  }
+})
+
+pauseBtn.addEventListener('click', async () => {
+  const result = await send('set-pause', { paused: !paused })
+  if (!result?.ok) {
+    flash(t('status.failed'), true)
+    return
+  }
+  paused = Boolean(result.paused)
+  renderPause()
+  flash(t(paused ? 'status.paused' : 'status.resumed'))
+})
+
+autoClose.addEventListener('change', async () => {
+  const result = await send('set-auto-close', { enabled: autoClose.checked })
+  if (!result?.ok) {
+    flash(t('status.failed'), true)
+    return
+  }
+  flash(t(autoClose.checked ? 'status.autoCloseOn' : 'status.autoCloseOff'))
+})
+
+importHistoryBtn.addEventListener('click', async () => {
+  importStatus.textContent = t('panel.importReading')
+  importHistoryBtn.disabled = true
+  try {
+    const result = await send('import-history', { days: 30 })
+    if (!result?.ok) throw new Error(result?.error || t('status.failed'))
+    importStatus.textContent = t('panel.importResult', {
+      n: result.imported,
+      s: result.skipped ?? 0,
+    })
+  } catch (err) {
+    importStatus.textContent = err instanceof Error ? err.message : t('status.failed')
+  } finally {
+    importHistoryBtn.disabled = false
+  }
+})
+
+importBookmarksBtn.addEventListener('click', async () => {
+  importStatus.textContent = t('panel.importReading')
+  importBookmarksBtn.disabled = true
+  try {
+    const result = await send('import-bookmarks')
+    if (!result?.ok) throw new Error(result?.error || t('status.failed'))
+    importStatus.textContent = t('panel.importResult', {
+      n: result.imported,
+      s: result.skipped ?? 0,
+    })
+  } catch (err) {
+    importStatus.textContent = err instanceof Error ? err.message : t('status.failed')
+  } finally {
+    importBookmarksBtn.disabled = false
   }
 })
 
@@ -422,6 +478,19 @@ refreshBtn.addEventListener('click', () => void refreshUi(true))
 
 logoutBtn.addEventListener('click', async () => {
   await chrome.storage.local.remove('session')
+  await refreshUi(false)
+})
+
+langSelect.addEventListener('change', async () => {
+  const next = langSelect.value
+  if (next === lang) return
+  lang = next
+  await chrome.storage.local.set({ extensionLang: lang })
+  applyTranslations(document.body, lang)
+  // Synchronise la langue du site (dans les deux sens).
+  await send('set-lang', { lang })
+  errorEl.hidden = true
+  feedbackEl.hidden = true
   await refreshUi(false)
 })
 

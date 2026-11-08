@@ -40,6 +40,14 @@ L'identifiant s'affiche sur `chrome://extensions` (ou dans l'erreur renvoyée pa
 
 `config.js` contient l'adresse Supabase et la clé publique (`anon`). Ce fichier est local et ignoré par Git.
 
+## Mode pause
+
+Le bouton **Pause** suspend **toute activité automatique** (capture, fermeture d'onglets expirés) **sans désactiver l'extension** : elle reste installée et visible (badge ⏸), pour ne jamais oublier de la réactiver. Les actions manuelles (rangement, épingle, import) restent disponibles.
+
+## Langues et synchronisation
+
+Le popup existe en **FR / EN / ES / 中文**. La langue choisie dans l'extension est **écrite sur le site** (et inversement) : le content script applique la langue au site ouvert, et le site remonte ses changements à l'extension. La synchronisation passe par `chrome.storage` et un évènement `tabnest:lang` / `tabnest:lang-changed`.
+
 ## CRUD dans l'extension
 
 - **Créer** : capture automatique, « Capturer cette page », import historique/favoris.

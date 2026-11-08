@@ -87,6 +87,37 @@ async function main() {
   if (skeletonGone) ok('squelette de chargement remplacé par le contenu')
   else fail('le squelette de chargement reste affiché')
 
+  // Mode pause + langue
+  const pauseVisible = await page.locator('#pause-btn').isVisible().catch(() => false)
+  if (pauseVisible) ok('bouton pause présent')
+  else fail('bouton pause absent')
+
+  const languageVisible = await page.locator('#lang-select').isVisible().catch(() => false)
+  if (languageVisible) ok('sélecteur de langue présent')
+  else fail('sélecteur de langue absent')
+
+  await page.locator('#lang-select').selectOption('en')
+  await page.waitForTimeout(500)
+  const englishPanel = await page
+    .locator('details summary')
+    .first()
+    .textContent()
+  if (/Import history or bookmarks/.test(englishPanel ?? '')) ok('interface traduite en anglais')
+  else fail(`interface non traduite (${englishPanel})`)
+  await page.locator('#lang-select').selectOption('fr')
+  await page.waitForTimeout(400)
+
+  await page.locator('#pause-btn').click()
+  await page.waitForTimeout(600)
+  const bannerVisible = await page.locator('#pause-banner').isVisible().catch(() => false)
+  const pauseLabel = await page.locator('#pause-btn').textContent()
+  if (bannerVisible) ok('bandeau de pause affiché')
+  else fail('bandeau de pause absent')
+  if (/Reprendre|Resume/.test(pauseLabel ?? '')) ok('bouton passé en « Reprendre »')
+  else fail(`libellé de pause inattendu (${pauseLabel})`)
+  await page.locator('#pause-btn').click()
+  await page.waitForTimeout(500)
+
   // Panneaux repliés : on les ouvre pour vérifier leur contenu
   await page.locator('details summary', { hasText: 'Importer' }).click()
   await page.locator('details summary', { hasText: 'Fermer les onglets' }).click()
@@ -134,11 +165,27 @@ async function main() {
       sent.push(message?.type)
       return original(message, callback)
     }
+    document.querySelector('#pause-btn').click()
+    document.querySelector('#lang-select').value = 'en'
+    document.querySelector('#lang-select').dispatchEvent(new Event('change'))
     document.querySelector('#auto-close').click()
     document.querySelector('#import-history').click()
     document.querySelector('#import-bookmarks').click()
     return sent
   })
+  if (settingsMessages.includes('set-pause')) ok('la pause envoie « set-pause »')
+  else fail('la pause n’envoie aucun message')
+
+  // La langue est bien mémorisée (synchronisation avec le site côté stockage)
+  const storedLang = await page.evaluate(async () => {
+    const { extensionLang } = await chrome.storage.local.get('extensionLang')
+    return extensionLang
+  })
+  if (['fr', 'en', 'es', 'zh'].includes(storedLang ?? '')) {
+    ok(`langue mémorisée pour la synchronisation (${storedLang})`)
+  } else {
+    fail('aucune langue mémorisée')
+  }
   if (settingsMessages.includes('set-auto-close')) ok('la bascule envoie « set-auto-close »')
   else fail('la bascule n’envoie aucun message')
   if (
