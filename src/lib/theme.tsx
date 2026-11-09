@@ -19,16 +19,36 @@ function readSaved(): Theme {
 
 let current: Theme = readSaved()
 let currentDark = false
+let appliedDark: boolean | null = null
+let transitionTimer = 0
 const listeners = new Set<() => void>()
 
 function computeDark(theme: Theme): boolean {
   return theme === 'dark' || (theme === 'system' && (media?.matches ?? false))
 }
 
+/**
+ * Pendant ~300 ms, on autorise les couleurs à s'interpoler : le passage
+ * clair/sombre glisse au lieu de « claquer ». La classe est retirée ensuite
+ * pour ne pas transformer chaque survol en animation.
+ */
+function startColorTransition() {
+  if (typeof window === 'undefined') return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const root = document.documentElement
+  root.classList.add('theme-switching')
+  window.clearTimeout(transitionTimer)
+  transitionTimer = window.setTimeout(() => root.classList.remove('theme-switching'), 520)
+}
+
 function apply(theme: Theme) {
-  currentDark = computeDark(theme)
+  const nextDark = computeDark(theme)
+  // Aucune transition au tout premier rendu (évite un flash au chargement).
+  if (appliedDark !== null && appliedDark !== nextDark) startColorTransition()
+  currentDark = nextDark
   document.documentElement.classList.toggle('dark', currentDark)
   document.documentElement.style.colorScheme = currentDark ? 'dark' : 'light'
+  appliedDark = nextDark
 }
 
 // Appliqué dès le chargement du module, avant le premier rendu (pas de flash).

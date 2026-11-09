@@ -277,3 +277,29 @@ select option {
   color: #1f2c25;
   background-color: #f6f1e4;
 }
+
+/* Passage clair ↔ sombre en douceur : les couleurs glissent pendant ~300 ms,
+   puis la classe est retirée pour ne pas animer chaque interaction. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color 200ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    fill 200ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    stroke 200ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    outline-color 200ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+  transition-delay: 0ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
+  }
+}
