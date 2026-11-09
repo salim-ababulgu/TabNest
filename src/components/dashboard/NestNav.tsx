@@ -202,8 +202,8 @@ export function NestNav({
     <div className="space-y-0.5">
       <div
         className={cn(
-          'flex items-center justify-between pb-1',
-          collapsed ? 'px-1' : 'px-3',
+          'flex items-center pb-1',
+          collapsed ? 'justify-center' : 'justify-between px-3',
         )}
       >
         {!collapsed && (
@@ -215,7 +215,12 @@ export function NestNav({
         <button
           type="button"
           onClick={onToggleEdit}
-          className={cn('rounded p-1', iconClass, editMode && 'text-lime')}
+          className={cn(
+            'rounded p-1',
+            collapsed && 'grid size-8 place-items-center',
+            iconClass,
+            editMode && 'text-lime',
+          )}
           aria-label={t('nest.manage')}
           title={t('nest.manage')}
           aria-pressed={editMode}
