@@ -164,6 +164,8 @@ const FR: Record<string, Entry> = {
   'dash.hero.nextExpiry': 'Prochaine expiration dans {d} j',
   'dash.onboarding.open': 'Commencer le guide',
   'dash.onboarding.later': 'Plus tard',
+  'dash.pocketImporting': '{done} / {total} liens importés',
+  'dash.deletingAccount': 'Suppression du compte…',
   'dash.cancel': 'Annuler',
   'dash.toast.projectRenamed': 'Projet renommé.',
   'dash.toast.projectDeleted': 'Projet supprimé (les pages sont conservées).',

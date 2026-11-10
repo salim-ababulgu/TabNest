@@ -396,6 +396,8 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.hero.nextExpiry': '{d} 天后到期',
   'dash.onboarding.open': '开始导览',
   'dash.onboarding.later': '稍后',
+  'dash.pocketImporting': '已导入 {done} / {total} 个链接',
+  'dash.deletingAccount': '正在删除账户…',
   'dash.cancel': '取消',
   'dash.toast.projectRenamed': '已重命名项目。',
   'dash.toast.projectDeleted': '已删除项目（页面已保留）。',

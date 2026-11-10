@@ -140,6 +140,7 @@ export async function setReason(page: Page, reason: string | null): Promise<void
 export async function importPagesBulk(
   entries: { url: string; title: string; reason: string | null }[],
   userId: string,
+  onProgress?: (done: number, total: number) => void,
 ): Promise<{ imported: number; skipped: number }> {
   const existing = await supabase.from('pages').select('url').is('deleted_at', null).limit(5000)
   const known = new Set((existing.data ?? []).map((row) => row.url))
@@ -162,11 +163,13 @@ export async function importPagesBulk(
   }
 
   let imported = 0
+  onProgress?.(0, rows.length)
   for (let index = 0; index < rows.length; index += 50) {
     const batch = rows.slice(index, index + 50)
     const { error } = await supabase.from('pages').insert(batch)
     if (error) throw error
     imported += batch.length
+    onProgress?.(imported, rows.length)
   }
   return { imported, skipped: entries.length - imported }
 }

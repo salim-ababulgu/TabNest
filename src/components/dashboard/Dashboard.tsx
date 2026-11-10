@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
+import { AsciiReveal, AsciiSkeleton } from 'ascii-reveal'
 import { Flip } from 'gsap/Flip'
 import type { ComponentType, FormEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import {
@@ -19,6 +20,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Pin,
+  Loader2,
   Plus,
   RefreshCw,
   RotateCcw,
@@ -391,6 +393,8 @@ export function Dashboard() {
   const [showFeedback, setShowFeedback] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false)
+  const [deletingAccount, setDeletingAccount] = useState(false)
+  const [pocketProgress, setPocketProgress] = useState<{ done: number; total: number } | null>(null)
   const [showAddPage, setShowAddPage] = useState(false)
   const [showAddProject, setShowAddProject] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
@@ -1163,6 +1167,7 @@ export function Dashboard() {
   }
 
   async function deleteMyAccount() {
+    setDeletingAccount(true)
     try {
       const { error } = await supabase.rpc('delete_my_account')
       if (error) throw error
@@ -1170,6 +1175,8 @@ export function Dashboard() {
       await signOut()
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    } finally {
+      setDeletingAccount(false)
     }
   }
 
@@ -1189,11 +1196,14 @@ export function Dashboard() {
           reason: reasonFromTags(entry.tags),
         })),
         user.id,
+        (done, total) => setPocketProgress({ done, total }),
       )
       await load()
       notify('success', fmt(t('pocket.imported'), { n: result.imported, s: result.skipped }))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    } finally {
+      setPocketProgress(null)
     }
   }
 
@@ -1615,7 +1625,22 @@ export function Dashboard() {
             <span>{t('dash.mobileReadOnly')}</span>
           </div>
 
-          {loadedOnce && pages.length === 0 ? (
+          {!loadedOnce ? (
+            <section
+              data-dash-anim
+              aria-busy="true"
+              data-skeleton-hero=""
+              className="relative overflow-hidden rounded-2xl bg-field px-5 py-7 text-field-ink md:px-8 md:py-8"
+            >
+              <AsciiSkeleton variant="dither" rows={2} width={160} />
+              <AsciiSkeleton
+                variant="scan"
+                lines={1}
+                widths={[120]}
+                className="mt-4 block opacity-70"
+              />
+            </section>
+          ) : pages.length === 0 ? (
             <section
               data-dash-anim
               className="relative overflow-hidden rounded-2xl bg-field px-5 py-8 text-field-ink md:px-8 md:py-10"
@@ -1648,6 +1673,13 @@ export function Dashboard() {
               data-dash-anim
               className="relative overflow-hidden rounded-2xl bg-field px-5 py-7 text-field-ink md:px-8 md:py-8"
             >
+              <AsciiReveal
+                as="div"
+                preset="dither"
+                duration="fast"
+                lazy={false}
+                className="block"
+              >
               <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
                 <div>
                   <p className="text-xs text-field-muted">{t('dash.hero.todayLabel')}</p>
@@ -1675,6 +1707,7 @@ export function Dashboard() {
                   )}
                 </div>
               </div>
+              </AsciiReveal>
             </section>
           )}
 
@@ -2283,6 +2316,7 @@ export function Dashboard() {
               </Select>
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
+              {busy && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
               {t('dash.add')}
             </Button>
           </form>
@@ -2302,6 +2336,7 @@ export function Dashboard() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={busy || !newGroup.trim()}>
+              {busy && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
               {t('dash.create')}
             </Button>
           </form>
@@ -2493,6 +2528,36 @@ export function Dashboard() {
                 {t('pocket.button')}
               </label>
             </div>
+            {pocketProgress && (
+              <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    {t('pocket.title')}
+                  </span>
+                  <span className="tabular-nums text-foreground/70">
+                    {fmt(t('dash.pocketImporting'), {
+                      done: pocketProgress.done,
+                      total: pocketProgress.total,
+                    })}
+                  </span>
+                </div>
+                <div
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={pocketProgress.total}
+                  aria-valuenow={pocketProgress.done}
+                  className="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary"
+                >
+                  <div
+                    className="h-full rounded-full bg-lime transition-[width] duration-300"
+                    style={{
+                      width: `${pocketProgress.total === 0 ? 0 : Math.round((pocketProgress.done / pocketProgress.total) * 100)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
@@ -2580,6 +2645,14 @@ export function Dashboard() {
               total: onboardingSteps.length,
             })}
           </p>
+          <div className="mt-3 h-1 overflow-hidden rounded-full bg-secondary">
+            <div
+              className="h-full rounded-full bg-lime transition-[width] duration-300"
+              style={{
+                width: `${Math.round((onboardingSteps.filter((step) => step.done).length / onboardingSteps.length) * 100)}%`,
+              }}
+            />
+          </div>
 
           <ol className="mt-6 space-y-5">
             {onboardingSteps.map((step) => (
@@ -2648,6 +2721,35 @@ export function Dashboard() {
             </Button>
           </div>
         </Modal>
+      )}
+
+      {pocketProgress && !showSettings && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed right-4 bottom-20 z-40 flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2 text-xs shadow-none md:bottom-6"
+        >
+          <Loader2 className="size-4 animate-spin text-lime" aria-hidden="true" />
+          <span className="tabular-nums">
+            {fmt(t('dash.pocketImporting'), {
+              done: pocketProgress.done,
+              total: pocketProgress.total,
+            })}
+          </span>
+        </div>
+      )}
+
+      {deletingAccount && (
+        <div
+          role="status"
+          aria-live="assertive"
+          className="fixed inset-0 z-[80] grid place-items-center bg-background/80"
+        >
+          <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm">
+            <Loader2 className="size-5 animate-spin text-lime" aria-hidden="true" />
+            {t('dash.deletingAccount')}
+          </div>
+        </div>
       )}
 
       {showFeedback && (

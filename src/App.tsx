@@ -53,6 +53,21 @@ function usePathname() {
   return pathname
 }
 
+/** Chargement d'une nouvelle page : fine barre en haut, pas de splash plein écran. */
+function RouteLoading() {
+  return (
+    <div className="min-h-screen bg-background">
+      <div
+        role="progressbar"
+        aria-label="Chargement de la page"
+        className="fixed inset-x-0 top-0 z-[70] h-0.5 overflow-hidden"
+      >
+        <div className="route-bar h-full w-1/3 bg-lime" />
+      </div>
+    </div>
+  )
+}
+
 function Splash() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -79,7 +94,7 @@ function AppContent() {
 
   if (pathname === '/extension') {
     return (
-      <Suspense fallback={<Splash />}>
+      <Suspense fallback={<RouteLoading />}>
         <ExtensionPage />
       </Suspense>
     )
@@ -87,7 +102,7 @@ function AppContent() {
 
   if (pathname === '/admin') {
     return (
-      <Suspense fallback={<Splash />}>
+      <Suspense fallback={<RouteLoading />}>
         <AdminPage />
       </Suspense>
     )
@@ -95,7 +110,7 @@ function AppContent() {
 
   if (legalSlug) {
     return (
-      <Suspense fallback={<Splash />}>
+      <Suspense fallback={<RouteLoading />}>
         <LegalPage slug={legalSlug} />
       </Suspense>
     )
@@ -107,7 +122,7 @@ function AppContent() {
 
   if (user) {
     return (
-      <Suspense fallback={<Splash />}>
+      <Suspense fallback={<RouteLoading />}>
         <Dashboard />
       </Suspense>
     )
@@ -115,7 +130,7 @@ function AppContent() {
 
   if (showAuth) {
     return (
-      <Suspense fallback={<Splash />}>
+      <Suspense fallback={<RouteLoading />}>
         <AuthForm
           initialEmail={authEmail}
           defaultMode="signup"
@@ -126,7 +141,7 @@ function AppContent() {
   }
 
   return (
-    <Suspense fallback={<Splash />}>
+    <Suspense fallback={<RouteLoading />}>
       <Landing
         onStart={(email) => {
           setAuthEmail(email ?? '')

@@ -3,6 +3,7 @@ import { RefreshCw, ShieldCheck } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
+import { AsciiSkeleton } from 'ascii-reveal'
 
 const ADMIN_EMAIL = 'salimababulgu@gmail.com'
 
@@ -20,12 +21,26 @@ type Stats = {
 
 type RecentUser = { email: string; created_at: string }
 
-function Card({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function Card({
+  label,
+  value,
+  sub,
+  loading = false,
+}: {
+  label: string
+  value: string
+  sub?: string
+  loading?: boolean
+}) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="mt-2 font-heading text-3xl font-medium">{value}</p>
-      {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
+      {loading ? (
+        <AsciiSkeleton variant="dither" rows={1} width={96} className="mt-2 block" />
+      ) : (
+        <p className="mt-2 font-heading text-3xl font-medium">{value}</p>
+      )}
+      {sub && !loading && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
     </div>
   )
 }
@@ -132,26 +147,26 @@ export function AdminPage() {
 
         {!error && (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Card
+            <Card loading={loading && !stats}
               label="Utilisateurs"
               value={stats ? String(stats.usersTotal) : '…'}
               sub={stats ? `+${stats.usersLast7d} sur 7 jours` : undefined}
             />
-            <Card
+            <Card loading={loading && !stats}
               label="Pages gardées"
               value={stats ? String(stats.pagesTotal) : '…'}
               sub={stats ? `+${stats.pagesLast24h} en 24 h` : undefined}
             />
-            <Card
+            <Card loading={loading && !stats}
               label="Pages sur 7 jours"
               value={stats ? String(stats.pagesLast7d) : '…'}
             />
-            <Card
+            <Card loading={loading && !stats}
               label="Sites (domaines)"
               value={stats ? String(stats.sitesTotal ?? 0) : '…'}
               sub={stats ? `+${stats.sitesLast7d ?? 0} sur 7 jours` : undefined}
             />
-            <Card
+            <Card loading={loading && !stats}
               label="Projets"
               value={stats ? String(stats.groupsTotal) : '…'}
               sub={stats ? `${stats.pagesExpired} pages expirées en attente` : undefined}
