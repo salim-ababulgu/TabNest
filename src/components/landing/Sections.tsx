@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { Check } from 'lucide-react'
 import { ScreenshotFrame } from '@/components/landing/ScreenshotFrame'
 import { Eyebrow } from '@/components/landing/Eyebrow'
+import { AsciiImage } from '@/components/ui/ascii-image'
 import { Reveal } from '@/components/landing/Reveal'
 import { useLang } from '@/components/landing/i18n'
 import { computeExpiry } from '@/lib/lifetime'
@@ -285,14 +286,11 @@ export function ExtensionSection() {
 
           <Reveal delay={120} className="md:col-span-6">
             <div className="mx-auto w-full max-w-[560px] rounded-[1.5rem] bg-card p-8 sm:p-12">
-              <img
+              <AsciiImage
                 src="/screenshots/popup-connected.png"
                 alt={t('extension.alt')}
-                width={336}
-                height={720}
-                loading="lazy"
-                decoding="async"
                 className="mx-auto block w-full max-w-[360px] rounded-[1.25rem]"
+                imgClassName="block w-full rounded-[1.25rem]"
               />
             </div>
             <p className="mt-4 text-center text-sm text-foreground/65">{t('extension.caption')}</p>

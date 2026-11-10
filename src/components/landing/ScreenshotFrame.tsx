@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { AsciiImage } from '@/components/ui/ascii-image'
 
 /**
  * Cadre autour d'une vraie capture d'écran de l'application.
@@ -11,8 +12,6 @@ export function ScreenshotFrame({
   crop = 'top',
   portrait = false,
   eager = false,
-  width = portrait ? 390 : 1280,
-  height = portrait ? 844 : 800,
   className,
 }: {
   src: string
@@ -53,15 +52,12 @@ export function ScreenshotFrame({
           filnest.pages.dev
         </span>
       </div>
-      <img
+      <AsciiImage
         src={src}
         alt={alt}
-        width={width}
-        height={height}
-        loading={eager ? 'eager' : 'lazy'}
-        decoding="async"
-        fetchPriority={eager ? 'high' : 'auto'}
-        className={cn(
+        eager={eager}
+        className="block w-full"
+        imgClassName={cn(
           'block w-full object-cover',
           crop === 'top' ? 'object-top' : 'object-center',
           portrait ? 'aspect-auto' : 'aspect-[16/10]',

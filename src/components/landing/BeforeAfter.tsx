@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronsLeftRight } from 'lucide-react'
 import { useLang } from '@/components/landing/i18n'
+import { AsciiImage } from '@/components/ui/ascii-image'
 
 type Tab = { name: string; color: string }
 
@@ -117,15 +118,12 @@ export function BeforeAfter() {
         }}
       >
         {/* Après : la même navigation, rangée (toujours entière sous le mur) */}
-        <img
+        <AsciiImage
           src="/screenshots/dashboard-pages.png"
           alt={t('compare.alt')}
-          width={1024}
-          height={604}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover object-top"
+          eager
+          className="absolute inset-0"
+          imgClassName="h-full w-full object-cover object-top"
         />
 
         {/* Avant : le mur d'onglets, découpé par le séparateur */}

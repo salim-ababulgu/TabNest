@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { AsciiReveal, AsciiSkeleton } from 'ascii-reveal'
+import { AsciiImage } from '@/components/ui/ascii-image'
 import { Flip } from 'gsap/Flip'
 import type { ComponentType, FormEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import {
@@ -241,10 +242,13 @@ function SiteAvatar({ site, className }: { site: Site; className?: string }) {
           {site.domain.charAt(0)}
         </span>
       ) : (
-        <img
+        <AsciiImage
           src={sources[sourceIndex]}
           alt=""
-          className="size-full object-contain"
+          className="size-full"
+          imgClassName="size-full object-contain"
+          skeletonRows={1}
+          skeletonCircle
           onError={() => setSourceIndex((index) => index + 1)}
         />
       )}
@@ -1964,24 +1968,21 @@ export function Dashboard() {
                             </div>
                           </div>
                           {site.ogImage && (
-                            <img
+                            <AsciiImage
                               src={site.ogImage}
                               alt=""
-                              loading="lazy"
-                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 hover:scale-[1.03]"
-                              onError={(event) => {
-                                event.currentTarget.style.display = 'none'
-                              }}
+                              className="absolute inset-0"
+                              imgClassName="h-full w-full object-cover transition-transform duration-300 hover:scale-[1.03]"
+                              skeletonRows={3}
                             />
                           )}
                           <div className="absolute inset-x-0 top-0 hidden items-center gap-2 bg-black/50 p-3 text-xs text-white sm:flex">
-                            <img
+                            <AsciiImage
                               src={faviconFor(site)}
                               alt=""
-                              className="size-5 rounded bg-white/90 p-0.5"
-                              onError={(event) => {
-                                event.currentTarget.style.display = 'none'
-                              }}
+                              className="size-5 rounded bg-white/90"
+                              imgClassName="size-full rounded object-contain p-0.5"
+                              skeletonRows={1}
                             />
                             <span className="hidden truncate sm:inline">{site.domain}</span>
                             {site.pinned && (
