@@ -389,6 +389,7 @@ export function Dashboard() {
 
   const [showSettings, setShowSettings] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false)
   const [showAddPage, setShowAddPage] = useState(false)
   const [showAddProject, setShowAddProject] = useState(false)
@@ -574,6 +575,7 @@ export function Dashboard() {
     }
   }, [])
 
+
   function hideOnboarding() {
     setOnboardingHidden(true)
     try {
@@ -635,8 +637,24 @@ export function Dashboard() {
       done: hasReason,
     },
   ]
+  const nextExpiryDays = (() => {
+    const now = Date.now()
+    const upcoming = pages
+      .map((page) => (page.expires_at ? new Date(page.expires_at).getTime() : null))
+      .filter((value): value is number => value !== null && value > now)
+    if (upcoming.length === 0) return null
+    return Math.max(1, Math.ceil((Math.min(...upcoming) - now) / 86_400_000))
+  })()
+
   const onboardingDone = onboardingSteps.every((step) => step.done)
   const onboardingNext = onboardingSteps.find((step) => !step.done)
+  // Le guide ne s'ouvre tout seul que pour un compte réellement vide.
+  useEffect(() => {
+    if (!loadedOnce || loading) return
+    if (pages.length > 0 || onboardingHidden || onboardingDone) return
+    setShowOnboarding(true)
+  }, [loadedOnce, loading, pages.length, onboardingHidden, onboardingDone])
+
 
   const onboardingDoneRef = useRef(false)
   useEffect(() => {
@@ -1597,122 +1615,68 @@ export function Dashboard() {
             <span>{t('dash.mobileReadOnly')}</span>
           </div>
 
-          <section data-dash-anim className="relative overflow-hidden rounded-2xl bg-field text-field-ink px-5 py-8 md:px-8 md:py-10">
-            <div className="relative">
-              <h1 className="mt-3 max-w-xl font-heading text-4xl leading-[1.05] font-medium tracking-tight md:text-5xl">
-                {t('dash.hero.title')}
-              </h1>
-              <p className="mt-4 max-w-lg text-sm text-field-muted">{t('dash.hero.sub')}</p>
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs text-field-ink">
-                <span className="size-1.5 rounded-full bg-lime" />
-                {fmt(t('dash.pagesKept'), { n: pages.length })}
-              </div>
-            </div>
-          </section>
-
-          {!loadedOnce && !onboardingHidden && !onboardingDone && (
+          {loadedOnce && pages.length === 0 ? (
             <section
-              aria-busy="true"
-              data-skeleton-onboarding=""
-              className="mt-6 rounded-2xl border bg-card p-6"
+              data-dash-anim
+              className="relative overflow-hidden rounded-2xl bg-field px-5 py-8 text-field-ink md:px-8 md:py-10"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <Skeleton className="h-6 w-56" />
-                  <Skeleton className="mt-2 h-4 w-40" />
-                </div>
-                <Skeleton className="size-5" />
-              </div>
-              <div className="mt-5 space-y-3">
-                {[0, 1, 2].map((index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <Skeleton className="size-6 rounded-full" delay={index * 60} />
-                    <div className="flex-1 space-y-1.5">
-                      <Skeleton className="h-4 w-2/5" delay={index * 60} />
-                      <Skeleton className="h-3 w-3/5" delay={index * 60} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          <div className="hidden md:block">
-          {!onboardingHidden && !onboardingDone && !loading && (
-            <section data-dash-anim className="mt-6 rounded-2xl border bg-card p-6">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="font-heading text-xl font-semibold">
-                    {t('dash.onboarding.title')}
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {fmt(t('dash.onboarding.progress'), {
-                      done: onboardingSteps.filter((step) => step.done).length,
-                      total: onboardingSteps.length,
-                    })}
-                  </p>
-                </div>
+              <p className="text-xs text-field-muted">{t('dash.hero.freshLabel')}</p>
+              <h1 className="mt-2 max-w-xl font-heading text-3xl leading-[1.05] font-medium tracking-tight md:text-4xl">
+                {t('dash.hero.freshTitle')}
+              </h1>
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-field-muted">
+                {t('dash.hero.freshSub')}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  onClick={hideOnboarding}
-                  aria-label={t('dash.onboarding.hide')}
-                  className="shrink-0 rounded p-1 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowOnboarding(true)}
+                  className="inline-flex h-10 items-center rounded-full bg-lime px-4 text-sm font-semibold text-lime-foreground"
                 >
-                  <X className="size-4" aria-hidden="true" />
+                  {t('dash.onboarding.open')}
                 </button>
+                <a
+                  href="/extension"
+                  className="inline-flex h-10 items-center rounded-full border border-white/20 px-4 text-sm text-field-ink hover:bg-white/10"
+                >
+                  {t('dash.onboarding.cta.install')}
+                </a>
               </div>
-
-              <ol className="mt-5 space-y-3">
-                {onboardingSteps.map((step) => (
-                  <li key={step.labelKey} className="flex items-start gap-3">
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full',
-                        step.done
-                          ? 'bg-lime text-lime-foreground'
-                          : 'border border-border text-transparent',
-                      )}
+            </section>
+          ) : (
+            <section
+              data-dash-anim
+              className="relative overflow-hidden rounded-2xl bg-field px-5 py-7 text-field-ink md:px-8 md:py-8"
+            >
+              <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-xs text-field-muted">{t('dash.hero.todayLabel')}</p>
+                  <p className="mt-1 font-heading text-5xl leading-none tracking-[-0.03em] tabular-nums">
+                    {pages.length}
+                  </p>
+                  <p className="mt-2 text-sm text-field-muted">{t('dash.hero.pagesLabel')}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-field-muted">
+                  <span>{fmt(t('dash.hero.sitesLabel'), { n: sites.length })}</span>
+                  {nextExpiryDays !== null && (
+                    <span>{fmt(t('dash.hero.nextExpiry'), { d: nextExpiryDays })}</span>
+                  )}
+                  {!onboardingDone && (
+                    <button
+                      type="button"
+                      onClick={() => setShowOnboarding(true)}
+                      className="rounded-full border border-white/20 px-3 py-1 text-xs text-field-ink hover:bg-white/10"
                     >
-                      <Check className="size-3" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className={cn('text-sm font-medium', step.done && 'text-foreground/55')}>
-                        {t(step.labelKey)}
-                      </p>
-                      <p className="mt-1 text-sm leading-relaxed text-foreground/70">{t(step.detailKey)}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-
-              <div className="mt-5 flex flex-wrap items-center gap-2">
-                {onboardingNext?.labelKey === 'dash.onboarding.s1.label' ? (
-                  <a
-                    href="/extension"
-                    className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground"
-                  >
-                    {t('dash.onboarding.cta.install')}
-                  </a>
-                ) : onboardingNext?.labelKey === 'dash.onboarding.s2.label' ? (
-                  <Button size="sm" onClick={() => setShowAddPage(true)}>
-                    {t('dash.onboarding.cta.add')}
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setView('today')
-                      setSelectedGroup(null)
-                    }}
-                  >
-                    {t('dash.onboarding.cta.today')}
-                  </Button>
-                )}
+                      {fmt(t('dash.onboarding.progress'), {
+                        done: onboardingSteps.filter((step) => step.done).length,
+                        total: onboardingSteps.length,
+                      })}
+                    </button>
+                  )}
+                </div>
               </div>
             </section>
           )}
-          </div>
 
           {loading && !loadedOnce ? (
             <section className="mt-8" aria-busy="true" data-skeleton-top="">
@@ -2598,6 +2562,90 @@ export function Dashboard() {
             </div>
 
             </section>
+          </div>
+        </Modal>
+      )}
+
+      {showOnboarding && (
+        <Modal
+          title={t('dash.onboarding.title')}
+          onClose={() => {
+            hideOnboarding()
+            setShowOnboarding(false)
+          }}
+        >
+          <p className="-mt-1 text-sm text-foreground/70">
+            {fmt(t('dash.onboarding.progress'), {
+              done: onboardingSteps.filter((step) => step.done).length,
+              total: onboardingSteps.length,
+            })}
+          </p>
+
+          <ol className="mt-6 space-y-5">
+            {onboardingSteps.map((step) => (
+              <li key={step.labelKey} className="flex items-start gap-3">
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full',
+                    step.done
+                      ? 'bg-lime text-lime-foreground'
+                      : 'border border-border text-transparent',
+                  )}
+                >
+                  <Check className="size-3.5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className={cn('text-sm font-medium', step.done && 'text-foreground/60')}>
+                    {t(step.labelKey)}
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-foreground/70">
+                    {t(step.detailKey)}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <div className="mt-7 flex flex-wrap items-center gap-2">
+            {onboardingNext?.labelKey === 'dash.onboarding.s1.label' ? (
+              <a
+                href="/extension"
+                className="inline-flex h-10 items-center rounded-full bg-lime px-4 text-sm font-semibold text-lime-foreground"
+              >
+                {t('dash.onboarding.cta.install')}
+              </a>
+            ) : onboardingNext?.labelKey === 'dash.onboarding.s2.label' ? (
+              <Button
+                className="bg-lime text-lime-foreground hover:bg-lime/90"
+                onClick={() => {
+                  setShowOnboarding(false)
+                  setShowAddPage(true)
+                }}
+              >
+                {t('dash.onboarding.cta.add')}
+              </Button>
+            ) : (
+              <Button
+                className="bg-lime text-lime-foreground hover:bg-lime/90"
+                onClick={() => {
+                  setShowOnboarding(false)
+                  setView('today')
+                  setSelectedGroup(null)
+                }}
+              >
+                {t('dash.onboarding.cta.today')}
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              onClick={() => {
+                hideOnboarding()
+                setShowOnboarding(false)
+              }}
+            >
+              {t('dash.onboarding.later')}
+            </Button>
           </div>
         </Modal>
       )}

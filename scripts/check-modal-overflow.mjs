@@ -13,7 +13,7 @@ async function login(page) {
   await page.locator('#email').fill(EMAIL)
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: /Se connecter|Sign in/ }).last().click()
-  await page.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
 }
 
 async function openDetail(page) {

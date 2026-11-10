@@ -14,7 +14,7 @@ async function login(page) {
   await page.locator('#email').fill(EMAIL)
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: /^Se connecter$/ }).click()
-  await page.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
   await page.waitForTimeout(500)
 }
 
@@ -67,7 +67,7 @@ async function main() {
 
   // 3. Persistance après rechargement
   await page.reload({ waitUntil: 'networkidle' })
-  await page.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
   await page.waitForTimeout(600)
   const persisted = await page.getByRole('button', { name: /^Doc/ }).first().isVisible().catch(() => false)
   if (persisted) console.log('OK   étagère conservée après rechargement')

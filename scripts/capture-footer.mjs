@@ -9,7 +9,7 @@ async function run(name, w, h, dark) {
   await p.getByRole("tab", { name: /^Connexion$/ }).click()
   await p.locator("#password").fill(process.env.TABNEST_DEMO_PASSWORD ?? '')
   await p.getByRole("button", { name: /^Se connecter$/ }).click()
-  await p.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
+  await p.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
   await p.waitForTimeout(800)
   await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
   await p.waitForTimeout(600)

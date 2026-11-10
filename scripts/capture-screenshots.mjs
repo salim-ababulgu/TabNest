@@ -96,7 +96,7 @@ async function signInOrUp(page) {
     await page.locator('#password').fill(PASSWORD)
     await page.getByRole('button', { name: 'Créer un compte', exact: true }).click()
   }
-  await page.getByText('Ce qui compte revient').waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
 }
 
 async function main() {
@@ -128,7 +128,7 @@ async function main() {
   await insert(session.token, '/rest/v1/pages', pages.map((item) => ({ ...item, user_id: session.userId })))
 
   await page.reload({ waitUntil: 'networkidle' })
-  await page.getByText('Ce qui compte revient').waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
   await page.waitForTimeout(900)
   mkdirSync(OUT_DIR, { recursive: true })
 
@@ -149,7 +149,7 @@ async function main() {
   // Mobile : même page, taille d'écran réduite
   await page.setViewportSize({ width: 390, height: 844 })
   await page.reload({ waitUntil: 'networkidle' })
-  await page.getByText('Ce qui compte revient').waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
   await page.waitForTimeout(700)
   await page.screenshot({ path: join(OUT_DIR, 'dashboard-mobile.png') })
 

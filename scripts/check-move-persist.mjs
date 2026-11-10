@@ -13,7 +13,7 @@ async function login(page) {
   await page.locator('#email').fill(EMAIL)
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: /^Se connecter$/ }).click()
-  await page.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
 }
 
 async function main() {
@@ -71,7 +71,7 @@ async function main() {
   if (!toast) failures += 1
 
   await page.reload({ waitUntil: 'networkidle' })
-  await page.getByText(/Ce qui compte revient|What matters comes back/).waitFor({ timeout: 20000 })
+  await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
   await page.getByRole('button', { name: /Pistes|Leads/ }).first().click()
   await page.waitForTimeout(1000)
   const stillThere = await page.locator(`[data-site="${domain}"]`).count()

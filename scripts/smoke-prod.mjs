@@ -46,8 +46,12 @@ async function main() {
   await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: 'Se connecter', exact: true }).click()
   await page.waitForTimeout(5000)
-  const h1 = (await page.locator('h1').first().textContent().catch(() => '')) ?? ''
-  const dashboardVisible = /Ce qui compte revient|What matters comes back/.test(h1)
+  const dashboardVisible = await page
+    .getByRole('button', { name: /Rafraîchir|Refresh/ })
+    .first()
+    .isVisible()
+    .catch(() => false)
+  const h1 = (await page.locator('h1, p').first().textContent().catch(() => '')) ?? ''
   report('Connexion → dashboard', dashboardVisible, h1.slice(0, 60))
 
   if (dashboardVisible) {
