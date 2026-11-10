@@ -2369,7 +2369,7 @@ export function Dashboard() {
                   <button
                     key={code}
                     type="button"
-                    onClick={() => setTheme(code)}
+                    onClick={(event) => setTheme(code, { x: event.clientX, y: event.clientY })}
                     aria-pressed={theme === code}
                     className={cn(
                       'h-8 flex-1 rounded-full px-3 text-xs font-medium transition-colors sm:flex-none',

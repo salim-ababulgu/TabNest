@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
 
 export type Theme = 'light' | 'dark' | 'system'
+export type ThemeOrigin = { x: number; y: number } | null
 
 const KEY = 'tabnest-theme'
 
@@ -28,9 +29,22 @@ function computeDark(theme: Theme): boolean {
 }
 
 /**
- * Pendant ~300 ms, on autorise les couleurs à s'interpoler : le passage
- * clair/sombre glisse au lieu de « claquer ». La classe est retirée ensuite
- * pour ne pas transformer chaque survol en animation.
+ * Applique le thème immédiatement. Renvoie vrai si la luminosité a réellement
+ * changé (utile pour ne pas animer au premier rendu).
+ */
+function commit(theme: Theme): boolean {
+  const nextDark = computeDark(theme)
+  const changed = appliedDark !== null && appliedDark !== nextDark
+  currentDark = nextDark
+  document.documentElement.classList.toggle('dark', currentDark)
+  document.documentElement.style.colorScheme = currentDark ? 'dark' : 'light'
+  appliedDark = nextDark
+  return changed
+}
+
+/**
+ * Repli sans View Transitions : pendant ~300 ms on autorise les couleurs à
+ * s'interpoler, puis on retire la classe pour ne pas animer chaque survol.
  */
 function startColorTransition() {
   if (typeof window === 'undefined') return
@@ -41,14 +55,36 @@ function startColorTransition() {
   transitionTimer = window.setTimeout(() => root.classList.remove('theme-switching'), 520)
 }
 
-function apply(theme: Theme) {
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (callback: () => void) => { finished: Promise<void> }
+}
+
+function apply(theme: Theme, origin: ThemeOrigin = null) {
+  const root = document.documentElement
+  const reduced =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const doc = document as ViewTransitionDocument
   const nextDark = computeDark(theme)
-  // Aucune transition au tout premier rendu (évite un flash au chargement).
-  if (appliedDark !== null && appliedDark !== nextDark) startColorTransition()
-  currentDark = nextDark
-  document.documentElement.classList.toggle('dark', currentDark)
-  document.documentElement.style.colorScheme = currentDark ? 'dark' : 'light'
-  appliedDark = nextDark
+  const willChange = appliedDark !== null && appliedDark !== nextDark
+
+  // Cercle qui se déploie depuis le bouton cliqué (Chrome / Edge récents).
+  if (willChange && origin && !reduced && typeof doc.startViewTransition === 'function') {
+    const radius = Math.hypot(
+      Math.max(origin.x, window.innerWidth - origin.x),
+      Math.max(origin.y, window.innerHeight - origin.y),
+    )
+    root.style.setProperty('--theme-x', `${origin.x}px`)
+    root.style.setProperty('--theme-y', `${origin.y}px`)
+    root.style.setProperty('--theme-r', `${radius}px`)
+    doc.startViewTransition(() => {
+      commit(theme)
+    })
+    return
+  }
+
+  if (willChange) startColorTransition()
+  commit(theme)
 }
 
 // Appliqué dès le chargement du module, avant le premier rendu (pas de flash).
@@ -61,7 +97,7 @@ media?.addEventListener?.('change', () => {
   }
 })
 
-export function setTheme(next: Theme) {
+export function setTheme(next: Theme, origin: ThemeOrigin = null) {
   if (next === current) return
   current = next
   try {
@@ -69,7 +105,7 @@ export function setTheme(next: Theme) {
   } catch {
     // stockage indisponible
   }
-  apply(next)
+  apply(next, origin)
   for (const listener of listeners) listener()
 }
 
@@ -83,7 +119,7 @@ export function useTheme() {
     () => current,
   )
 
-  const set = useCallback((next: Theme) => setTheme(next), [])
+  const set = useCallback((next: Theme, origin?: ThemeOrigin) => setTheme(next, origin), [])
 
   return useMemo(() => ({ theme, setTheme: set }), [theme, set])
 }

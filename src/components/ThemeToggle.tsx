@@ -22,7 +22,9 @@ export function ThemeToggle({
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      onClick={(event) =>
+        setTheme(isDark ? 'light' : 'dark', { x: event.clientX, y: event.clientY })
+      }
       aria-label={label}
       title={label}
       aria-pressed={isDark}
