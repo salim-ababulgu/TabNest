@@ -341,16 +341,18 @@ function Modal({
   title,
   onClose,
   children,
+  open = true,
 }: {
   title: string
   onClose: () => void
   children: ReactNode
+  open?: boolean
 }) {
   return (
     <Dialog
-      open
-      onOpenChange={(open) => {
-        if (!open) onClose()
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose()
       }}
     >
       <DialogContent className="max-h-[85dvh] min-w-0 max-w-[calc(100%-2rem)] overflow-x-hidden overflow-y-auto p-5 max-sm:inset-0 max-sm:top-0 max-sm:left-0 max-sm:h-full max-sm:max-h-none max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:ring-0 sm:max-w-lg sm:p-6">
@@ -2095,7 +2097,7 @@ export function Dashboard() {
         </main>
       </div>
 
-      {selectedSite && (
+        {selectedSite && (
         <Modal title={selectedSite.domain} onClose={() => setSelectedSite(null)}>
           <div className="min-w-0 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
@@ -2188,7 +2190,7 @@ export function Dashboard() {
             </div>
           </div>
         </Modal>
-      )}
+        )}
 
       <AlertDialog open={confirmDeleteAccount} onOpenChange={setConfirmDeleteAccount}>
         <AlertDialogContent>
@@ -2262,8 +2264,7 @@ export function Dashboard() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {showAddPage && (
-        <Modal title={t('dash.addPage')} onClose={() => setShowAddPage(false)}>
+        <Modal open={showAddPage} title={t('dash.addPage')} onClose={() => setShowAddPage(false)}>
           <form onSubmit={handleAddPage} className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="url">{t('dash.addr')}</Label>
@@ -2322,10 +2323,8 @@ export function Dashboard() {
             </Button>
           </form>
         </Modal>
-      )}
 
-      {showAddProject && (
-        <Modal title={t('dash.newProject')} onClose={() => setShowAddProject(false)}>
+        <Modal open={showAddProject} title={t('dash.newProject')} onClose={() => setShowAddProject(false)}>
           <form onSubmit={handleAddGroup} className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="new-group">{t('dash.projectName')}</Label>
@@ -2342,10 +2341,8 @@ export function Dashboard() {
             </Button>
           </form>
         </Modal>
-      )}
 
-      {showSettings && (
-        <Modal title={t('dash.settings')} onClose={() => setShowSettings(false)}>
+        <Modal open={showSettings} title={t('dash.settings')} onClose={() => setShowSettings(false)}>
           <div className="space-y-8">
             <p className="-mt-1 text-sm leading-relaxed text-foreground/70">
               {t('dash.settingsIntro')}
@@ -2630,10 +2627,8 @@ export function Dashboard() {
             </section>
           </div>
         </Modal>
-      )}
 
-      {showOnboarding && (
-        <Modal
+        <Modal open={showOnboarding}
           title={t('dash.onboarding.title')}
           onClose={() => {
             hideOnboarding()
@@ -2722,7 +2717,6 @@ export function Dashboard() {
             </Button>
           </div>
         </Modal>
-      )}
 
       {pocketProgress && !showSettings && (
         <div
@@ -2753,11 +2747,9 @@ export function Dashboard() {
         </div>
       )}
 
-      {showFeedback && (
-        <Modal title={t('feedback.title')} onClose={() => setShowFeedback(false)}>
+        <Modal open={showFeedback} title={t('feedback.title')} onClose={() => setShowFeedback(false)}>
           <FeedbackPanel onDone={() => setShowFeedback(false)} />
         </Modal>
-      )}
 
       {dragPos && draggingSite && (
         <div
