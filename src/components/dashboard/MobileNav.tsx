@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react'
-import { Archive, Clock, LayoutGrid, Menu, Settings, Sparkles, Compass, LogOut } from 'lucide-react'
+import { Archive, Clock, LayoutGrid, Menu, Settings, Sparkles, Compass } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   Sheet,
@@ -102,7 +102,6 @@ export function MobileMenu({
   onOpenChange,
   email,
   onOpenSettings,
-  onSignOut,
   nav,
 }: {
   open: boolean
@@ -110,7 +109,6 @@ export function MobileMenu({
   nav: ComponentProps<typeof NestNav>
   email: string | null | undefined
   onOpenSettings: () => void
-  onSignOut: () => void
 }) {
   const { t } = useLangValue()
   return (
@@ -138,14 +136,17 @@ export function MobileMenu({
             <Settings className="size-4" aria-hidden="true" />
             {t('dash.settings')}
           </button>
-          <p className="mt-3 truncate px-3 text-xs text-muted-foreground">{email}</p>
           <button
             type="button"
-            onClick={onSignOut}
-            className="mt-2 inline-flex items-center gap-1.5 px-3 text-xs text-foreground/70 hover:text-foreground"
+            onClick={onOpenSettings}
+            aria-label={t('dash.openSettings')}
+            className="mt-1 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left hover:bg-accent"
           >
-            <LogOut className="size-3.5" aria-hidden="true" />
-            {t('dash.logout')}
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-[10px] font-semibold uppercase text-foreground/70">
+              {(email ?? '?').charAt(0)}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-xs text-foreground/70">{email}</span>
+            <Settings className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
           </button>
         </div>
       </SheetContent>

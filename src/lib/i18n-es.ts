@@ -422,6 +422,8 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.onboarding.later': 'Más tarde',
   'dash.pocketImporting': '{done} / {total} enlaces importados',
   'dash.deletingAccount': 'Eliminando la cuenta…',
+  'dash.openSettings': 'Abrir los ajustes',
+  'dash.logoutDesc': 'Cierra tu sesión en este dispositivo. Puedes volver a entrar cuando quieras.',
   'dash.cancel': 'Cancelar',
   'dash.toast.projectRenamed': 'Proyecto renombrado.',
   'dash.toast.projectDeleted': 'Proyecto eliminado (las páginas se conservan).',

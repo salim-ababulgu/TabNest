@@ -166,6 +166,8 @@ const FR: Record<string, Entry> = {
   'dash.onboarding.later': 'Plus tard',
   'dash.pocketImporting': '{done} / {total} liens importés',
   'dash.deletingAccount': 'Suppression du compte…',
+  'dash.openSettings': 'Ouvrir les paramètres',
+  'dash.logoutDesc': 'Ferme votre session sur cet appareil. Vous pourrez vous reconnecter à tout moment.',
   'dash.cancel': 'Annuler',
   'dash.toast.projectRenamed': 'Projet renommé.',
   'dash.toast.projectDeleted': 'Projet supprimé (les pages sont conservées).',

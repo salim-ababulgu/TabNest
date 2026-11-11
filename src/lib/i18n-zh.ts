@@ -398,6 +398,8 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.onboarding.later': '稍后',
   'dash.pocketImporting': '已导入 {done} / {total} 个链接',
   'dash.deletingAccount': '正在删除账户…',
+  'dash.openSettings': '打开设置',
+  'dash.logoutDesc': '在此设备上退出登录，随时可以重新登录。',
   'dash.cancel': '取消',
   'dash.toast.projectRenamed': '已重命名项目。',
   'dash.toast.projectDeleted': '已删除项目（页面已保留）。',

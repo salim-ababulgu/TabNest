@@ -1439,35 +1439,30 @@ export function Dashboard() {
 
         <div className="shrink-0 border-t border-sidebar-border px-2 py-3">
           {sidebarCollapsed ? (
-            <div className="flex flex-col items-center gap-2">
-              <span
-                title={user?.email ?? ''}
-                className="grid size-7 place-items-center rounded-full bg-sidebar-accent text-[10px] font-semibold uppercase"
-              >
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              title={user?.email ?? t('dash.settings')}
+              aria-label={t('dash.openSettings')}
+              className="mx-auto grid size-8 place-items-center rounded-full bg-sidebar-accent text-[10px] font-semibold uppercase text-sidebar-foreground transition-shadow hover:ring-1 hover:ring-lime/70"
+            >
+              {(user?.email ?? '?').charAt(0)}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              aria-label={t('dash.openSettings')}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-sidebar-accent"
+            >
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-sidebar-accent text-[10px] font-semibold uppercase text-sidebar-foreground">
                 {(user?.email ?? '?').charAt(0)}
               </span>
-              <button
-                type="button"
-                onClick={() => signOut()}
-                title={t('dash.logout')}
-                aria-label={t('dash.logout')}
-                className="rounded-md p-1 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-              >
-                <LogOut className="size-4" aria-hidden="true" />
-              </button>
-            </div>
-          ) : (
-            <>
-              <p className="truncate px-2 text-xs text-sidebar-foreground/60">{user?.email}</p>
-              <button
-                type="button"
-                onClick={() => signOut()}
-                className="mt-2 inline-flex items-center gap-1.5 px-2 text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground"
-              >
-                <LogOut className="size-3.5" aria-hidden="true" />
-                {t('dash.logout')}
-              </button>
-            </>
+              <span className="min-w-0 flex-1 truncate text-xs text-sidebar-foreground/75">
+                {user?.email}
+              </span>
+              <Settings className="size-3.5 shrink-0 text-sidebar-foreground/60" aria-hidden="true" />
+            </button>
           )}
         </div>
       </aside>
@@ -2607,6 +2602,24 @@ export function Dashboard() {
                 {t('dash.settingsAccount')}
               </h3>
 
+            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+              <div>
+                <p className="text-sm font-medium">{t('dash.logout')}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">
+                  {t('dash.logoutDesc')}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => void signOut()}
+                className="shrink-0"
+              >
+                <LogOut className="size-3.5" aria-hidden="true" />
+                {t('dash.logout')}
+              </Button>
+            </div>
+
             <div className="flex flex-col gap-3 rounded-2xl border border-destructive/40 bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <p className="text-sm font-medium text-destructive">{t('dash.deleteAccount')}</p>
@@ -2787,7 +2800,6 @@ export function Dashboard() {
           setMobileMenuOpen(false)
           setShowSettings(true)
         }}
-        onSignOut={() => void signOut()}
       />
     </div>
   )
