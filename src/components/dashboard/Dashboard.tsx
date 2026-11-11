@@ -82,6 +82,10 @@ import {
   setReason,
   importPagesBulk,
   visitPage,
+  fetchDeletedPages,
+  restoreDeletedPage,
+  deletePagePermanently,
+  restorePageState,
 } from '@/lib/pages'
 import type { Group, Page } from '@/lib/pages'
 import { NestNav } from '@/components/dashboard/NestNav'
@@ -256,14 +260,19 @@ function SiteAvatar({ site, className }: { site: Site; className?: string }) {
   )
 }
 
-const TODAY_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-})
+const TODAY_LOCALES: Record<string, string> = {
+  fr: 'fr-FR',
+  en: 'en-GB',
+  es: 'es-ES',
+  zh: 'zh-CN',
+}
 
-function formatToday(): string {
-  const text = TODAY_FORMATTER.format(new Date())
+function formatToday(lang: string): string {
+  const text = new Intl.DateTimeFormat(TODAY_LOCALES[lang] ?? 'fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  }).format(new Date())
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
@@ -400,6 +409,8 @@ export function Dashboard() {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false)
   const [deletingAccount, setDeletingAccount] = useState(false)
+  const [retiredPages, setRetiredPages] = useState<Page[]>([])
+  const [retiredToDelete, setRetiredToDelete] = useState<Page | null>(null)
   const [pocketProgress, setPocketProgress] = useState<{ done: number; total: number } | null>(null)
   const [showAddPage, setShowAddPage] = useState(false)
   const [showAddProject, setShowAddProject] = useState(false)
@@ -519,11 +530,14 @@ export function Dashboard() {
     })
   })
 
-  const notify = useCallback((level: ToastLevel, message: string) => {
+  const notify = useCallback(
+    (level: ToastLevel, message: string, action?: { label: string; onClick: () => void }) => {
     const id = Date.now() + Math.random()
-    setToasts((current) => [...current, { id, level, message }])
-    window.setTimeout(() => {
-      setToasts((current) => current.filter((toast) => toast.id !== id))    }, 4500)
+    setToasts((current) => [...current, { id, level, message, action }])
+    window.setTimeout(
+      () => setToasts((current) => current.filter((toast) => toast.id !== id)),
+      action ? 7000 : 4500,
+    )
   }, [])
 
   useEffect(() => {
@@ -624,7 +638,7 @@ export function Dashboard() {
   const alerts = buildAlerts(pages, extensionStatus, t)
   const unreadAlerts = alerts.filter((alert) => !readAlerts.includes(alert.id))
 
-  const hasReason = pages.some((page) => page.reason && page.reason !== 'decide')
+  const hasReason = pages.some((page) => Boolean(page.reason))
   const onboardingSteps = [
     {
       labelKey: 'dash.onboarding.s1.label',
@@ -745,7 +759,7 @@ export function Dashboard() {
       setKind('normal')
       setGroupId(NO_GROUP)
       setShowAddPage(false)
-      await load()
+      await load(true)
       notify('success', t('dash.toast.pageAdded'))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.addError'))
@@ -764,7 +778,7 @@ export function Dashboard() {
       setNewGroup('')
       setGroupId(group.id)
       setShowAddProject(false)
-      await load()
+      await load(true)
       notify('success', t('dash.toast.projectCreated'))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.projectError'))
@@ -777,7 +791,7 @@ export function Dashboard() {
     setError(null)
     try {
       await visitPage(page)
-      await load()
+      await load(true)
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
     }
@@ -787,7 +801,7 @@ export function Dashboard() {
     setError(null)
     try {
       await setReason(page, reason)
-      await load()
+      await load(true)
       notify(
         'success',
         reason
@@ -813,6 +827,11 @@ export function Dashboard() {
   ) {
     try {
       const allPages = pagesOfSite(site.domain)
+      const previous = allPages.map((page) => ({
+        id: page.id,
+        reason: page.reason,
+        group_id: page.group_id,
+      }))
       if (target.kind === 'reason') {
         await Promise.all(allPages.map((page) => setReason(page, target.reason)))
       } else {
@@ -821,8 +840,13 @@ export function Dashboard() {
           target.groupId,
         )
       }
-      await load()
-      notify('success', fmt(t('dash.toast.movedTo'), { name: target.label }))
+      await load(true)
+      notify('success', fmt(t('dash.toast.movedTo'), { name: target.label }), {
+        label: t('dash.undo'),
+        onClick: () => {
+          void restorePageState(previous).then(() => load(true))
+        },
+      })
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
     }
@@ -1128,17 +1152,61 @@ export function Dashboard() {
 
     try {
       await archivePage(page.id)
-      notify('success', t('dash.toast.pageRemoved'))
+      notify('success', t('dash.toast.pageRemoved'), {
+        label: t('dash.undo'),
+        onClick: () => {
+          void restoreDeletedPage(page).then(() => load(true))
+        },
+      })
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
       await load(true)
     }
   }
 
+  useEffect(() => {
+    if (view !== 'archives') return
+    let cancelled = false
+    fetchDeletedPages()
+      .then((rows) => {
+        if (!cancelled) setRetiredPages(rows)
+      })
+      .catch(() => {
+        if (!cancelled) setRetiredPages([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [view, pages.length, loadedOnce])
+
+  async function handleRestoreDeleted(page: Page) {
+    try {
+      await restoreDeletedPage(page)
+      setRetiredPages((current) => current.filter((item) => item.id !== page.id))
+      await load(true)
+      notify('success', t('dash.toast.pageRestored'))
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
+  async function confirmDeleteForever() {
+    if (!retiredToDelete) return
+    const page = retiredToDelete
+    setRetiredToDelete(null)
+    try {
+      await deletePagePermanently(page.id)
+      setRetiredPages((current) => current.filter((item) => item.id !== page.id))
+      notify('success', t('dash.toast.deletedForever'))
+    } catch (cause) {
+      notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
+    }
+  }
+
   async function handleRenameProject(id: string, name: string) {
     try {
       await renameGroup(id, name)
-      await load()
+      await load(true)
       notify('success', t('dash.toast.projectRenamed'))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
@@ -1152,7 +1220,7 @@ export function Dashboard() {
       await deleteGroup(id)
       setProjectToDelete(null)
       if (selectedGroup === id) setSelectedGroup(null)
-      await load()
+      await load(true)
       notify('success', t('dash.toast.projectDeleted'))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
@@ -1165,7 +1233,7 @@ export function Dashboard() {
       const expired = pagesOfSite(site.domain).filter(isExpired)
       if (expired.length === 0) return
       await Promise.all(expired.map((page) => restorePage(page)))
-      await load()
+      await load(true)
       notify('success', fmt(t('dash.restored'), { n: expired.length }))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
@@ -1204,7 +1272,7 @@ export function Dashboard() {
         user.id,
         (done, total) => setPocketProgress({ done, total }),
       )
-      await load()
+      await load(true)
       notify('success', fmt(t('pocket.imported'), { n: result.imported, s: result.skipped }))
     } catch (cause) {
       notify('error', cause instanceof Error ? cause.message : t('dash.toast.error'))
@@ -1475,7 +1543,7 @@ export function Dashboard() {
             </span>
             <span className="font-heading text-lg font-semibold">Filnest</span>
           </div>
-          <p className="hidden text-sm text-field-muted lg:block">{formatToday()}</p>
+          <p className="hidden text-sm text-field-muted lg:block">{formatToday(lang)}</p>
           <div className="flex items-center gap-1.5 md:gap-2">
             <Button
               variant="outline"
@@ -1848,7 +1916,7 @@ export function Dashboard() {
               </div>
             )}
 
-            {loading ? (
+            {loading && !loadedOnce ? (
               showSkeleton ? (
                 <SkeletonGrid count={9} />
               ) : null
@@ -2009,11 +2077,7 @@ export function Dashboard() {
                               when: timeAgo(site.lastVisit, t),
                             })}
                           </p>
-                          {site.pages[0] && (
-                            <p className="mt-1 text-[11px] text-foreground/70">
-                              {expiryText(site.pages[0])}
-                            </p>
-                          )}
+
                           {urgency && (
                             <span
                               className={cn(
@@ -2078,6 +2142,53 @@ export function Dashboard() {
               </div>
             )}
           </section>
+
+          {view === 'archives' && (
+            <section className="mt-10 rounded-2xl border border-border bg-card p-4 sm:p-5">
+              <h2 className="font-heading text-lg font-medium">{t('dash.retiredTitle')}</h2>
+              <p className="mt-1 text-sm leading-relaxed text-foreground/70">
+                {t('dash.retiredHint')}
+              </p>
+              {retiredPages.length === 0 ? (
+                <p className="mt-4 text-sm text-muted-foreground">{t('dash.retiredEmpty')}</p>
+              ) : (
+                <ul className="mt-4 divide-y divide-border">
+                  {retiredPages.map((page) => (
+                    <li
+                      key={page.id}
+                      className="flex flex-wrap items-center justify-between gap-3 py-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{page.title ?? page.url}</p>
+                        <p className="truncate text-xs text-foreground/70">
+                          {domainOf(page.url)}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void handleRestoreDeleted(page)}
+                        >
+                          <RotateCcw className="size-3.5" aria-hidden="true" />
+                          {t('dash.restorePage')}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive"
+                          onClick={() => setRetiredToDelete(page)}
+                        >
+                          <Trash2 className="size-3.5" aria-hidden="true" />
+                          {t('dash.deleteForever')}
+                        </Button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
 
           <DashboardFooter />
         </main>
@@ -2177,6 +2288,26 @@ export function Dashboard() {
           </div>
         </Modal>
         )}
+
+      <AlertDialog
+        open={Boolean(retiredToDelete)}
+        onOpenChange={(next) => {
+          if (!next) setRetiredToDelete(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dash.deleteForeverTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('dash.deleteForeverDesc')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('dash.cancel')}</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={() => void confirmDeleteForever()}>
+              {t('dash.deleteForever')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={confirmDeleteAccount} onOpenChange={setConfirmDeleteAccount}>
         <AlertDialogContent>

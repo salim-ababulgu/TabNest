@@ -174,6 +174,46 @@ export async function importPagesBulk(
   return { imported, skipped: entries.length - imported }
 }
 
+export async function fetchDeletedPages(): Promise<Page[]> {
+  const { data, error } = await supabase
+    .from('pages')
+    .select('*')
+    .not('deleted_at', 'is', null)
+    .order('deleted_at', { ascending: false })
+  if (error) throw error
+  return (data ?? []) as Page[]
+}
+
+export async function restoreDeletedPage(page: Page): Promise<void> {
+  const now = new Date()
+  const { error } = await supabase
+    .from('pages')
+    .update({
+      deleted_at: null,
+      expires_at: computeExpiry(page.kind, page.visit_count, now, page.reason),
+    })
+    .eq('id', page.id)
+  if (error) throw error
+}
+
+export async function deletePagePermanently(id: string): Promise<void> {
+  const { error } = await supabase.from('pages').delete().eq('id', id)
+  if (error) throw error
+}
+
+/** Rétablit l'état précédent de plusieurs pages (annulation d'un déplacement). */
+export async function restorePageState(
+  entries: { id: string; reason: string | null; group_id: string | null }[],
+): Promise<void> {
+  for (const entry of entries) {
+    const { error } = await supabase
+      .from('pages')
+      .update({ reason: entry.reason, group_id: entry.group_id })
+      .eq('id', entry.id)
+    if (error) throw error
+  }
+}
+
 export async function restorePage(page: Page): Promise<Page> {
   const now = new Date()
   const expires_at = computeExpiry(page.kind, page.visit_count, now, page.reason)

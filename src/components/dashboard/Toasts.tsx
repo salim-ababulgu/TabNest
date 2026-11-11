@@ -8,6 +8,7 @@ export type ToastItem = {
   id: number
   level: ToastLevel
   message: string
+  action?: { label: string; onClick: () => void }
 }
 
 const STYLES: Record<ToastLevel, { box: string; icon: typeof Info }> = {
@@ -43,6 +44,18 @@ export function Toasts({
           >
             <Icon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <p className="flex-1 leading-snug">{toast.message}</p>
+            {toast.action && (
+              <button
+                type="button"
+                onClick={() => {
+                  toast.action?.onClick()
+                  onDismiss(toast.id)
+                }}
+                className="shrink-0 rounded px-1.5 py-0.5 text-xs font-semibold underline underline-offset-2 hover:opacity-80"
+              >
+                {toast.action.label}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => onDismiss(toast.id)}
