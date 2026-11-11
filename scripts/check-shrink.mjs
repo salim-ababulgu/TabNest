@@ -85,16 +85,16 @@ async function main() {
   const browser = await chromium.launch()
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
   await login(page)
-  await page.getByRole('button', { name: /Modifier|Edit/ }).first().click()
-  await page.getByText(/Mode déplacement|Move mode/).waitFor({ timeout: 5000 })
+  await page.getByRole('button', { name: /Ranger|Arrange/ }).first().click()
+  await page.getByText(/Ranger|Arrange/).first().waitFor({ timeout: 5000 })
 
   let result = await attempt(page)
   if (!result.ok) {
     console.log('   tentative 1 incomplète :', result.reason ?? result.scale)
     // Sortir et réentrer en mode déplacement pour repartir propre
     await page.getByRole('button', { name: /Terminer|Done/ }).click().catch(() => {})
-    await page.getByRole('button', { name: /Modifier|Edit/ }).first().click()
-    await page.getByText(/Mode déplacement|Move mode/).waitFor({ timeout: 5000 })
+    await page.getByRole('button', { name: /Ranger|Arrange/ }).first().click()
+    await page.getByText(/Ranger|Arrange/).first().waitFor({ timeout: 5000 })
     result = await attempt(page)
   }
 

@@ -42,7 +42,7 @@ async function main() {
   else fail('projet créé mais absent de la navigation')
 
   // ---------- 2. Projet : renommer (mode Ranger) ----------
-  await page.getByRole('button', { name: /Ranger les étagères|Edit shelves/ }).click()
+  await page.getByRole('button', { name: /Gérer les listes|Manage lists/ }).click()
   await page.waitForTimeout(300)
   await page.getByRole('button', { name: new RegExp(`Renommer ${projectName}`) }).click()
   const renamed = `${projectName} modifié`
@@ -68,7 +68,7 @@ async function main() {
   const gone = await page.getByRole('button', { name: renamed }).count()
   if (gone === 0) ok('projet supprimé')
   else fail('projet toujours présent après suppression')
-  await page.getByRole('button', { name: /Ranger les étagères|Edit shelves/ }).click()
+  await page.getByRole('button', { name: /Gérer les listes|Manage lists/ }).click()
 
   // ---------- 4. Pages expirées : masquées + restauration ----------
   const bannerBefore = await page

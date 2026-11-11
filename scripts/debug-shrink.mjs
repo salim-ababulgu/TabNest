@@ -20,8 +20,8 @@ async function main() {
   const browser = await chromium.launch()
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
   await login(page)
-  await page.getByRole('button', { name: /Modifier|Edit/ }).first().click()
-  await page.getByText(/Mode déplacement|Move mode/).waitFor({ timeout: 5000 })
+  await page.getByRole('button', { name: /Ranger|Arrange/ }).first().click()
+  await page.getByText(/Ranger|Arrange/).first().waitFor({ timeout: 5000 })
 
   const target = page.locator('[data-drop-target="explore"]').first()
   const tb = await target.boundingBox()

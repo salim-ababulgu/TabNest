@@ -22,6 +22,7 @@ import {
   PanelLeftOpen,
   Pin,
   Loader2,
+  ArrowUpDown,
   ExternalLink,
   Plus,
   RefreshCw,
@@ -165,6 +166,8 @@ const VIEW_TITLES: Record<View, string> = {
 }
 
 const NO_GROUP = 'none'
+const REASON_FILTERS = ['decide', 'finish', 'explore', 'remember'] as const
+
 const MAX_STACK = 4
 
 /** En mode déplacement, ces sections servent de destinations. */
@@ -429,6 +432,8 @@ export function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [onboardingHidden, setOnboardingHidden] = useState(false)
   const [query, setQuery] = useState('')
+  const [reasonFilter, setReasonFilter] = useState<string | null>(null)
+  const [sortMode, setSortMode] = useState<'recent' | 'visits' | 'expiry' | 'title'>('recent')
   const [draggingSite, setDraggingSite] = useState<Site | null>(null)
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null)
   const [editMode, setEditMode] = useState(false)
@@ -1343,6 +1348,13 @@ export function Dashboard() {
     }
     // Les pages expirées sont masquées partout, sauf dans les archives.
     if (view !== 'archives' && !selectedGroup && !activeCollection && isExpired(page)) return false
+    if (reasonFilter) {
+      if (reasonFilter === 'decide') {
+        if (page.reason && page.reason !== 'decide') return false
+      } else if (page.reason !== reasonFilter) {
+        return false
+      }
+    }
     if (activeCollection) return matchesRule(page, activeCollection.rule)
     if (selectedGroup) return page.group_id === selectedGroup
     if (view === 'all' || view === 'sites') return true
@@ -1355,7 +1367,27 @@ export function Dashboard() {
     return !page.reason || page.reason === 'decide'
   })
 
-  const sites = sortSites(aggregateSites(visiblePages))
+  const orderSites = (list: Site[], mode: typeof sortMode): Site[] => {
+    const pinnedFirst = (a: Site, b: Site) => (a.pinned === b.pinned ? 0 : a.pinned ? -1 : 1)
+    return [...list].sort((a, b) => {
+      const pin = pinnedFirst(a, b)
+      if (pin !== 0) return pin
+      if (mode === 'visits') return b.visits - a.visits
+      if (mode === 'title') return a.domain.localeCompare(b.domain)
+      if (mode === 'expiry') {
+        const nextA = Math.min(
+          ...a.pages.map((page) => (page.expires_at ? new Date(page.expires_at).getTime() : Number.MAX_SAFE_INTEGER)),
+        )
+        const nextB = Math.min(
+          ...b.pages.map((page) => (page.expires_at ? new Date(page.expires_at).getTime() : Number.MAX_SAFE_INTEGER)),
+        )
+        return nextA - nextB
+      }
+      return (b.lastVisit ?? '').localeCompare(a.lastVisit ?? '')
+    })
+  }
+
+  const sites = orderSites(sortSites(aggregateSites(visiblePages)), sortMode)
   const recentPages = [...visiblePages]
     .sort((a, b) => (b.last_visited_at ?? '').localeCompare(a.last_visited_at ?? ''))
     .slice(0, 8)
@@ -1902,6 +1934,36 @@ export function Dashboard() {
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={t('dash.filterReason')}>
+                  {REASON_FILTERS.map((reason) => (
+                    <button
+                      key={reason}
+                      type="button"
+                      aria-pressed={reasonFilter === reason}
+                      onClick={() => setReasonFilter((current) => (current === reason ? null : reason))}
+                      className={
+                        'inline-flex h-8 items-center rounded-full px-2.5 text-xs font-medium transition-colors ' +
+                        (reasonFilter === reason
+                          ? 'bg-lime text-lime-foreground'
+                          : 'bg-secondary text-foreground/75 hover:bg-accent')
+                      }
+                    >
+                      {t(`reason.${reason}`)}
+                    </button>
+                  ))}
+                </div>
+                <Select value={sortMode} onValueChange={(value) => setSortMode(value as typeof sortMode)}>
+                  <SelectTrigger className="h-8 w-auto gap-1.5 text-xs" aria-label={t('dash.sort')}>
+                    <ArrowUpDown className="size-3.5" aria-hidden="true" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recent">{t('dash.sort.recent')}</SelectItem>
+                    <SelectItem value="visits">{t('dash.sort.visits')}</SelectItem>
+                    <SelectItem value="expiry">{t('dash.sort.expiry')}</SelectItem>
+                    <SelectItem value="title">{t('dash.sort.title')}</SelectItem>
+                  </SelectContent>
+                </Select>
                 {selectedGroup && (
                   <Button variant="outline" size="sm" onClick={() => setSelectedGroup(null)}>
                     {t('dash.showAll')}

@@ -21,8 +21,8 @@ async function runDesktop(browser) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
   await login(page)
 
-  await page.getByRole('button', { name: /Modifier|Edit/ }).first().click()
-  await page.getByText(/Mode déplacement|Move mode/).waitFor({ timeout: 5000 })
+  await page.getByRole('button', { name: /Ranger|Arrange/ }).first().click()
+  await page.getByText(/Ranger|Arrange/).first().waitFor({ timeout: 5000 })
   console.log('desktop : mode déplacement activé')
 
   // La carte doit changer de curseur en mode déplacement
@@ -46,7 +46,7 @@ async function runDesktop(browser) {
   console.log(selected ? '   OK sélection par appui' : '   FAIL sélection')
 
   // Clic sur une section de la sidebar (cible unique)
-  const today = page.getByRole('button', { name: /Aujourd|Today/ }).first()
+  const today = page.getByRole('button', { name: /À décider|To decide/ }).first()
   await today.click()
   const toast = await page
     .getByText(/Déplacé dans|Moved to/)
@@ -69,8 +69,8 @@ async function runMobile(browser) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
   await login(page)
 
-  await page.getByRole('button', { name: /Modifier|Edit/ }).first().click()
-  await page.getByText(/Mode déplacement|Move mode/).waitFor({ timeout: 5000 })
+  await page.getByRole('button', { name: /Ranger|Arrange/ }).first().click()
+  await page.getByText(/Ranger|Arrange/).first().waitFor({ timeout: 5000 })
   console.log('mobile : mode déplacement activé')
 
   // Sélectionner deux cartes

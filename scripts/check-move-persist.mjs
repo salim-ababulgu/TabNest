@@ -26,8 +26,8 @@ async function main() {
   const domain = await firstSite.getAttribute('data-site')
   console.log(`site de test : ${domain}`)
 
-  await page.getByRole('button', { name: /Modifier|Edit/ }).first().click()
-  await page.getByText(/Mode déplacement|Move mode/).waitFor({ timeout: 5000 })
+  await page.getByRole('button', { name: /Ranger|Arrange/ }).first().click()
+  await page.getByText(/Ranger|Arrange/).first().waitFor({ timeout: 5000 })
 
   // --- 1. La carte entière est "saisie" : un clone plein format suit le pointeur
   const overlay = page.locator('[data-site] article [role="button"][aria-label]').first()

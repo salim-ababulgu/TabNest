@@ -19,12 +19,12 @@ async function login(page) {
 }
 
 async function openShelfForm(page) {
-  await page.getByRole('button', { name: /Ranger les étagères|Edit shelves/ }).click()
-  await page.getByRole('button', { name: /Nouvelle étagère|New shelf/ }).click()
+  await page.getByRole('button', { name: /Gérer les listes|Manage lists/ }).click()
+  await page.getByRole('button', { name: /Nouvelle liste|New list/ }).click()
 }
 
 async function fillAndCreate(page, name, ruleLabel) {
-  await page.getByLabel(/Nom de l’étagère|Shelf name/).fill(name)
+  await page.getByLabel(/Nom de la liste|List name/).fill(name)
   await page.getByRole('button', { name: ruleLabel }).first().click()
   await page.getByRole('button', { name: /^Créer$|^Create$/ }).click()
 }
@@ -44,7 +44,7 @@ async function main() {
   await openShelfForm(page)
   await fillAndCreate(page, 'Doc', 'Documentation')
   const toast = await page
-    .getByText(/Étagère « Doc » créée|Shelf “Doc” created/)
+    .getByText(/Liste « Doc » créée|List “Doc” created/)
     .first()
     .isVisible({ timeout: 5000 })
     .catch(() => false)
@@ -75,7 +75,7 @@ async function main() {
 
   // 4. Doublon refusé
   await openShelfForm(page)
-  await page.getByLabel(/Nom de l’étagère|Shelf name/).fill('doc')
+  await page.getByLabel(/Nom de la liste|List name/).fill('doc')
   await page.getByRole('button', { name: /^Créer$|^Create$/ }).click()
   const dup = await page
     .getByText(/Ce nom est déjà pris|That name is taken/)
@@ -94,7 +94,7 @@ async function main() {
   const gone = await page.getByRole('button', { name: /^Doc$/ }).count()
   if (gone === 0) console.log('OK   étagère supprimée')
   else fail('étagère toujours présente après suppression')
-  await page.getByRole('button', { name: /Ranger les étagères|Edit shelves/ }).click()
+  await page.getByRole('button', { name: /Gérer les listes|Manage lists/ }).click()
   await page.close()
 
   // 6. Mobile : la même liste vit dans le tiroir
@@ -104,18 +104,18 @@ async function main() {
   await mobile.waitForTimeout(500)
   const drawer = mobile.getByRole('dialog').first()
   const drawerTitle = await drawer
-    .getByText(/Étagères|Shelves/)
+    .getByText(/Listes|Lists/)
     .first()
     .isVisible()
     .catch(() => false)
-  if (drawerTitle) console.log('OK   tiroir mobile : liste « Étagères » présente')
-  else fail('tiroir mobile sans liste d’étagères')
+  if (drawerTitle) console.log('OK   tiroir mobile : liste « Listes » présente')
+  else fail('tiroir mobile sans liste')
   const pencil = await drawer
-    .getByRole('button', { name: /Ranger les étagères|Edit shelves/ })
+    .getByRole('button', { name: /Gérer les listes|Manage lists/ })
     .first()
     .isVisible()
     .catch(() => false)
-  if (pencil) console.log('OK   tiroir mobile : crayon « Ranger » présent')
+  if (pencil) console.log('OK   tiroir mobile : bouton « Gérer les listes » présent')
   else fail('tiroir mobile : crayon absent')
   await mobile.close()
 
