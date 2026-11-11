@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import gsap from 'gsap'
 import { AsciiReveal, AsciiSkeleton } from 'ascii-reveal'
 import { AsciiImage } from '@/components/ui/ascii-image'
+import { SearchPalette } from '@/components/dashboard/SearchPalette'
 import { Flip } from 'gsap/Flip'
 import type { ComponentType, FormEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import {
@@ -28,12 +29,10 @@ import {
   Plus,
   RefreshCw,
   RotateCcw,
-  Search,
   Settings,
   Smartphone,
   Sparkles,
   Trash2,
-  X,
   Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -1421,6 +1420,23 @@ export function Dashboard() {
         .slice(0, 50)
     : []
 
+  const toSearchItem = (page: Page) => ({
+    key: page.id,
+    title: page.title ?? page.url,
+    meta: `${domainOf(page.url)} · ${timeAgo(page.last_visited_at, t)} · ${expiryText(page)}`,
+    onSelect: () => {
+      const site = sites.find((item) => item.domain === domainOf(page.url))
+      if (site) setSelectedSite(site)
+      else window.open(page.url, '_blank', 'noreferrer')
+    },
+  })
+  const recentSearchItems = [...pages]
+    .filter((page) => view === 'archives' || !isExpired(page))
+    .sort((a, b) => (b.last_visited_at ?? '').localeCompare(a.last_visited_at ?? ''))
+    .slice(0, 6)
+    .map(toSearchItem)
+  const resultSearchItems = searchResults.slice(0, 8).map(toSearchItem)
+
   const sites = orderSites(sortSites(aggregateSites(visiblePages)), sortMode)
   const recentPages = [...visiblePages]
     .sort((a, b) => (b.last_visited_at ?? '').localeCompare(a.last_visited_at ?? ''))
@@ -1848,49 +1864,22 @@ export function Dashboard() {
           )}
 
 
-          <div className="mt-6 flex items-center gap-2" data-dash-search="">
-            <div className="relative flex-1">
-              <Search
-                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <Input
-                ref={searchRef}
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Escape') setQuery('')
-                }}
-                placeholder={t('dash.searchPlaceholder')}
-                aria-label={t('dash.searchAria')}
-                className="h-11 w-full pr-20 pl-10 text-sm"
-              />
-              {query ? (
-                <button
-                  type="button"
-                  onClick={() => setQuery('')}
-                  aria-label={t('dash.searchClear')}
-                  className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1.5 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="size-4" aria-hidden="true" />
-                </button>
-              ) : (
-                <kbd className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                  ⌘K
-                </kbd>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => setSearchScope((current) => (current === 'all' ? 'view' : 'all'))}
-              className="inline-flex h-11 shrink-0 items-center rounded-full border border-border px-3 text-xs font-medium text-foreground/75 hover:bg-accent"
-              aria-pressed={searchScope === 'all'}
-            >
-              {searchScope === 'all'
-                ? t('dash.searchScopeAll')
-                : fmt(t('dash.searchIn'), { view: currentTitle })}
-            </button>
+          <div className="mt-6" data-dash-search="">
+            <SearchPalette
+              query={query}
+              onQueryChange={setQuery}
+              inputRef={searchRef}
+              recents={recentSearchItems}
+              results={resultSearchItems}
+              scopeLabel={
+                searchScope === 'all'
+                  ? t('dash.searchScopeAll')
+                  : fmt(t('dash.searchIn'), { view: currentTitle })
+              }
+              onToggleScope={() =>
+                setSearchScope((current) => (current === 'all' ? 'view' : 'all'))
+              }
+            />
           </div>
 
           {showRecents && (
@@ -2067,64 +2056,7 @@ export function Dashboard() {
               </div>
             )}
 
-            {normalizedQuery ? (
-              <div className="mt-5" data-search-results>
-                <p className="text-xs text-muted-foreground">
-                  {fmt(t('dash.searchResults'), { n: searchResults.length })}
-                </p>
-                {searchResults.length === 0 ? (
-                  <div className="mt-3 rounded-xl border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-                    {fmt(t('dash.noResults'), { q: query })}{' '}
-                    <button
-                      type="button"
-                      onClick={() => setQuery('')}
-                      className="underline underline-offset-2 hover:text-foreground"
-                    >
-                      {t('dash.searchClear')}
-                    </button>
-                  </div>
-                ) : (
-                  <ul className="mt-3 overflow-hidden rounded-2xl border border-border bg-card">
-                    {searchResults.map((page) => (
-                      <li
-                        key={page.id}
-                        className="flex items-center gap-2 border-b border-border px-3 py-2.5 last:border-b-0"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const site = sites.find((item) => item.domain === domainOf(page.url))
-                            if (site) setSelectedSite(site)
-                          }}
-                          className="flex min-w-0 flex-1 flex-col items-start rounded-lg px-1 py-1 text-left hover:bg-accent/60"
-                        >
-                          <span className="block w-full truncate text-sm font-medium">
-                            {page.title ?? page.url}
-                          </span>
-                          <span className="mt-0.5 block w-full truncate text-xs text-foreground/70">
-                            {domainOf(page.url)} · {timeAgo(page.last_visited_at, t)} ·{' '}
-                            {expiryText(page)}
-                            {page.reason && isReason(page.reason)
-                              ? ` · ${t(`reason.${page.reason}`)}`
-                              : ''}
-                          </span>
-                        </button>
-                        <a
-                          href={page.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={t('dash.openPage')}
-                          title={t('dash.openPage')}
-                          className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
-                        >
-                          <ExternalLink className="size-4" aria-hidden="true" />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ) : loading && !loadedOnce ? (
+            {loading && !loadedOnce ? (
               showSkeleton ? (
                 <SkeletonGrid count={9} />
               ) : null
