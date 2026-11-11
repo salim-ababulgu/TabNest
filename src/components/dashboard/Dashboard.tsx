@@ -22,6 +22,7 @@ import {
   PanelLeftOpen,
   Pin,
   Loader2,
+  ExternalLink,
   Plus,
   RefreshCw,
   RotateCcw,
@@ -1355,12 +1356,10 @@ export function Dashboard() {
   })
 
   const sites = sortSites(aggregateSites(visiblePages))
-  const topSites = [...sites]
-    .sort((a, b) => {
-      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
-      return b.visits - a.visits
-    })
-    .slice(0, 10)
+  const recentPages = [...visiblePages]
+    .sort((a, b) => (b.last_visited_at ?? '').localeCompare(a.last_visited_at ?? ''))
+    .slice(0, 8)
+  const showRecents = view === 'all' && !selectedGroup && !activeCollection && !normalizedQuery
   const currentTitle = activeCollection
     ? activeCollection.name
     : selectedGroup
@@ -1750,6 +1749,14 @@ export function Dashboard() {
                 </div>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-field-muted">
                   <span>{fmt(t('dash.hero.sitesLabel'), { n: sites.length })}</span>
+                  {extensionStatus !== 'linked' && (
+                    <a
+                      href="/extension"
+                      className="inline-flex h-9 items-center rounded-full bg-lime px-3 text-xs font-semibold text-lime-foreground"
+                    >
+                      {t('dash.activate.cta')}
+                    </a>
+                  )}
                   {nextExpiryDays !== null && (
                     <span>{fmt(t('dash.hero.nextExpiry'), { d: nextExpiryDays })}</span>
                   )}
@@ -1771,49 +1778,112 @@ export function Dashboard() {
             </section>
           )}
 
-          {loading && !loadedOnce ? (
-            <section className="mt-8" aria-busy="true" data-skeleton-top="">
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-7 w-40" />
-                <Skeleton className="h-3.5 w-24" />
-              </div>
-              <div className="mt-3 flex gap-4 overflow-hidden pb-2">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="flex w-20 shrink-0 flex-col items-center gap-1.5">
-                    <Skeleton className="size-16 rounded-full" delay={(index % 6) * 60} />
-                    <Skeleton className="h-3.5 w-16" delay={(index % 6) * 60} />
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : (
-            topSites.length > 0 && (
-              <section data-dash-anim className="mt-8">
-              <div className="flex items-center justify-between">
+
+          <div className="mt-6 flex items-center gap-2" data-dash-search="">
+            <div className="relative flex-1">
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <Input
+                ref={searchRef}
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') setQuery('')
+                }}
+                placeholder={t('dash.searchPlaceholder')}
+                aria-label={t('dash.searchAria')}
+                className="h-11 w-full pr-20 pl-10 text-sm"
+              />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  aria-label={t('dash.searchClear')}
+                  className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1.5 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-4" aria-hidden="true" />
+                </button>
+              ) : (
+                <kbd className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                  ⌘K
+                </kbd>
+              )}
+            </div>
+          </div>
+
+          {showRecents && (
+            <section className="mt-6" data-recents="">
+              <div className="flex items-center justify-between gap-3">
                 <h2 className="font-heading text-lg font-medium tracking-tight">
-                  {t('dash.mostVisited')}
+                  {t('dash.recents')}
                 </h2>
-                <span className="text-xs text-muted-foreground">{t('dash.quickAccess')}</span>
               </div>
-              <div className="mt-3 flex gap-4 overflow-x-auto pb-2">
-                {topSites.map((site) => (
-                  <button
-                    key={site.domain}
-                    type="button"
-                    onClick={() => setSelectedSite(site)}
-                    className="flex w-20 shrink-0 flex-col items-center gap-1.5"
-                  >
-                    <span className="grid size-16 place-items-center rounded-full bg-border p-[2px]">
-                      <SiteAvatar site={site} className="size-full rounded-full" />
-                    </span>
-                    <span className="w-full truncate text-center text-[11px] text-muted-foreground">
-                      {site.domain}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              </section>
-            )
+
+              {loading && !loadedOnce ? (
+                <div className="mt-3 space-y-2" aria-busy="true" data-skeleton-top="">
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3"
+                    >
+                      <Skeleton className="size-8 rounded-lg" delay={(index % 4) * 60} />
+                      <div className="flex-1 space-y-1.5">
+                        <Skeleton className="h-3.5 w-2/5" delay={(index % 4) * 60} />
+                        <Skeleton className="h-3 w-3/5" delay={(index % 4) * 60} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : recentPages.length === 0 ? null : (
+                <ul className="mt-3 overflow-hidden rounded-2xl border border-border bg-card">
+                  {recentPages.map((page) => {
+                    const site = sites.find((item) => item.domain === domainOf(page.url))
+                    return (
+                      <li
+                        key={page.id}
+                        className="flex items-center gap-2 border-b border-border px-3 py-2.5 last:border-b-0"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (site) setSelectedSite(site)
+                          }}
+                          className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-1 py-1 text-left hover:bg-accent/60"
+                        >
+                          <span className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-lg bg-secondary">
+                            {site ? (
+                              <SiteAvatar site={site} className="size-full rounded-lg" />
+                            ) : null}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-medium">
+                              {page.title ?? page.url}
+                            </span>
+                            <span className="mt-0.5 block truncate text-xs text-foreground/70">
+                              {domainOf(page.url)} · {timeAgo(page.last_visited_at, t)} ·{' '}
+                              {expiryText(page)}
+                            </span>
+                          </span>
+                        </button>
+                        <a
+                          href={page.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={t('dash.openPage')}
+                          title={t('dash.openPage')}
+                          className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
+                        >
+                          <ExternalLink className="size-4" aria-hidden="true" />
+                        </a>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </section>
           )}
 
           <section className="mt-8">
@@ -1832,34 +1902,6 @@ export function Dashboard() {
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <div className="relative">
-                  <Search
-                    className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <Input
-                    ref={searchRef}
-                    type="search"
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Escape') setQuery('')
-                    }}
-                    placeholder={t('dash.searchPlaceholder')}
-                    aria-label={t('dash.searchAria')}
-                    className="h-8 w-44 pr-8 pl-8 text-xs md:w-60"
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      onClick={() => setQuery('')}
-                      aria-label={t('dash.searchClear')}
-                      className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="size-3.5" aria-hidden="true" />
-                    </button>
-                  )}
-                </div>
                 {selectedGroup && (
                   <Button variant="outline" size="sm" onClick={() => setSelectedGroup(null)}>
                     {t('dash.showAll')}
@@ -1949,7 +1991,20 @@ export function Dashboard() {
                   </>
                 ) : (
                   <>
-                    {t('dash.emptyState')}
+                    <p>{t('dash.emptyState')}</p>
+                    <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                      <Button size="sm" onClick={() => setShowAddPage(true)}>
+                        {t('dash.emptyAdd')}
+                      </Button>
+                      {extensionStatus !== 'linked' && (
+                        <a
+                          href="/extension"
+                          className="inline-flex h-8 items-center rounded-full border border-border px-3 text-xs font-medium hover:bg-accent"
+                        >
+                          {t('dash.activate.cta')}
+                        </a>
+                      )}
+                    </div>
                   </>
                 )}
               </div>
