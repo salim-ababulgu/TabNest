@@ -482,6 +482,8 @@ export const ES_ALL: Record<string, Entry> = {
 
   'theme.toLight': 'Cambiar a claro',
   'theme.toDark': 'Cambiar a oscuro',
+  'nest.groupTime': 'Tiempo',
+  'nest.groupSpaces': 'Espacios',
   'nest.title': 'Listas',
   'nest.intro': 'Las páginas se ordenan aquí solas.',
   'nest.auto': 'Las páginas se ordenarán aquí solas.',

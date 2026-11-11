@@ -104,12 +104,12 @@ async function main() {
   await mobile.waitForTimeout(500)
   const drawer = mobile.getByRole('dialog').first()
   const drawerTitle = await drawer
-    .getByText(/Listes|Lists/)
+    .getByText(/Temps|Time/)
     .first()
     .isVisible()
     .catch(() => false)
-  if (drawerTitle) console.log('OK   tiroir mobile : liste « Listes » présente')
-  else fail('tiroir mobile sans liste')
+  if (drawerTitle) console.log('OK   tiroir mobile : groupes de navigation présents')
+  else fail('tiroir mobile sans groupes de navigation')
   const pencil = await drawer
     .getByRole('button', { name: /Gérer les listes|Manage lists/ })
     .first()

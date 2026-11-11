@@ -168,6 +168,9 @@ const VIEW_TITLES: Record<View, string> = {
 const NO_GROUP = 'none'
 const REASON_FILTERS = ['decide', 'finish', 'explore', 'remember'] as const
 
+/** Ordre de la navigation : le temps d'abord, puis les espaces. */
+const NAV_ORDER = ['today', 'finish', 'explore', 'remember', 'archives', 'all', 'sites'] as const
+
 const MAX_STACK = 4
 
 /** En mode déplacement, ces sections servent de destinations. */
@@ -1412,12 +1415,15 @@ export function Dashboard() {
   }
 
   const nestNavProps = {
-    builtins: VIEWS.filter((item) => !nest.hidden.includes(item.id)).map((item) => ({
-      id: item.id,
-      labelKey: item.labelKey,
-      icon: item.icon,
-      count: countFor(item.id),
-    })),
+    builtins: NAV_ORDER.map((id) => VIEWS.find((item) => item.id === id))
+      .filter((item): item is (typeof VIEWS)[number] => Boolean(item))
+      .filter((item) => !nest.hidden.includes(item.id))
+      .map((item) => ({
+        id: item.id,
+        labelKey: item.labelKey,
+        icon: item.icon,
+        count: countFor(item.id),
+      })),
     collections: nest.collections,
     collectionCounts: countCollections(nest.collections, pages),
     view,

@@ -212,28 +212,8 @@ export function NestNav({
   return (
     <div className="space-y-0.5">
       <div
-        className={cn(
-          'flex items-center pb-1',
-          collapsed ? 'justify-center' : 'justify-between px-3',
-        )}
+        className={cn('flex items-center justify-end pb-1', collapsed ? 'px-1' : 'px-3')}
       >
-        {!collapsed && (
-          <span className={cn('relative flex items-center gap-1.5 text-xs font-medium', labelClass)}>
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-lime" />
-            <span className="relative block">
-              <span
-                aria-hidden="true"
-                className={cn(
-                  'skeleton-shimmer absolute inset-0 h-3 rounded transition-opacity duration-200',
-                  revealed ? 'opacity-0' : 'opacity-100',
-                )}
-              />
-              <span className={cn('block transition-opacity duration-200', revealed ? 'opacity-100' : 'opacity-0')}>
-                {t('nest.title')}
-              </span>
-            </span>
-          </span>
-        )}
         <button
           type="button"
           onClick={onToggleEdit}
@@ -251,19 +231,26 @@ export function NestNav({
         </button>
       </div>
 
-      {!collapsed && (
-        <p className={cn('pb-1 text-[11px] leading-snug', labelClass, 'px-3')}>
-          {t('nest.intro')}
-        </p>
-      )}
-
-      {builtins.map((item) => {
+            {builtins.map((item) => {
         const Icon = item.icon
         const active = !activeCollection && !selectedGroup && view === item.id
         const canDrop = dropViews.includes(item.id)
         const canHide = editMode && !keepViews.includes(item.id)
         return (
-          <div key={item.id} className="relative">
+          <div key={item.id}>
+            {item.id === 'today' && !collapsed && (
+              <p className={cn('px-3 pt-3 pb-1 text-[11px] font-medium', labelClass)}>
+                {t('nest.groupTime')}
+              </p>
+            )}
+            {item.id === 'today' && collapsed && <div className="my-2 h-px bg-sidebar-border/70" />}
+            {item.id === 'all' && !collapsed && (
+              <p className={cn('px-3 pt-3 pb-1 text-[11px] font-medium', labelClass)}>
+                {t('nest.groupSpaces')}
+              </p>
+            )}
+            {item.id === 'all' && collapsed && <div className="my-2 h-px bg-sidebar-border/70" />}
+            <div className="relative">
             <button
               type="button"
               data-drop-target={canDrop ? item.id : undefined}
@@ -314,6 +301,7 @@ export function NestNav({
                 <X className="size-3.5" aria-hidden="true" />
               </button>
             )}
+            </div>
           </div>
         )
       })}

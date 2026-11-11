@@ -456,6 +456,8 @@ export const ZH_ALL: Record<string, Entry> = {
 
   'theme.toLight': '切换到浅色',
   'theme.toDark': '切换到深色',
+  'nest.groupTime': '时间',
+  'nest.groupSpaces': '空间',
   'nest.title': '清单',
   'nest.intro': '页面会自动归到架子上。',
   'nest.auto': '页面会自动归到这里。',
