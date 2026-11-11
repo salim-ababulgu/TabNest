@@ -1386,55 +1386,46 @@ export function Dashboard() {
             sidebarCollapsed ? 'flex-col px-2 py-3' : 'px-5 py-5',
           )}
         >
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-lime text-lime-foreground">
-            <Sparkles className="size-4" aria-hidden="true" />
-          </span>
-          {!sidebarCollapsed && (
-            <span className="font-heading text-xl font-semibold">Filnest</span>
+          {sidebarCollapsed ? (
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              title={t('dash.expandMenu')}
+              aria-label={t('dash.expandMenu')}
+              aria-expanded={false}
+              className="group relative grid size-8 shrink-0 place-items-center rounded-lg bg-lime text-lime-foreground outline-none focus-visible:ring-2 focus-visible:ring-lime/70"
+            >
+              <Sparkles
+                className="size-4 transition-opacity duration-150 group-hover:opacity-0 group-focus-visible:opacity-0"
+                aria-hidden="true"
+              />
+              <PanelLeftOpen
+                className="absolute size-4 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
+                aria-hidden="true"
+              />
+            </button>
+          ) : (
+            <>
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-lime text-lime-foreground">
+                <Sparkles className="size-4" aria-hidden="true" />
+              </span>
+              <span className="font-heading text-xl font-semibold">Filnest</span>
+              <button
+                type="button"
+                onClick={toggleSidebar}
+                title={t('dash.collapseMenu')}
+                aria-label={t('dash.collapseMenu')}
+                aria-expanded
+                className="ml-auto rounded-md p-1 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              >
+                <PanelLeftClose className="size-4" aria-hidden="true" />
+              </button>
+            </>
           )}
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            title={sidebarCollapsed ? t('dash.expandMenu') : t('dash.collapseMenu')}
-            aria-label={sidebarCollapsed ? t('dash.expandMenu') : t('dash.collapseMenu')}
-            aria-expanded={!sidebarCollapsed}
-            className={cn(
-              'rounded-md p-1 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground',
-              !sidebarCollapsed && 'ml-auto',
-            )}
-          >
-            {sidebarCollapsed ? (
-              <PanelLeftOpen className="size-4" aria-hidden="true" />
-            ) : (
-              <PanelLeftClose className="size-4" aria-hidden="true" />
-            )}
-          </button>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
           <NestNav {...nestNavProps} collapsed={sidebarCollapsed} />
-        </div>
-
-        <div className="shrink-0 border-t border-sidebar-border px-2 py-2">
-          <button
-            type="button"
-            onClick={() => {
-              setShowSettings(true)
-              setSelectedGroup(null)
-            }}
-            title={t('dash.settings')}
-            aria-label={t('dash.settings')}
-            className={cn(
-              'flex w-full items-center gap-2.5 rounded-lg text-sm transition-colors',
-              sidebarCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2',
-              showSettings
-                ? 'bg-sidebar-accent text-sidebar-foreground'
-                : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
-            )}
-          >
-            <Settings className="size-4 shrink-0" aria-hidden="true" />
-            {!sidebarCollapsed && <span>{t('dash.settings')}</span>}
-          </button>
         </div>
 
         <div className="shrink-0 border-t border-sidebar-border px-2 py-3">

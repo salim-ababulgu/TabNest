@@ -97,7 +97,7 @@ async function main() {
   }
 
   // ---------- 5. Formulaire de retour ----------
-  await page.getByRole('button', { name: /Paramètres|Settings/ }).first().click()
+  await page.getByRole('button', { name: /Ouvrir les paramètres|Open settings/ }).first().click()
   await page.waitForTimeout(500)
   const feedbackRow = await page
     .getByText(/Donner mon avis|Send feedback/)

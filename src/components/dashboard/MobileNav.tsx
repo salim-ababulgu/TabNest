@@ -131,14 +131,6 @@ export function MobileMenu({
           <button
             type="button"
             onClick={onOpenSettings}
-            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/75 hover:bg-accent"
-          >
-            <Settings className="size-4" aria-hidden="true" />
-            {t('dash.settings')}
-          </button>
-          <button
-            type="button"
-            onClick={onOpenSettings}
             aria-label={t('dash.openSettings')}
             className="mt-1 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left hover:bg-accent"
           >
