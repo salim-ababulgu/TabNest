@@ -23,6 +23,7 @@ import {
   Pin,
   Loader2,
   ArrowUpDown,
+  ChevronLeft,
   ExternalLink,
   Plus,
   RefreshCw,
@@ -616,6 +617,16 @@ export function Dashboard() {
     } catch {
       // stockage indisponible
     }
+  }
+
+  function openMobileSearch() {
+    setView('all')
+    setSelectedGroup(null)
+    setActiveCollectionId(null)
+    window.setTimeout(() => {
+      searchRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      searchRef.current?.focus()
+    }, 60)
   }
 
   function toggleSidebar() {
@@ -2319,6 +2330,14 @@ export function Dashboard() {
 
         {selectedSite && (
         <Modal title={selectedSite.domain} onClose={() => setSelectedSite(null)}>
+          <button
+            type="button"
+            onClick={() => setSelectedSite(null)}
+            className="-mt-1 inline-flex min-h-11 w-fit items-center gap-1.5 self-start text-sm font-medium text-foreground/80 sm:hidden"
+          >
+            <ChevronLeft className="size-4" aria-hidden="true" />
+            {t('dash.back')}
+          </button>
           <div className="min-w-0 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
               <SiteAvatar site={selectedSite} className="size-10 shrink-0 rounded-lg border" />
@@ -3032,6 +3051,7 @@ export function Dashboard() {
           setSelectedGroup(null)
         }}
         onOpenMenu={() => setMobileMenuOpen(true)}
+        onOpenSearch={openMobileSearch}
         editMode={editMode}
         onMoveToView={(next) => moveSelectionToView(next)}
       />

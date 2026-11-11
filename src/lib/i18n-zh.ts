@@ -381,7 +381,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.toast.accountDeleted': '账户已删除。',
   'dash.loadTimeout': '网络太慢。请检查网络后重试。',
   'dash.retry': '重试',
-  'dash.mobileReadOnly': '在手机上，Filnest 为只读模式：自动捕捉由电脑上的扩展完成。',
+  'dash.mobileReadOnly': '自动捕捉由电脑上的扩展完成。在这里可以查看和整理页面。',
   'pocket.title': '从 Pocket 导入',
   'pocket.desc': 'Pocket 已关闭：通过它的 HTML 导出找回你的链接。「待完成」「线索」等标签会变成架子。',
   'pocket.button': '选择文件',
@@ -423,6 +423,7 @@ export const ZH_ALL: Record<string, Entry> = {
   'dash.sort.visits': '访问次数',
   'dash.sort.expiry': '到期',
   'dash.sort.title': '网站名称',
+  'dash.back': '返回',
   'dash.cancel': '取消',
   'dash.toast.projectRenamed': '已重命名项目。',
   'dash.toast.projectDeleted': '已删除项目（页面已保留）。',
@@ -549,6 +550,7 @@ export const ZH_ALL: Record<string, Entry> = {
 
   'nav.mobile.label': '移动端导航',
   'nav.mobile.sections': '版块',
+  'nav.mobile.search': '搜索',
   'nav.mobile.more': '更多',
   'nav.mobile.openMenu': '打开完整菜单',
 

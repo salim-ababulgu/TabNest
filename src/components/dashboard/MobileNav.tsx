@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react'
-import { Archive, Clock, LayoutGrid, Menu, Settings, Sparkles, Compass } from 'lucide-react'
+import { Archive, Clock, LayoutGrid, Menu, Search, Settings, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   Sheet,
@@ -21,10 +21,10 @@ type NavView =
   | 'ephemeral'
   | 'archives'
 
-const TABS: { id: 'today' | 'all' | 'explore' | 'archives'; labelKey: string; icon: typeof Clock }[] = [
+const TABS: { id: 'today' | 'all' | 'search' | 'archives'; labelKey: string; icon: typeof Clock }[] = [
   { id: 'today', labelKey: 'view.today', icon: Clock },
   { id: 'all', labelKey: 'view.all', icon: LayoutGrid },
-  { id: 'explore', labelKey: 'view.explore', icon: Compass },
+  { id: 'search', labelKey: 'nav.mobile.search', icon: Search },
   { id: 'archives', labelKey: 'view.archives', icon: Archive },
 ]
 
@@ -33,12 +33,14 @@ export function MobileTabBar({
   view,
   onSelect,
   onOpenMenu,
+  onOpenSearch,
   editMode = false,
   onMoveToView,
 }: {
   view: NavView
   onSelect: (view: NavView) => void
   onOpenMenu: () => void
+  onOpenSearch: () => void
   editMode?: boolean
   onMoveToView?: (view: NavView) => void
 }) {
@@ -52,7 +54,8 @@ export function MobileTabBar({
         {TABS.map((tab) => {
           const Icon = tab.icon
           const active = view === tab.id
-          const canReceive = tab.id === 'today' || tab.id === 'all' || tab.id === 'explore'
+          const isSearch = tab.id === 'search'
+          const canReceive = tab.id === 'today' || tab.id === 'all'
           return (
             <li key={tab.id}>
               <button
@@ -60,15 +63,19 @@ export function MobileTabBar({
                 data-drop-target={canReceive ? tab.id : undefined}
                 onClick={() => {
                   if (editMode) {
-                    if (canReceive) onMoveToView?.(tab.id)
+                    if (canReceive) onMoveToView?.(tab.id as NavView)
                     return
                   }
-                  onSelect(tab.id)
+                  if (isSearch) {
+                    onOpenSearch()
+                    return
+                  }
+                  onSelect(tab.id as NavView)
                 }}
                 aria-current={active && !editMode ? 'page' : undefined}
-                disabled={editMode && !canReceive}
+                disabled={editMode && (!canReceive || isSearch)}
                 className={cn(
-                  'flex w-full flex-col items-center gap-1 py-2.5 text-[10px] transition-colors',
+                  'flex min-h-11 w-full flex-col items-center justify-center gap-1 py-2 text-[10px] transition-colors',
                   editMode && canReceive && 'text-lime',
                   editMode && !canReceive && 'opacity-40',
                   !editMode && (active ? 'text-foreground' : 'text-muted-foreground'),
@@ -85,7 +92,7 @@ export function MobileTabBar({
             type="button"
             onClick={onOpenMenu}
             aria-label={t('nav.mobile.openMenu')}
-            className="flex w-full flex-col items-center gap-1 py-2.5 text-[10px] text-muted-foreground"
+            className="flex min-h-11 w-full flex-col items-center justify-center gap-1 py-2 text-[10px] text-muted-foreground"
           >
             <Menu className="size-5" aria-hidden="true" />
             {t('nav.mobile.more')}

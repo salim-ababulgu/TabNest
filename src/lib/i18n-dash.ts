@@ -149,7 +149,7 @@ const FR: Record<string, Entry> = {
   'dash.loadTimeout': 'La connexion est trop lente. Vérifie ton réseau, puis réessaie.',
   'dash.retry': 'Réessayer',
   'dash.mobileReadOnly':
-    'Sur mobile, Filnest est en lecture seule : la capture automatique fonctionne depuis l’extension sur ordinateur.',
+    'La capture automatique fonctionne depuis l’extension sur ordinateur. Ici, vous pouvez consulter et organiser vos pages.',
   'pocket.title': 'Importer depuis Pocket',
   'pocket.desc': 'Pocket a fermé : récupère tes liens via son export HTML. Les étiquettes « à finir », « piste », etc. deviennent des étagères.',
   'pocket.button': 'Choisir un fichier',
@@ -191,6 +191,7 @@ const FR: Record<string, Entry> = {
   'dash.sort.visits': 'Visites',
   'dash.sort.expiry': 'Expiration',
   'dash.sort.title': 'Nom du site',
+  'dash.back': 'Retour',
   'dash.cancel': 'Annuler',
   'dash.toast.projectRenamed': 'Projet renommé.',
   'dash.toast.projectDeleted': 'Projet supprimé (les pages sont conservées).',
@@ -325,6 +326,7 @@ const FR: Record<string, Entry> = {
 
   'nav.mobile.label': 'Navigation mobile',
   'nav.mobile.sections': 'Sections',
+  'nav.mobile.search': 'Recherche',
   'nav.mobile.more': 'Plus',
   'nav.mobile.openMenu': 'Ouvrir le menu complet',
 
@@ -553,7 +555,7 @@ const EN: Record<string, Entry> = {
   'dash.loadTimeout': 'The connection is too slow. Check your network, then try again.',
   'dash.retry': 'Try again',
   'dash.mobileReadOnly':
-    'On mobile, Filnest is read-only: automatic capture runs from the extension on your computer.',
+    'Automatic capture runs from the extension on your computer. Here, you can browse and organise your pages.',
   'pocket.title': 'Import from Pocket',
   'pocket.desc': 'Pocket shut down: recover your links via its HTML export. Tags like “to finish”, “lead”, etc. become shelves.',
   'pocket.button': 'Choose a file',
@@ -568,6 +570,7 @@ const EN: Record<string, Entry> = {
   'dash.hero.nextExpiry': 'Next expiry in {d} d',
   'dash.onboarding.open': 'Start the guide',
   'dash.onboarding.later': 'Later',
+  'dash.back': 'Back',
   'dash.cancel': 'Cancel',
   'dash.toast.projectRenamed': 'Project renamed.',
   'dash.toast.projectDeleted': 'Project deleted (pages are kept).',
@@ -696,6 +699,7 @@ const EN: Record<string, Entry> = {
 
   'nav.mobile.label': 'Mobile navigation',
   'nav.mobile.sections': 'Sections',
+  'nav.mobile.search': 'Search',
   'nav.mobile.more': 'More',
   'nav.mobile.openMenu': 'Open full menu',
 

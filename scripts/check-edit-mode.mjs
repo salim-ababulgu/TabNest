@@ -90,7 +90,7 @@ async function runMobile(browser) {
   if (!selectedText) failures += 1
 
   // Cible = onglet du bas (Pistes)
-  await page.getByRole('button', { name: /Pistes|Leads/ }).first().click()
+  await openLeadsTarget(page)
   const toast = await page
     .getByText(/Déplacé dans|Moved to/)
     .first()
@@ -105,6 +105,21 @@ async function runMobile(browser) {
   await page.getByRole('button', { name: /Terminer|Done/ }).click()
   await page.close()
   return failures
+}
+
+
+async function openLeadsTarget(page) {
+  const direct = page.getByRole('button', { name: /Pistes|Leads/ }).first()
+  if (await direct.isVisible().catch(() => false)) {
+    await direct.click()
+    return
+  }
+  await page.getByRole('button', { name: /Ouvrir le menu|Open menu/ }).first().click()
+  await page.waitForTimeout(400)
+  await page.getByRole('button', { name: /Pistes|Leads/ }).first().click()
+  await page.waitForTimeout(300)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(300)
 }
 
 async function main() {

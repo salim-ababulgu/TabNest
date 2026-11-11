@@ -16,6 +16,21 @@ async function login(page) {
   await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
 }
 
+
+async function openLeadsTarget(page) {
+  const direct = page.getByRole('button', { name: /Pistes|Leads/ }).first()
+  if (await direct.isVisible().catch(() => false)) {
+    await direct.click()
+    return
+  }
+  await page.getByRole('button', { name: /Ouvrir le menu|Open menu/ }).first().click()
+  await page.waitForTimeout(400)
+  await page.getByRole('button', { name: /Pistes|Leads/ }).first().click()
+  await page.waitForTimeout(300)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(300)
+}
+
 async function main() {
   const browser = await chromium.launch()
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
@@ -61,7 +76,7 @@ async function main() {
 
   // --- 2. Déplacement via une section + persistance après rechargement
   await overlay.click()
-  await page.getByRole('button', { name: /Pistes|Leads/ }).first().click()
+  await openLeadsTarget(page)
   const toast = await page
     .getByText(/Déplacé dans|Moved to/)
     .first()
@@ -72,7 +87,7 @@ async function main() {
 
   await page.reload({ waitUntil: 'networkidle' })
   await page.getByRole('button', { name: /Rafraîchir|Refresh/ }).first().waitFor({ timeout: 20000 })
-  await page.getByRole('button', { name: /Pistes|Leads/ }).first().click()
+  await openLeadsTarget(page)
   await page.waitForTimeout(1000)
   const stillThere = await page.locator(`[data-site="${domain}"]`).count()
   if (stillThere > 0) {

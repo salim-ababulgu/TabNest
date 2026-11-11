@@ -405,7 +405,7 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.loadTimeout': 'La conexión es demasiado lenta. Revisa tu red e inténtalo de nuevo.',
   'dash.retry': 'Reintentar',
   'dash.mobileReadOnly':
-    'En móvil, Filnest es de solo lectura: la captura automática funciona con la extensión en el ordenador.',
+    'La captura automática funciona con la extensión en el ordenador. Aquí puedes consultar y organizar tus páginas.',
   'pocket.title': 'Importar desde Pocket',
   'pocket.desc': 'Pocket cerró: recupera tus enlaces con su exportación HTML. Las etiquetas «terminar», «pista», etc. se convierten en estantes.',
   'pocket.button': 'Elegir un archivo',
@@ -447,6 +447,7 @@ export const ES_ALL: Record<string, Entry> = {
   'dash.sort.visits': 'Visitas',
   'dash.sort.expiry': 'Caducidad',
   'dash.sort.title': 'Nombre del sitio',
+  'dash.back': 'Volver',
   'dash.cancel': 'Cancelar',
   'dash.toast.projectRenamed': 'Proyecto renombrado.',
   'dash.toast.projectDeleted': 'Proyecto eliminado (las páginas se conservan).',
@@ -575,6 +576,7 @@ export const ES_ALL: Record<string, Entry> = {
 
   'nav.mobile.label': 'Navegación móvil',
   'nav.mobile.sections': 'Secciones',
+  'nav.mobile.search': 'Buscar',
   'nav.mobile.more': 'Más',
   'nav.mobile.openMenu': 'Abrir el menú completo',
 
