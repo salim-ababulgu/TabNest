@@ -97,8 +97,19 @@ export function NestNav({
   const [renameValue, setRenameValue] = useState('')
   const [renamingProjectId, setRenamingProjectId] = useState<string | null>(null)
   const [projectRenameValue, setProjectRenameValue] = useState('')
+  // Au déploiement, les libellés apparaissent après un bref shimmer de squelette.
+  const [revealed, setRevealed] = useState(!collapsed)
   const panelRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (collapsed) {
+      setRevealed(false)
+      return
+    }
+    const timer = window.setTimeout(() => setRevealed(true), 210)
+    return () => window.clearTimeout(timer)
+  }, [collapsed])
 
   useEffect(() => {
     if (!adding || !panelRef.current) return
@@ -207,9 +218,20 @@ export function NestNav({
         )}
       >
         {!collapsed && (
-          <span className={cn('flex items-center gap-1.5 text-xs font-medium', labelClass)}>
+          <span className={cn('relative flex items-center gap-1.5 text-xs font-medium', labelClass)}>
             <span aria-hidden="true" className="size-1.5 rounded-full bg-lime" />
-            {t('nest.title')}
+            <span className="relative block">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'skeleton-shimmer absolute inset-0 h-3 rounded transition-opacity duration-200',
+                  revealed ? 'opacity-0' : 'opacity-100',
+                )}
+              />
+              <span className={cn('block transition-opacity duration-200', revealed ? 'opacity-100' : 'opacity-0')}>
+                {t('nest.title')}
+              </span>
+            </span>
           </span>
         )}
         <button
@@ -257,7 +279,25 @@ export function NestNav({
             >
               <Icon className="size-4 shrink-0" aria-hidden="true" />
               {!collapsed && (
-                <span className="min-w-0 flex-1 truncate text-left">{t(item.labelKey)}</span>
+                <span className="relative min-w-0 flex-1 text-left">
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'skeleton-shimmer absolute inset-y-0 left-0 my-auto h-3 w-3/4 rounded transition-opacity duration-200',
+                      revealed ? 'opacity-0' : 'opacity-100',
+                    )}
+                    style={{ transitionDelay: collapsed ? '0ms' : '160ms' }}
+                  />
+                  <span
+                    className={cn(
+                      'block truncate transition-opacity duration-200',
+                      revealed ? 'opacity-100' : 'opacity-0',
+                    )}
+                    style={{ transitionDelay: collapsed ? '0ms' : '160ms' }}
+                  >
+                    {t(item.labelKey)}
+                  </span>
+                </span>
               )}
               {!collapsed && item.count > 0 && (
                 <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[11px] tabular-nums opacity-90">{item.count}</span>
@@ -329,7 +369,25 @@ export function NestNav({
               >
                 <span className="size-2 shrink-0 rounded-full bg-lime" aria-hidden="true" />
                 {!collapsed && (
-                  <span className="min-w-0 flex-1 truncate text-left">{collection.name}</span>
+                  <span className="relative min-w-0 flex-1 text-left">
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'skeleton-shimmer absolute inset-y-0 left-0 my-auto h-3 w-3/4 rounded transition-opacity duration-200',
+                        revealed ? 'opacity-0' : 'opacity-100',
+                      )}
+                      style={{ transitionDelay: collapsed ? '0ms' : '160ms' }}
+                    />
+                    <span
+                      className={cn(
+                        'block truncate transition-opacity duration-200',
+                        revealed ? 'opacity-100' : 'opacity-0',
+                      )}
+                      style={{ transitionDelay: collapsed ? '0ms' : '160ms' }}
+                    >
+                      {collection.name}
+                    </span>
+                  </span>
                 )}
                 {!collapsed && (
                   <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[11px] tabular-nums opacity-90">
@@ -538,7 +596,25 @@ export function NestNav({
                 >
                   <span className="size-2 shrink-0 rounded-full bg-lime" aria-hidden="true" />
                   {!collapsed && (
-                    <span className="min-w-0 flex-1 truncate text-left">{project.name}</span>
+                    <span className="relative min-w-0 flex-1 text-left">
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          'skeleton-shimmer absolute inset-y-0 left-0 my-auto h-3 w-3/4 rounded transition-opacity duration-200',
+                          revealed ? 'opacity-0' : 'opacity-100',
+                        )}
+                        style={{ transitionDelay: collapsed ? '0ms' : '160ms' }}
+                      />
+                      <span
+                        className={cn(
+                          'block truncate transition-opacity duration-200',
+                          revealed ? 'opacity-100' : 'opacity-0',
+                        )}
+                        style={{ transitionDelay: collapsed ? '0ms' : '160ms' }}
+                      >
+                        {project.name}
+                      </span>
+                    </span>
                   )}
                   {!collapsed && project.count > 0 && (
                     <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[11px] tabular-nums opacity-90">{project.count}</span>

@@ -1409,7 +1409,7 @@ export function Dashboard() {
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-lime text-lime-foreground">
                 <Sparkles className="size-4" aria-hidden="true" />
               </span>
-              <span className="font-heading text-xl font-semibold">Filnest</span>
+              <span className="label-in font-heading text-xl font-semibold">Filnest</span>
               <button
                 type="button"
                 onClick={toggleSidebar}
@@ -1449,7 +1449,7 @@ export function Dashboard() {
               <span className="grid size-7 shrink-0 place-items-center rounded-full bg-sidebar-accent text-[10px] font-semibold uppercase text-sidebar-foreground">
                 {(user?.email ?? '?').charAt(0)}
               </span>
-              <span className="min-w-0 flex-1 truncate text-xs text-sidebar-foreground/75">
+              <span className="label-in min-w-0 flex-1 truncate text-xs text-sidebar-foreground/75">
                 {user?.email}
               </span>
               <Settings className="size-3.5 shrink-0 text-sidebar-foreground/60" aria-hidden="true" />
