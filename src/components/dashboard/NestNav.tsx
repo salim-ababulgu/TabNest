@@ -89,6 +89,9 @@ export function NestNav({
   collapsed?: boolean
 }) {
   const { t } = useLangValue()
+  const TIME_VIEW_IDS = ['today', 'finish', 'explore', 'remember', 'archives']
+  const timeBuiltins = builtins.filter((item) => TIME_VIEW_IDS.includes(item.id))
+  const spaceBuiltins = builtins.filter((item) => !TIME_VIEW_IDS.includes(item.id))
   const [adding, setAdding] = useState(false)
   const [name, setName] = useState('')
   const [ruleId, setRuleId] = useState(RULE_OPTIONS[0].id)
@@ -209,47 +212,13 @@ export function NestNav({
     )
   }
 
-  return (
-    <div className="space-y-0.5">
-      <div
-        className={cn('flex items-center justify-end pb-1', collapsed ? 'px-1' : 'px-3')}
-      >
-        <button
-          type="button"
-          onClick={onToggleEdit}
-          className={cn(
-            'rounded p-1',
-            collapsed && 'grid size-8 place-items-center',
-            iconClass,
-            editMode && 'text-lime',
-          )}
-          aria-label={t('nest.manage')}
-          title={t('nest.manage')}
-          aria-pressed={editMode}
-        >
-          <Pencil className="size-3.5" aria-hidden="true" />
-        </button>
-      </div>
-
-            {builtins.map((item) => {
-        const Icon = item.icon
-        const active = !activeCollection && !selectedGroup && view === item.id
-        const canDrop = dropViews.includes(item.id)
-        const canHide = editMode && !keepViews.includes(item.id)
-        return (
-          <div key={item.id}>
-            {item.id === 'today' && !collapsed && (
-              <p className={cn('px-3 pt-3 pb-1 text-[11px] font-medium', labelClass)}>
-                {t('nest.groupTime')}
-              </p>
-            )}
-            {item.id === 'today' && collapsed && <div className="my-2 h-px bg-sidebar-border/70" />}
-            {item.id === 'all' && !collapsed && (
-              <p className={cn('px-3 pt-3 pb-1 text-[11px] font-medium', labelClass)}>
-                {t('nest.groupSpaces')}
-              </p>
-            )}
-            {item.id === 'all' && collapsed && <div className="my-2 h-px bg-sidebar-border/70" />}
+  function renderBuiltin(item: Builtin) {
+    const Icon = item.icon
+    const active = !activeCollection && !selectedGroup && view === item.id
+    const canDrop = dropViews.includes(item.id)
+    const canHide = editMode && !keepViews.includes(item.id)
+    return (
+      <div key={item.id}>
             <div className="relative">
             <button
               type="button"
@@ -302,9 +271,40 @@ export function NestNav({
               </button>
             )}
             </div>
-          </div>
-        )
-      })}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-0.5">
+      <div
+        className={cn('flex items-center justify-end pb-1', collapsed ? 'px-1' : 'px-3')}
+      >
+        <button
+          type="button"
+          onClick={onToggleEdit}
+          className={cn(
+            'rounded p-1',
+            collapsed && 'grid size-8 place-items-center',
+            iconClass,
+            editMode && 'text-lime',
+          )}
+          aria-label={t('nest.manage')}
+          title={t('nest.manage')}
+          aria-pressed={editMode}
+        >
+          <Pencil className="size-3.5" aria-hidden="true" />
+        </button>
+      </div>
+
+      {!collapsed && (
+        <p className={cn('px-3 pt-3 pb-1 text-[11px] font-medium', labelClass)}>
+          {t('nest.groupSpaces')}
+        </p>
+      )}
+      {collapsed && <div className="my-2 h-px bg-sidebar-border/70" />}
+      {spaceBuiltins.map(renderBuiltin)}
+
 
       {collections.map((collection) => {
         const active = activeCollection === collection.id
@@ -638,6 +638,14 @@ export function NestNav({
           ))}
         </>
       )}
+
+      {!collapsed && (
+        <p className={cn('px-3 pt-3 pb-1 text-[11px] font-medium', labelClass)}>
+          {t('nest.groupTime')}
+        </p>
+      )}
+      {collapsed && <div className="my-2 h-px bg-sidebar-border/70" />}
+      {timeBuiltins.map(renderBuiltin)}
 
       {builtins.length === 0 && collections.length === 0 && !collapsed && (
         <p className={cn('px-3 py-2 text-xs', labelClass)}>{t('nest.empty')}</p>

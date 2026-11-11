@@ -170,7 +170,7 @@ const NO_GROUP = 'none'
 const REASON_FILTERS = ['decide', 'finish', 'explore', 'remember'] as const
 
 /** Ordre de la navigation : le temps d'abord, puis les espaces. */
-const NAV_ORDER = ['today', 'finish', 'explore', 'remember', 'archives', 'all', 'sites'] as const
+const NAV_ORDER = ['all', 'sites', 'today', 'finish', 'explore', 'remember', 'archives'] as const
 
 const MAX_STACK = 4
 
