@@ -2174,6 +2174,15 @@ export function Dashboard() {
                               <span className="grid size-14 place-items-center rounded-2xl border border-border bg-card font-heading text-xl font-semibold uppercase text-foreground/70 sm:size-16 sm:text-2xl">
                                 {site.domain.charAt(0)}
                               </span>
+                              <img
+                                src={faviconFor(site)}
+                                alt=""
+                                loading="lazy"
+                                className="absolute inset-0 m-auto size-12 rounded-xl bg-card object-contain p-1.5 sm:size-14"
+                                onError={(event) => {
+                                  event.currentTarget.style.display = 'none'
+                                }}
+                              />
                             </div>
                           </div>
                           {site.ogImage && (

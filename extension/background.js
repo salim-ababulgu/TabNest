@@ -167,8 +167,29 @@ const enrichedOnce = new Set()
  * L'enrichissement (image de partage) est prévu côté serveur : aucune clé
  * tierce n'est embarquée dans l'extension. On garde les métadonnées de la page.
  */
-async function enrichWithServer() {
-  return null
+async function enrichWithServer(url) {
+  try {
+    const session = await getSession()
+    if (!session?.access_token) return null
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/enrich`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url }),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return {
+      ogImage: typeof data.ogImage === 'string' ? data.ogImage : null,
+      favicon: typeof data.favicon === 'string' ? data.favicon : null,
+      ecommerce: Boolean(data.ecommerce),
+    }
+  } catch {
+    return null
+  }
 }
 
 async function capture(url, title, faviconUrl, increment = true, ogImageUrl = '', themeColor = '') {
@@ -216,15 +237,19 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
     const exists = Array.isArray(rows) && rows.length > 0
 
     const rowMissingImage = !exists || !rows[0]?.og_image_url
-    if (rowMissingImage && !enrichedOnce.has(url) && (!ogImage || !favicon || !finalTitle)) {
+    if (rowMissingImage && !enrichedOnce.has(url)) {
       enrichedOnce.add(url)
-      const enriched = await enrichWithServer()
+      const enriched = await enrichWithServer(url)
       if (enriched) {
-        finalTitle = finalTitle || enriched.title || ''
-        const image = sanitizeUrl(enriched.image?.url)
-        const logo = sanitizeUrl(enriched.logo?.url)
+        const image = sanitizeUrl(enriched.ogImage)
+        const logo = sanitizeUrl(enriched.favicon)
         if (!favicon && logo) favicon = logo
-        if (!ogImage && image) ogImage = image
+        // E-commerce : jamais d'image d'aperçu, seulement le favicon.
+        if (enriched.ecommerce) {
+          ogImage = null
+        } else if (!ogImage && image) {
+          ogImage = image
+        }
       }
     }
 
