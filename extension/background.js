@@ -4,7 +4,37 @@ const IGNORED =
   /^(chrome|edge|about|chrome-extension|devtools|view-source|file|data|blob):/i
 const APP_HOSTS = ['localhost:5173', '127.0.0.1:5173', 'filnest.pages.dev']
 const CAPTURE_COOLDOWN_MS = 15000
-const lastCaptured = new Map()
+
+/**
+ * Cooldown stocké dans chrome.storage.local : il survit à la mise en sommeil
+ * du service worker (contrairement à une Map en mémoire), ce qui évite de
+ * re-capturer les mêmes pages en rafale après chaque réveil.
+ */
+async function captureWithinCooldown(url) {
+  try {
+    const { captureCooldowns = {} } = await chrome.storage.local.get('captureCooldowns')
+    const last = captureCooldowns[url]
+    if (last && Date.now() - last < CAPTURE_COOLDOWN_MS) return true
+  } catch {
+    // stockage indisponible : on autorise
+  }
+  return false
+}
+
+async function markCaptured(url) {
+  try {
+    const { captureCooldowns = {} } = await chrome.storage.local.get('captureCooldowns')
+    const now = Date.now()
+    const pruned = {}
+    for (const [key, ts] of Object.entries(captureCooldowns)) {
+      if (now - ts < CAPTURE_COOLDOWN_MS * 4) pruned[key] = ts
+    }
+    pruned[url] = now
+    await chrome.storage.local.set({ captureCooldowns: pruned })
+  } catch {
+    // stockage indisponible
+  }
+}
 
 const SEARCH_PATTERNS = [
   /^https?:\/\/(www\.)?google\.[a-z.]+\/search/i,
@@ -92,15 +122,30 @@ async function forgetTab(tabId) {
 }
 
 async function bumpBadge() {
-  const { captures = 0 } = await chrome.storage.local.get('captures')
-  const next = captures + 1
-  await chrome.storage.local.set({ captures: next })
   try {
+    const session = await getSession()
+    if (!session?.access_token) return
+    // Compte réel des pages du compte (le compteur local s'était gonflé à cause
+    // des captures en rafale ; on le recale sur Supabase).
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/pages?select=id&user_id=eq.${session.user.id}`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${session.access_token}`,
+          Prefer: 'count=exact',
+          Range: '0-0',
+        },
+      },
+    )
+    const range = res.headers.get('content-range')
+    const total = range ? Number(range.split('/')[1]) : 0
+    await chrome.storage.local.set({ captures: total })
     await chrome.action.setBadgeBackgroundColor({ color: '#c8f05a' })
     await chrome.action.setBadgeTextColor({ color: '#161613' })
-    await chrome.action.setBadgeText({ text: String(next) })
-  } catch {
-    // badge non critique
+    await chrome.action.setBadgeText({ text: total > 0 ? String(total) : '' })
+  } catch (error) {
+    console.warn('[Filnest] badge', error)
   }
 }
 
@@ -136,10 +181,7 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
   }
 
   const now = Date.now()
-  if (increment) {
-    const last = lastCaptured.get(url)
-    if (last && now - last < CAPTURE_COOLDOWN_MS) return
-  }
+  if (await captureWithinCooldown(url)) return
 
   const { captureEnabled = true, paused = false } = await chrome.storage.local.get([
     'captureEnabled',
@@ -154,7 +196,6 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
   let ogImage = sanitizeUrl(ogImageUrl)
   let finalTitle = title || ''
   const theme = sanitizeColor(themeColor)
-  if (increment) lastCaptured.set(url, now)
 
   const headers = {
     apikey: SUPABASE_ANON_KEY,
@@ -237,11 +278,12 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
         console.warn('[Filnest] insertion de la page échouée', insertRes.status)
         return
       }
+      await bumpBadge()
     }
 
     console.log('[Filnest] capturée', increment ? '(visite)' : '(maj)', url)
+    await markCaptured(url)
     await chrome.storage.local.set({ lastCapture: { url, at: now } })
-    await bumpBadge()
   } catch (error) {
     console.warn('[Filnest] capture : erreur réseau', error)
   }
@@ -249,11 +291,11 @@ async function capture(url, title, faviconUrl, increment = true, ogImageUrl = ''
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!tab.url) return
-  const isComplete = changeInfo.status === 'complete'
-  const hasFavicon = Boolean(changeInfo.favIconUrl)
-  if (!isComplete && !hasFavicon) return
+  // On ne capture qu'à la fin du chargement : les changements de favicon seuls
+  // (sites avec icône dynamique) déclenchaient des centaines de captures.
+  if (changeInfo.status !== 'complete') return
   void rememberTab(tabId, tab.url, tab.title ?? '', tab.favIconUrl ?? '')
-  void capture(tab.url, tab.title ?? '', tab.favIconUrl ?? '', isComplete)
+  void capture(tab.url, tab.title ?? '', tab.favIconUrl ?? '', true)
 })
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
@@ -832,6 +874,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true
   }
   if (message?.type === 'get-status') {
+    void bumpBadge()
     Promise.all([getSession(), chrome.storage.local.get(['captures', 'lastCapture'])]).then(
       ([session, info]) => {
         sendResponse({

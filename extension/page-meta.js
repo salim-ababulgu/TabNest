@@ -39,4 +39,3 @@ function sendMeta() {
 }
 
 sendMeta()
-window.setTimeout(sendMeta, 2000)
