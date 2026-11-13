@@ -209,7 +209,7 @@ function domainOf(url: string): string {
 }
 
 function googleFavicon(domain: string): string {
-  return `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(domain)}`
+  return `https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(domain)}`
 }
 
 function faviconFor(site: Site): string {
@@ -2178,7 +2178,7 @@ export function Dashboard() {
                                 src={faviconFor(site)}
                                 alt=""
                                 loading="lazy"
-                                className="absolute inset-0 m-auto size-12 rounded-xl bg-card object-contain p-1.5 sm:size-14"
+                                className="absolute inset-0 m-auto size-16 rounded-xl bg-card object-contain p-2 sm:size-20"
                                 onError={(event) => {
                                   event.currentTarget.style.display = 'none'
                                 }}

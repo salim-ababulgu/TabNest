@@ -82,7 +82,7 @@ Deno.serve(async (request) => {
       return new Response(JSON.stringify({ error: 'hôte non autorisé' }), { status: 403, headers })
     }
 
-    const favicon = `${GOOGLE_FAVICON}?domain=${encodeURIComponent(host)}&sz=64`
+    const favicon = `${GOOGLE_FAVICON}?domain=${encodeURIComponent(host)}&sz=128`
 
     if (isEcommerceDomain(host)) {
       return new Response(JSON.stringify({ favicon, ogImage: null, ecommerce: true }), { headers })
